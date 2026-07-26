@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import BandLinks from '../components/BandLinks.astro';
+import { getTable } from '../lib/content.js';
+
+const einstellungen = await getTable('einstellungen', { single: true });
+const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
+const bandsRaw = await getTable('bands', { select: '*,links:band_links(*)', order: 'reihenfolge.asc', filters: { sichtbar: 'eq.true' } });
+const bands = (bandsRaw || []).filter((b) => b.sichtbar !== false)
+  .sort((a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0));
+
+// In Zweierreihen gruppieren (wie im Design), Hintergrund alterniert
+const rows = [];
+for (let i = 0; i < bands.length; i += 2) rows.push(bands.slice(i, i + 2));
+const nameHtml = (n) => (n || '').split('\n').map((s) => s).join('<br />');
+const namePlain = (n) => (n || '').split('\n').join(' ');
+---
+<Base active="lineup" einstellungen={einstellungen} jahre={jahre} title="Line-Up – Rock4Aid">
+  <section id="programm" style="background:#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat;padding:clamp(30px,4.8vw,72px) 0 clamp(20px,3vw,38px)">
+    <div style="max-width:1500px;margin:0 auto;padding:0 5.66%">
+      <h1 style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(30px,4.88vw,50px);line-height:1.08;color:#4b2e83">Line-Up</h1>
+      <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(14px,2.2vw,33px) 0 0"></div>
+    </div>
+  </section>
+
+  {bands.length === 0 && (
+    <div style="background:#efc900 url(/assets/grain.png) center/100% 100% no-repeat;padding:clamp(40px,6vw,90px) 0">
+      <p style="max-width:1500px;margin:0 auto;padding:0 5.66%;text-align:center;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(18px,2.6vw,30px);color:#4b2e83">Das Line-Up wird zeitnah veröffentlicht.</p>
+    </div>
+  )}
+
+  {rows.map((row, i) => (
+    <div style={`background:${i % 2 === 0 ? '#efc900' : '#ffdd00'} url(/assets/grain.png) center/100% 100% no-repeat;padding:clamp(24px,3.6vw,46px) 0 clamp(26px,4vw,50px)`}>
+      <div style="max-width:1500px;margin:0 auto;padding:0 5.66%">
+        <div style={`display:flex;flex-wrap:wrap;gap:clamp(18px,7vw,105px);align-items:flex-start;${row.length === 1 ? 'justify-content:center' : ''}`}>
+          {row.map((b) => (
+            <div style={`${row.length === 1 ? 'flex:0 1 41%' : 'flex:1 1 42%'};min-width:280px`}>
+              <img src={b.foto} alt={`${namePlain(b.name)} bei Rock4Aid`} data-lightbox data-lightbox-src={b.foto} style="width:100%;aspect-ratio:418/465;object-fit:cover" />
+              <p style="margin:.5em 0 0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(24px,4.717vw,48.3px);line-height:1;letter-spacing:0;color:#4b2e83" set:html={nameHtml(b.name)}></p>
+              {b.buehne && <p style="margin:.14em 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.646vw,27.1px);line-height:1.1;letter-spacing:.12em;color:#4b2e83">{b.buehne}</p>}
+              <p style="margin:.14em 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.646vw,27.1px);line-height:1.1;letter-spacing:.12em;color:#4b2e83">{b.spielzeit}</p>
+              <BandLinks links={b.links} />
+              <div style="width:100%;height:2px;background:#4b2e83;margin:.5em 0 0"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  ))}
+</Base>

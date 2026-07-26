@@ -1,0 +1,7 @@
+# Netlify-Buildeinstellungen für die Rock4Aid-Website (Astro)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"

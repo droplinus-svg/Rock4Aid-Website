@@ -1,0 +1,8 @@
+---
+import LegalPage from '../components/LegalPage.astro';
+import { getTable } from '../lib/content.js';
+const einstellungen = await getTable('einstellungen', { single: true });
+const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
+const r = await getTable('rechtstexte', { single: true });
+---
+<LegalPage title="Impressum – Rock4Aid" heading="Impressum" html={r.impressum_html} einstellungen={einstellungen} jahre={jahre} />

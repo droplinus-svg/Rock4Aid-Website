@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 480" role="img" aria-label="Kartenausschnitt Freizeithalle Heddesheim">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef1f4"/><stop offset="1" stop-color="#dfe4ea"/>
+    </linearGradient>
+  </defs>
+  <rect width="1100" height="480" fill="url(#bg)"/>
+  <g stroke="#c7d0d8" stroke-width="10" fill="none" opacity="0.9">
+    <path d="M-20 120 H1120"/><path d="M-20 300 H1120"/>
+    <path d="M180 -20 V500"/><path d="M520 -20 V500"/><path d="M860 -20 V500"/>
+    <path d="M-20 210 L1120 250" stroke-width="14"/>
+  </g>
+  <g stroke="#c7d0d8" stroke-width="4" fill="none" opacity="0.7">
+    <path d="M60 60 H1040"/><path d="M60 400 H1040"/><path d="M340 -20 V500"/><path d="M700 -20 V500"/>
+  </g>
+  <g transform="translate(550 235)">
+    <ellipse cx="0" cy="40" rx="46" ry="14" fill="#3d2569" opacity="0.25"/>
+    <path d="M0 34 C-34 -10 -30 -64 0 -64 C30 -64 34 -10 0 34 Z" fill="#4b2e83"/>
+    <circle cx="0" cy="-34" r="15" fill="#ffdd00"/>
+  </g>
+  <g font-family="Archivo, sans-serif">
+    <rect x="300" y="330" width="500" height="70" rx="10" fill="#ffffff" opacity="0.92"/>
+    <text x="550" y="362" text-anchor="middle" fill="#4b2e83" font-size="26" font-weight="700">Freizeithalle Heddesheim</text>
+    <text x="550" y="388" text-anchor="middle" fill="#3b2c1e" font-size="18">Großsachsener Str. 35 · 68542 Heddesheim</text>
+  </g>
+</svg>

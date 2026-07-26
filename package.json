@@ -1,0 +1,19 @@
+{
+  "name": "rock4aid-website",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource/archivo": "^5.1.0",
+    "@supabase/supabase-js": "^2.45.4",
+    "astro": "^4.16.18"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.62.0"
+  }
+}

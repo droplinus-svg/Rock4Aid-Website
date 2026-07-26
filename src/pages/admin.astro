@@ -1,0 +1,92 @@
+---
+// Redaktionssystem – eigenständige Browser-App unter /admin.
+// supabase-js wird ausschließlich im Client-Script geladen (siehe src/admin/app.js).
+---
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Rock4Aid – Redaktion</title>
+  <style is:global>
+    @font-face { font-family:'Archivo'; font-weight:400; font-display:swap; src:url('/fonts/archivo-latin-400-normal.woff2') format('woff2'); }
+    @font-face { font-family:'Archivo'; font-weight:600; font-display:swap; src:url('/fonts/archivo-latin-600-normal.woff2') format('woff2'); }
+    @font-face { font-family:'Archivo'; font-weight:700; font-display:swap; src:url('/fonts/archivo-latin-700-normal.woff2') format('woff2'); }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:'Archivo',system-ui,sans-serif; background:#f4f5f7; color:#241636; display:flex; min-height:100vh; }
+    h1 { font-size:24px; margin:0 0 18px; color:#4b2e83; }
+    h3 { color:#4b2e83; margin:22px 0 8px; }
+    /* Login */
+    #login { margin:auto; background:#fff; padding:34px 30px; border-radius:14px; box-shadow:0 20px 60px rgba(75,46,131,.18); width:min(92vw,380px); display:flex; flex-direction:column; gap:12px; }
+    #login .brand, #nav .brand { font-weight:700; letter-spacing:.06em; color:#4b2e83; font-size:20px; line-height:1.1; }
+    #login .brand small, #nav .brand small { font-weight:600; color:#8a7aa8; letter-spacing:.14em; text-transform:uppercase; font-size:11px; }
+    #login label { display:flex; flex-direction:column; gap:5px; font-weight:600; font-size:14px; }
+    #login input { padding:11px 12px; border:1px solid #cfc7dc; border-radius:8px; font-size:15px; }
+    .loginerr { background:#fdecec; color:#a12020; padding:10px 12px; border-radius:8px; font-size:14px; }
+    /* Layout */
+    #nav { width:240px; background:#4b2e83; color:#fff; padding:22px 14px; display:flex; flex-direction:column; gap:6px; position:sticky; top:0; height:100vh; }
+    #nav .brand { color:#fff; margin-bottom:14px; }
+    #nav .brand small { color:#c9b8f0; }
+    .navbtn { text-align:left; background:transparent; color:#fff; border:0; padding:11px 12px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; }
+    .navbtn:hover { background:rgba(255,255,255,.12); }
+    .navbtn.active { background:#ffdd00; color:#4b2e83; }
+    .navbtn.publish { margin-top:auto; background:#2e9e5b; }
+    .navbtn.publish:hover { background:#27874e; }
+    .navbtn.logout { background:rgba(255,255,255,.08); font-weight:500; font-size:13px; }
+    #main { flex:1; padding:30px clamp(18px,3vw,44px); max-width:900px; }
+    /* Formulare */
+    .form, .miniform { display:flex; flex-direction:column; gap:16px; margin-bottom:20px; }
+    .miniform { background:#fff; padding:14px; border-radius:10px; border:1px dashed #cfc7dc; }
+    .feld { display:flex; flex-direction:column; gap:6px; }
+    .feld > label { font-weight:600; font-size:14px; color:#3a2b52; }
+    .feld input, .feld textarea, .feld select { padding:10px 12px; border:1px solid #cfc7dc; border-radius:8px; font:inherit; font-size:15px; background:#fff; }
+    .switch { flex-direction:row !important; align-items:center; gap:8px; display:inline-flex; }
+    .switch input { width:20px; height:20px; }
+    .hinweis { background:#eef4ff; border:1px solid #cddcff; color:#2b4a7a; padding:10px 12px; border-radius:8px; font-size:14px; }
+    /* Buttons */
+    .btn { background:#e9e4f2; color:#4b2e83; border:0; padding:11px 16px; border-radius:8px; font:inherit; font-weight:600; cursor:pointer; margin:4px 8px 4px 0; }
+    .btn:hover { background:#ded5ee; }
+    .btn.primary { background:#4b2e83; color:#fff; }
+    .btn.primary:hover { background:#3d2569; }
+    .btn.small { padding:6px 10px; font-size:13px; }
+    .btn.danger { background:#fbe3e3; color:#a12020; }
+    /* Listen */
+    .liste { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+    .listrow, .linkrow, .mediarow, .actrow { background:#fff; border:1px solid #e6e1ef; border-radius:10px; padding:10px 12px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .lr-name { font-weight:700; color:#4b2e83; flex:1; }
+    .lr-flag { font-size:13px; color:#6b5c86; } .lr-flag em { color:#b06a00; font-style:normal; }
+    /* Medien */
+    .medien { display:flex; flex-direction:column; gap:8px; }
+    .vorschau img, .vorschau video, .mediarow img, .mediarow video { max-height:90px; border-radius:6px; border:1px solid #e0d9ee; }
+    .vorschau .leer { color:#9a8fb0; font-size:14px; }
+    .upl-status { font-size:13px; color:#5a4b78; }
+    .ampel { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+    .ampel.gruen { background:#2e9e5b; } .ampel.gelb { background:#e5a300; } .ampel.rot { background:#d63b3b; }
+    /* Rich-Text */
+    .rte { border:1px solid #cfc7dc; border-radius:8px; overflow:hidden; background:#fff; }
+    .rte-bar { display:flex; gap:4px; padding:6px; background:#f2eefa; border-bottom:1px solid #e0d9ee; flex-wrap:wrap; }
+    .rte-bar button { border:1px solid #d3c9e6; background:#fff; border-radius:6px; padding:5px 10px; cursor:pointer; font:inherit; font-size:13px; }
+    .rte-bar .sep { width:1px; background:#d3c9e6; margin:0 4px; }
+    .rte-area { padding:12px; min-height:80px; font-size:15px; line-height:1.6; outline:none; }
+    .rt-klein{font-size:.82em} .rt-gross{font-size:1.25em} .rt-sehrgross{font-size:1.6em}
+    /* Kinder */
+    .kinder { background:#faf9fd; border:1px solid #eae5f4; border-radius:10px; padding:14px; margin:16px 0; }
+    .linkadd { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .linkadd input { flex:1; min-width:180px; padding:8px 10px; border:1px solid #cfc7dc; border-radius:8px; }
+    .linkadd select { padding:8px 10px; border:1px solid #cfc7dc; border-radius:8px; }
+    /* Toasts */
+    #toasts { position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:8px; z-index:50; }
+    .toast { background:#2e9e5b; color:#fff; padding:12px 16px; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.2); font-weight:600; }
+    .toast.err { background:#d63b3b; }
+    @media (max-width:760px){ body{flex-direction:column} #nav{width:auto;height:auto;position:static;flex-direction:row;flex-wrap:wrap} .navbtn.publish{margin:0} }
+  </style>
+</head>
+<body>
+  <div id="app">Lädt …</div>
+  <script>
+    import { start } from '../admin/app.js';
+    start();
+  </script>
+</body>
+</html>

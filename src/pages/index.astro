@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import { getTable } from '../lib/content.js';
+
+const einstellungen = await getTable('einstellungen', { single: true });
+const sponsorenRaw = await getTable('sponsoren', { order: 'reihenfolge.asc', filters: { sichtbar: 'eq.true' } });
+const sponsoren = (sponsorenRaw || []).filter((x) => x.sichtbar !== false);
+const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
+
+const infoTitel = einstellungen.info_titel || `LineUp & Termin ${einstellungen.festival_jahr || ''}`.trim();
+const claim1 = einstellungen.claim_zeile_1 || 'Live Musik I Essen & Getränke';
+const claim2 = einstellungen.claim_zeile_2 || 'Eintritt auf Spendenbasis';
+const terminSichtbar = einstellungen.termin_sichtbar !== false;
+const festivalDatum = einstellungen.festival_datum || '';
+const heroVideo = einstellungen.hero_video || '';
+// " I " (Trennzeichen) gelb hervorheben – wie im Design
+const claim1Html = claim1.split(' I ').join(' <span style="color:#ffdd00">I</span> ');
+// Sponsoren-Logogröße: Stufen klein/mittel/groß → Höhe in px
+const LOGO_H = { klein: 18, mittel: 25, gross: 34 };
+const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_hoehe || 25;
+---
+<Base active="termin" einstellungen={einstellungen} jahre={jahre}>
+  <div style="display:flex;flex-direction:column;min-height:calc(100svh - 52px)">
+    <section id="start" style="position:relative;background:#4b2e83;overflow:hidden;flex:1 1 auto;min-height:230px">
+      <div style="position:absolute;inset:0">
+        <img class="r4a-anim" src="/assets/hero-gold.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:r4aPan 26s ease-in-out infinite;will-change:transform" />
+        <img class="r4a-anim" src="/assets/hero-lights.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:screen;opacity:0;animation:r4aBeam 14s ease-in-out infinite" />
+        {heroVideo && (
+          <video src={heroVideo} autoplay muted loop playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
+        )}
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,16,5,.34) 0%,rgba(30,16,5,.04) 42%,rgba(40,20,6,.26) 100%)"></div>
+        <div style="position:absolute;inset:0;padding:3.4% 5.1% 0;display:flex;flex-direction:column">
+          <p style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(13px,2.83vw,42px);line-height:1.15;letter-spacing:.19em;text-transform:uppercase;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4)">Benefiz-Festival</p>
+          <div style="width:64%;height:2px;background:rgba(255,255,255,.9);margin:2.2% auto 0"></div>
+          <img src="/assets/wordmark.png" alt="Rock4Aid" style="width:72.4%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#4b2e83;padding:2.6% 0 3%;flex:0 0 auto">
+      <div style="margin:0 auto;padding:0 5.1%">
+        <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(19px,3.906vw,59px);line-height:1.01;letter-spacing:0;color:#fff">{infoTitel}</p>
+        {terminSichtbar && (
+          <p id="r4a-countdown" data-festival-date={festivalDatum} style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(19px,3.906vw,59px);line-height:1.01;letter-spacing:0;color:#ffdd00">wird zeitnah veröffentlicht&nbsp;!!</p>
+        )}
+        <div style="margin:2.4% 0 0;display:flex;flex-wrap:wrap;gap:clamp(20px,3vw,32px);align-items:flex-end;justify-content:space-between">
+          <div style="flex:1 1 340px;min-width:260px">
+            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff" set:html={claim1Html}></p>
+            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff">{claim2}</p>
+          </div>
+          {sponsoren.length > 0 && (
+            <div style="flex:0 0 auto;background:#fbfefd;border-radius:4px;padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px">
+              <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;line-height:1;color:#4b2e83">Sponsored by:</p>
+              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                {sponsoren.map((sp) => (
+                  <img src={sp.logo} alt={sp.name} style={`height:${logoH(sp)}px;width:auto`} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const el = document.getElementById('r4a-countdown');
+      if (!el) return;
+      const raw = (el.getAttribute('data-festival-date') || '').trim();
+      if (!raw) return; // leer → "wird zeitnah veröffentlicht !!" bleibt stehen
+      const target = Date.parse(raw);
+      if (!isFinite(target)) return;
+      function tick() {
+        const diff = target - Date.now();
+        if (diff <= 0) { el.textContent = 'Heute ist es soweit – wir rocken!'; return; }
+        const s = Math.floor(diff / 1000);
+        const d = Math.floor(s / 86400), h = Math.floor(s / 3600) % 24, m = Math.floor(s / 60) % 60, sec = s % 60;
+        el.textContent = `noch ${d} Tage ${h} Std ${m} Min ${sec} Sek !!`;
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</Base>

@@ -1,0 +1,19 @@
+---
+// Kleine Link-Buttons je Band/Act. links: [{ plattform, url }]
+const { links = [] } = Astro.props;
+const list = Array.isArray(links) ? links.filter((l) => l && l.url) : [];
+const LABEL = {
+  instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube',
+  website: 'Website', spotify: 'Spotify', tiktok: 'TikTok', bandcamp: 'Bandcamp',
+};
+---
+{list.length > 0 && (
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin:.5em 0 0">
+    {list.map((l) => (
+      <a href={l.url} target="_blank" rel="noopener noreferrer"
+         style="display:inline-flex;align-items:center;gap:6px;background:#4b2e83;color:#fff;font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;line-height:1;padding:7px 12px;border-radius:999px;white-space:nowrap">
+        <span style="width:6px;height:6px;border-radius:50%;background:#ffdd00"></span>{LABEL[(l.plattform || '').toLowerCase()] || l.plattform || 'Link'}
+      </a>
+    ))}
+  </div>
+)}

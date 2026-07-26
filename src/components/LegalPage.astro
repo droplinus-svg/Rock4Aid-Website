@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+const { title, html, einstellungen = {}, jahre = [], heading } = Astro.props;
+---
+<Base einstellungen={einstellungen} jahre={jahre} title={title}>
+  <style is:global>
+    .legal { max-width:1500px; margin:0 auto; padding:clamp(30px,4.8vw,72px) 5.66% clamp(46px,6vw,90px); }
+    .legal h1 { font-weight:700; font-size:clamp(28px,4.88vw,50px); line-height:1; letter-spacing:-.013em; margin:0; color:#fff; }
+    .legal .rule { width:100%; height:2px; background:rgba(255,255,255,.9); margin:clamp(12px,1.8vw,22px) 0 clamp(24px,3.4vw,44px); }
+    .legal h2 { font-weight:700; font-size:clamp(18px,2.1vw,24px); line-height:1.2; color:#ffdd00; margin:clamp(28px,3.4vw,44px) 0 10px; }
+    .legal p, .legal li { font-weight:400; font-size:clamp(16px,1.95vw,22px); line-height:1.68; letter-spacing:.02em; color:#fff; margin:0 0 12px; text-wrap:pretty; }
+    .legal ul { padding-left:22px; margin:0 0 12px; }
+    .legal a { color:#ffdd00; } .legal a:hover { color:#fff; }
+  </style>
+  <main class="legal">
+    <h1>{heading}</h1>
+    <div class="rule"></div>
+    <div set:html={html}></div>
+  </main>
+</Base>

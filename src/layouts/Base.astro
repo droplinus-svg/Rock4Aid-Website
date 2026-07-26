@@ -1,0 +1,93 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const {
+  title = 'Rock4Aid – Benefiz-Festival Heddesheim',
+  description = 'Rock4Aid – Benefiz-Festival in Heddesheim. Live Musik, Essen & Getränke, Eintritt auf Spendenbasis.',
+  active = '',
+  activeSlug = '',
+  einstellungen = {},
+  jahre = [],
+  noindex = false,
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex" />}
+  <meta property="og:title" content="Rock4Aid Webseite" />
+  <meta property="og:description" content="Live Musik I Essen & Getränke I Eintritt auf Spendenbasis" />
+  <style is:global>
+    /* --- Schrift lokal selbst gehostet (keine Google-Verbindung, DSGVO) --- */
+    @font-face { font-family:'Archivo'; font-style:normal; font-weight:400; font-display:swap; src:url('/fonts/archivo-latin-400-normal.woff2') format('woff2'); }
+    @font-face { font-family:'Archivo'; font-style:normal; font-weight:500; font-display:swap; src:url('/fonts/archivo-latin-500-normal.woff2') format('woff2'); }
+    @font-face { font-family:'Archivo'; font-style:normal; font-weight:600; font-display:swap; src:url('/fonts/archivo-latin-600-normal.woff2') format('woff2'); }
+    @font-face { font-family:'Archivo'; font-style:normal; font-weight:700; font-display:swap; src:url('/fonts/archivo-latin-700-normal.woff2') format('woff2'); }
+    @font-face { font-family:'Archivo'; font-style:italic; font-weight:400; font-display:swap; src:url('/fonts/archivo-latin-400-italic.woff2') format('woff2'); }
+
+    /* --- Basis (aus dem Design-Export) --- */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin:0; background:#4b2e83; color:#fff; font-family:'Archivo',system-ui,sans-serif; -webkit-font-smoothing:antialiased; overflow-x:clip; }
+    a { color:#ffdd00; text-decoration:none; }
+    a:hover { color:#fff; }
+    section[id] { scroll-margin-top:70px; }
+    img { display:block; }
+    summary { list-style:none; }
+    summary::-webkit-details-marker { display:none; }
+    summary::marker { content:""; }
+
+    @keyframes r4a-rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+    @keyframes r4aPan { 0% { transform:scale(1.06) translate3d(0,0,0); } 50% { transform:scale(1.14) translate3d(-1.2%,-1%,0); } 100% { transform:scale(1.06) translate3d(0,0,0); } }
+    @keyframes r4aBeam { 0%,100% { opacity:0; } 45%,55% { opacity:.42; } }
+    @media (prefers-reduced-motion: reduce) { .r4a-anim { animation: none !important; } }
+
+    /* Navigations-Hover exakt wie im Export (überschreibt globales a:hover) */
+    .r4a-nav a:hover, .r4a-nav summary:hover { color:#ffdd00 !important; }
+    .r4a-drop a:hover { color:#ffdd00 !important; background:#4b2e83 !important; }
+
+    /* Rich-Text Größenstufen aus dem Redaktionssystem */
+    .rt-klein { font-size:.82em; } .rt-gross { font-size:1.25em; } .rt-sehrgross { font-size:1.6em; }
+    .rt u { text-decoration: underline; } .rt strong { font-weight:700; }
+
+    /* Bild vergrößerbar (Presse etc.) */
+    [data-lightbox] { cursor: zoom-in; }
+  </style>
+</head>
+<body>
+  <div style="background:#4b2e83">
+    <Header active={active} activeSlug={activeSlug} einstellungen={einstellungen} jahre={jahre} />
+    <div style="height:52px;background:#4b2e83"></div>
+
+    <slot />
+
+    <Footer einstellungen={einstellungen} />
+
+    <!-- Lightbox: Klick auf ein Bild mit [data-lightbox] öffnet es groß -->
+    <div id="r4a-lightbox" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(20,10,45,.95);align-items:center;justify-content:center;padding:28px;cursor:zoom-out">
+      <img id="r4a-lightbox-img" src="" alt="" style="max-width:100%;max-height:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)" />
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const box = document.getElementById('r4a-lightbox');
+      const img = document.getElementById('r4a-lightbox-img');
+      if (!box || !img) return;
+      function open(src, alt) { img.src = src; img.alt = alt || ''; box.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+      function close() { box.style.display = 'none'; img.src = ''; document.body.style.overflow = ''; }
+      document.addEventListener('click', function (e) {
+        const t = e.target.closest('[data-lightbox]');
+        if (t) { e.preventDefault(); open(t.getAttribute('data-lightbox-src') || t.getAttribute('src'), t.getAttribute('alt')); }
+      });
+      box.addEventListener('click', close);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+  </script>
+</body>
+</html>
