@@ -22,6 +22,9 @@ const {
   {noindex && <meta name="robots" content="noindex" />}
   <meta property="og:title" content="Rock4Aid Webseite" />
   <meta property="og:description" content="Live Musik I Essen & Getränke I Eintritt auf Spendenbasis" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <style is:global>
     /* --- Schrift lokal selbst gehostet (keine Google-Verbindung, DSGVO) --- */
     @font-face { font-family:'Archivo'; font-style:normal; font-weight:400; font-display:swap; src:url('/fonts/archivo-latin-400-normal.woff2') format('woff2'); }
@@ -54,6 +57,8 @@ const {
     /* Rich-Text Größenstufen aus dem Redaktionssystem */
     .rt-klein { font-size:.82em; } .rt-gross { font-size:1.25em; } .rt-sehrgross { font-size:1.6em; }
     .rt u { text-decoration: underline; } .rt strong { font-weight:700; }
+    /* Rich-Text-Absätze ohne Eigenrand – Abstand steuert der jeweilige Container (gap), wie im Original */
+    p.rt { margin: 0; }
 
     /* Bild vergrößerbar (Presse etc.) */
     [data-lightbox] { cursor: zoom-in; }
