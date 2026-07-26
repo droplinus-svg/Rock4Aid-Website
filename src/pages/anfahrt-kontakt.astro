@@ -27,8 +27,10 @@ const cards = [
     </section>
   ) : (
     <>
-      <section id="anfahrt" style="background:#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat;padding:clamp(30px,4.8vw,72px) 0 clamp(34px,5vw,75px)">
-        <div style="max-width:1500px;margin:0 auto;padding:0 5.66%">
+      <section id="anfahrt" style="position:relative;overflow:hidden;background:#e8ecef;padding:clamp(30px,4.8vw,72px) 0 clamp(34px,5vw,75px)">
+        {a.karte_bild && <img src={a.karte_bild} alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />}
+        <div style="position:absolute;inset:0;background:rgba(247,249,250,.42)"></div>
+        <div style="position:relative;max-width:1500px;margin:0 auto;padding:0 5.66%">
           <h1 style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#4b2e83">Anfahrt &amp; Kontakt</h1>
           <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(12px,1.8vw,22px) 0 0"></div>
           {a.eintritt_zeile && <p style="margin:clamp(12px,2vw,30px) 0 clamp(22px,3.2vw,48px);text-align:center;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16px,2.93vw,38px);line-height:1.2;color:#4b2e83">{a.eintritt_zeile}</p>}
@@ -40,11 +42,9 @@ const cards = [
               </div>
             ))}
           </div>
-          <div style="margin:clamp(22px,3.2vw,48px) 0 0;border:4px solid #4b2e83;border-radius:10px;overflow:hidden">
-            <a href={a.karte_link} target="_blank" rel="noopener" style="display:block;position:relative;line-height:0">
-              <img src={a.karte_bild} alt="Karte: Freizeithalle Heddesheim" style="width:100%;height:clamp(260px,32vw,480px);object-fit:cover;display:block" />
-              <span style="position:absolute;right:16px;bottom:16px;background:#4b2e83;color:#fff;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;padding:10px 16px;border-radius:999px;box-shadow:0 6px 18px rgba(20,10,45,.4)">Route planen ↗</span>
-            </a>
+          <div style="margin:clamp(22px,3.2vw,48px) 0 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <a href={a.karte_link} target="_blank" rel="noopener" style="background:#4b2e83;color:#fff;font-family:'Archivo',sans-serif;font-weight:700;font-size:16px;padding:12px 20px;border-radius:999px;box-shadow:0 6px 18px rgba(20,10,45,.35)">Route planen ↗</a>
+            <span style="font-family:'Archivo',sans-serif;font-size:12px;color:#3b2c1e;opacity:.85">© OpenStreetMap-Mitwirkende</span>
           </div>
         </div>
       </section>

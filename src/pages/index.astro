@@ -14,7 +14,7 @@ const terminSichtbar = einstellungen.termin_sichtbar !== false;
 const festivalDatum = einstellungen.festival_datum || '';
 const heroVideo = einstellungen.hero_video || '';
 // " I " (Trennzeichen) gelb hervorheben – wie im Design
-const claim1Html = claim1.split(' I ').join(' <span style="color:#ffdd00">I</span> ');
+const claim1Html = claim1.split(' I ').join(' <span style="color:#fff">I</span> ');
 // Sponsoren-Logogröße: Stufen klein/mittel/groß → Höhe in px
 const LOGO_H = { klein: 18, mittel: 25, gross: 34 };
 const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_hoehe || 25;
@@ -32,7 +32,7 @@ const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_
         <div style="position:absolute;inset:0;padding:3.4% 5.1% 0;display:flex;flex-direction:column">
           <p style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(13px,2.83vw,42px);line-height:1.15;letter-spacing:.19em;text-transform:uppercase;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4)">Benefiz-Festival</p>
           <div style="width:64%;height:2px;background:rgba(255,255,255,.9);margin:2.2% auto 0"></div>
-          <img src="/assets/wordmark.png" alt="Rock4Aid" style="width:72.4%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
+          <img src="/assets/wordmark.png" alt="Rock4Aid" style="width:72.4%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:clamp(16px,3.5vh,56px) auto 0;padding-bottom:1.5%" />
         </div>
       </div>
     </section>
@@ -41,7 +41,7 @@ const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_
       <div style="margin:0 auto;padding:0 5.1%">
         <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(19px,3.906vw,59px);line-height:1.01;letter-spacing:0;color:#fff">{infoTitel}</p>
         {terminSichtbar && (
-          <p id="r4a-countdown" data-festival-date={festivalDatum} style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(19px,3.906vw,59px);line-height:1.01;letter-spacing:0;color:#ffdd00">wird zeitnah veröffentlicht&nbsp;!!</p>
+          <p id="r4a-countdown" data-festival-date={festivalDatum} style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(19px,3.906vw,59px);line-height:1.01;letter-spacing:0;color:#fff">wird zeitnah veröffentlicht&nbsp;!!</p>
         )}
         <div style="margin:2.4% 0 0;display:flex;flex-wrap:wrap;gap:clamp(20px,3vw,32px);align-items:flex-end;justify-content:space-between">
           <div style="flex:1 1 340px;min-width:260px">

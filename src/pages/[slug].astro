@@ -19,30 +19,49 @@ const intro = [...(jahr.rueckblick_intro || [])].sort(byR);
 const acts = [...(jahr.rueckblick_acts || [])].sort(byR);
 const presse = [...(jahr.rueckblick_presse || [])].sort(byR);
 const isVideo = (s) => /\.(mp4|webm|mov|m4v)$/i.test(s || '');
+
+// 2025-Stil: Text links, gerahmte Urkunde rechts (genau EIN gerahmtes Intro-Bild)
+const urkundeMode = intro.length === 1 && intro[0].rahmen;
+// 2026-Stil: versetzte Presse-Collage (Original). 2027+ nutzt das Raster.
+const collageMode = Number(jahr.jahr) === 2026;
+const COLLAGE = [
+  ['presse26-4', 0.72, 0, 16.36], ['presse26-1', 43.35, 0, 53.68],
+  ['presse26-3', 8.9, 11.61, 33.54], ['presse26-2', 43.35, 24.04, 54.09],
+  ['presse26-6', 0, 55.19, 32], ['presse26-7', 34.05, 55.19, 32],
+  ['presse26-5', 67.99, 55.19, 32], ['presse26-8', 4.5, 76.86, 22.9],
+];
+const findImg = (m) => presse.find((p) => (p.bild || '').includes(m));
+const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w })).filter((x) => x.p);
 ---
 <Base active="rueckblick" activeSlug={jahr.slug} einstellungen={einstellungen} jahre={jahre} title={`${jahr.titel} – Rock4Aid`}>
   <section id="rueckblick" style="background:#4b2e83;padding:clamp(34px,5.2vw,53px) 0 clamp(40px,5vw,52px)">
     <div style="max-width:1500px;margin:0 auto;padding:0 clamp(18px,5.66vw,85px)">
       <h2 style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#fff">{jahr.titel}</h2>
       <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 clamp(18px,2.6vw,30px)"></div>
-      {jahr.kennzahlen && <p style="margin:0 0 clamp(20px,3vw,30px);font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff" set:html={jahr.kennzahlen}></p>}
 
-      {intro.length === 1 && intro[0].rahmen ? (
-        <div style="margin:0 auto;max-width:430px;position:relative">
-          <img src="/assets/rahmen.png" alt="" style="width:100%;height:auto;position:relative;z-index:2;pointer-events:none" />
-          <img src={intro[0].bild} alt={intro[0].alt} data-lightbox data-lightbox-src={intro[0].bild} style="position:absolute;left:12.5%;top:7.5%;width:75%;height:85%;object-fit:cover;z-index:1" />
+      {urkundeMode ? (
+        <div style="margin:clamp(20px,3.2vw,34px) 0 0;display:flex;flex-wrap:wrap;gap:clamp(24px,4vw,44px);align-items:center">
+          <div style="flex:1 1 380px;min-width:280px;max-width:600px;display:flex;flex-direction:column;justify-content:center;gap:1.4em;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff;text-wrap:pretty" set:html={jahr.fliesstext}></div>
+          <div style="flex:0 1 430px;min-width:240px;position:relative">
+            <img src="/assets/rahmen.png" alt="" style="width:100%;height:auto;position:relative;z-index:2;pointer-events:none" />
+            <img src={intro[0].bild} alt={intro[0].alt} data-lightbox data-lightbox-src={intro[0].bild} style="position:absolute;left:12.5%;top:7.5%;width:75%;height:85%;object-fit:cover;z-index:1;cursor:zoom-in" />
+          </div>
         </div>
-      ) : intro.length > 0 ? (
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,1.8vw,19px)">
-          {intro.map((im) => (
-            isVideo(im.bild)
-              ? <video src={im.bild} controls playsinline preload="metadata" style="width:100%;aspect-ratio:363/226;object-fit:cover;background:#000"></video>
-              : <img src={im.bild} alt={im.alt} data-lightbox data-lightbox-src={im.bild} style="width:100%;aspect-ratio:363/226;object-fit:cover" />
-          ))}
-        </div>
-      ) : null}
-
-      {jahr.fliesstext && <div style="margin:clamp(24px,3.6vw,38px) auto 0;max-width:min(100%,760px);display:flex;flex-direction:column;gap:1.4em;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff;text-wrap:pretty" set:html={jahr.fliesstext}></div>}
+      ) : (
+        <>
+          {jahr.kennzahlen && <p style="margin:0 0 clamp(20px,3vw,30px);font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff" set:html={jahr.kennzahlen}></p>}
+          {intro.length > 0 && (
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,1.8vw,19px)">
+              {intro.map((im) => (
+                isVideo(im.bild)
+                  ? <video src={im.bild} controls playsinline preload="metadata" style="width:100%;aspect-ratio:363/226;object-fit:cover;background:#000"></video>
+                  : <img src={im.bild} alt={im.alt} data-lightbox data-lightbox-src={im.bild} style="width:100%;aspect-ratio:363/226;object-fit:cover" />
+              ))}
+            </div>
+          )}
+          {jahr.fliesstext && <div style="margin:clamp(24px,3.6vw,38px) auto 0;max-width:min(100%,760px);display:flex;flex-direction:column;gap:1.4em;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff;text-wrap:pretty" set:html={jahr.fliesstext}></div>}
+        </>
+      )}
     </div>
   </section>
 
@@ -74,14 +93,38 @@ const isVideo = (s) => /\.(mp4|webm|mov|m4v)$/i.test(s || '');
       <div style="max-width:1500px;margin:0 auto;padding:0 clamp(18px,5.66vw,85px)">
         <h2 style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#fff">{jahr.jahr} Presse</h2>
         <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 clamp(22px,3.2vw,40px)"></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(14px,2vw,22px);align-items:start">
-          {presse.map((p) => (
-            isVideo(p.bild)
-              ? <video src={p.bild} controls playsinline preload="metadata" style="width:100%;background:#000;box-shadow:0 8px 24px rgba(0,0,0,.35)"></video>
-              : <img src={p.bild} alt={p.alt} data-lightbox data-lightbox-src={p.bild} style="width:100%;box-shadow:0 8px 24px rgba(0,0,0,.35)" />
-          ))}
-        </div>
+
+        {collageMode && collageItems.length > 0 ? (
+          <>
+            <div class="rb-collage" style="position:relative;width:100%;aspect-ratio:978/1223">
+              {collageItems.map(({ p, l, t, w }) => (
+                <img src={p.bild} alt={p.alt} data-lightbox data-lightbox-src={p.bild} style={`position:absolute;left:${l}%;top:${t}%;width:${w}%;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:zoom-in`} />
+              ))}
+            </div>
+            <div class="rb-pressegrid" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;align-items:start">
+              {presse.map((p) => (
+                <img src={p.bild} alt={p.alt} data-lightbox data-lightbox-src={p.bild} style="width:100%;cursor:zoom-in;box-shadow:0 8px 24px rgba(0,0,0,.35)" />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(14px,2vw,22px);align-items:start">
+            {presse.map((p) => (
+              isVideo(p.bild)
+                ? <video src={p.bild} controls playsinline preload="metadata" style="width:100%;background:#000;box-shadow:0 8px 24px rgba(0,0,0,.35)"></video>
+                : <img src={p.bild} alt={p.alt} data-lightbox data-lightbox-src={p.bild} style="width:100%;cursor:zoom-in;box-shadow:0 8px 24px rgba(0,0,0,.35)" />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )}
+
+  <style>
+    /* Presse-Collage nur auf breiten Schirmen; darunter Raster (wie im Original) */
+    @media (max-width: 860px) {
+      .rb-collage { display: none !important; }
+      .rb-pressegrid { display: grid !important; }
+    }
+  </style>
 </Base>
