@@ -14,13 +14,13 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
     </section>
   ) : (
     <>
-      <section id="projekt" style="position:relative;background:#1d1424;overflow:hidden;min-height:min(38vw,500px)">
+      <section id="projekt" style="position:relative;background:#1d1424;overflow:hidden;min-height:min(30vw,420px)">
         <img class="r4a-anim" src={c.hero_bild} alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:r4aPan 30s ease-in-out infinite;will-change:transform" />
         <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,10,32,.62) 0%,rgba(18,10,32,.4) 45%,rgba(18,10,32,.55) 100%)"></div>
-        <div style="position:relative;min-height:min(38vw,500px);max-width:1500px;margin:0 auto;padding:clamp(34px,5.2vw,64px) 5.66% clamp(40px,6vw,80px);display:flex;flex-direction:column">
+        <div style="position:relative;min-height:min(30vw,420px);max-width:1500px;margin:0 auto;padding:clamp(34px,5.2vw,64px) 5.66% clamp(40px,6vw,80px);display:flex;flex-direction:column">
           <h1 style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#fff;text-wrap:balance">{c.hero_titel}</h1>
           <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
-          <div style="margin:auto auto;max-width:min(64%,760px);text-align:center;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(19px,2.93vw,30px);line-height:1.68;letter-spacing:.02em;color:#fff;text-wrap:pretty" set:html={c.intro_text}></div>
+          <div style="margin:auto auto;max-width:min(74%,840px);text-align:center;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(17px,1.9vw,23px);line-height:1.55;letter-spacing:.01em;color:#fff;text-wrap:pretty" set:html={c.intro_text}></div>
         </div>
       </section>
 
@@ -30,7 +30,7 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
           <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(12px,1.8vw,22px) 0 0"></div>
           <div style="margin:clamp(24px,3.8vw,50px) 0 0;display:flex;flex-wrap:wrap;gap:clamp(22px,4vw,60px);align-items:center">
             <img src={c.warum_bild} alt="" style="flex:1 1 40%;min-width:260px;width:100%;aspect-ratio:421/398;object-fit:cover" />
-            <div style="flex:1 1 44%;min-width:280px;display:flex;flex-direction:column;gap:1.1em;text-align:center;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(19px,2.93vw,30px);line-height:1.68;letter-spacing:.02em;color:#4b2e83;text-wrap:pretty" set:html={c.warum_text}></div>
+            <div style="flex:1 1 44%;min-width:280px;display:flex;flex-direction:column;gap:.9em;text-align:left;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(16px,1.6vw,20px);line-height:1.6;letter-spacing:.01em;color:#4b2e83;text-wrap:pretty" set:html={c.warum_text}></div>
           </div>
         </div>
       </section>
@@ -39,7 +39,7 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
         <img src={c.wasser_bild} alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />
         <div style="position:absolute;inset:0;background:rgba(18,24,12,.28)"></div>
         <div style="position:relative;max-width:1500px;margin:0 auto;padding:clamp(28px,4.4vw,66px) 5.66%;display:flex">
-          <div style="flex:0 1 41%;min-width:260px;background:#fff;padding:clamp(18px,2.6vw,39px) clamp(16px,2.4vw,36px);display:flex;flex-direction:column;gap:1.1em;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(14px,1.95vw,25px);line-height:1.68;letter-spacing:.02em;color:#4b2e83;text-wrap:pretty" set:html={c.wasser_text}></div>
+          <div style="flex:0 1 44%;min-width:260px;background:#fff;padding:clamp(18px,2.6vw,39px) clamp(16px,2.4vw,36px);display:flex;flex-direction:column;gap:.9em;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(15px,1.5vw,19px);line-height:1.62;letter-spacing:.01em;color:#4b2e83;text-wrap:pretty" set:html={c.wasser_text}></div>
         </div>
       </section>
 
@@ -47,10 +47,13 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
         <div style="max-width:1500px;margin:0 auto;padding:0 5.66%;text-align:center">
           <h2 style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#fff;text-wrap:balance">{c.spenden_titel}</h2>
           <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
+          <div style="margin:clamp(14px,2.2vw,28px) 0 0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(15px,1.6vw,20px);line-height:1.6;letter-spacing:.02em;color:#fff;text-wrap:pretty" set:html={c.spenden_text}></div>
           {c.spenden_link_url && (
-            <p style="margin:clamp(16px,2.6vw,39px) 0 0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(19px,2.93vw,30px);line-height:1.68;letter-spacing:.02em;color:#fff">🔗 Infos: <a href={c.spenden_link_url} target="_blank" rel="noopener" style="color:#ffdd00;border-bottom:2px solid #ffdd00">{c.spenden_link_text || c.spenden_link_url}</a></p>
+            <div style="margin:clamp(22px,3.2vw,42px) 0 0">
+              <a href={c.spenden_link_url} target="_blank" rel="noopener" style="display:inline-block;background:#ffdd00;color:#4b2e83;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(18px,2.1vw,26px);letter-spacing:.01em;padding:clamp(14px,1.6vw,20px) clamp(26px,3vw,44px);border-radius:999px;box-shadow:0 8px 22px rgba(10,4,30,.4)">Jetzt spenden ↗</a>
+              <p style="margin:clamp(10px,1.4vw,16px) 0 0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(13px,1.2vw,15px);letter-spacing:.02em;color:rgba(255,255,255,.85)">Mehr Infos: <a href={c.spenden_link_url} target="_blank" rel="noopener" style="color:#ffdd00;border-bottom:1px solid #ffdd00">{c.spenden_link_text || c.spenden_link_url}</a></p>
+            </div>
           )}
-          <div style="margin:clamp(14px,2.2vw,33px) 0 0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(19px,2.93vw,30px);line-height:1.68;letter-spacing:.02em;color:#fff;text-wrap:pretty" set:html={c.spenden_text}></div>
         </div>
       </section>
     </>

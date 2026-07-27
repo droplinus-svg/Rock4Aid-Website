@@ -46,7 +46,10 @@ export async function getTable(table, { select = '*', order, filters = {}, singl
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     if (single) return data[0] || fromFallback(table, true);
-    return Array.isArray(data) && data.length ? data : fromFallback(table, false);
+    // Wichtig: Eine erfolgreich geladene LEERE Liste bleibt leer (z. B. alle
+    // Sponsoren/Bands ausgeblendet). Der Fallback greift nur bei echten
+    // Verbindungsfehlern (siehe catch) oder wenn Supabase nicht konfiguriert ist.
+    return Array.isArray(data) ? data : fromFallback(table, false);
   } catch (err) {
     console.warn(`[content] '${table}' konnte nicht geladen werden → Fallback (${err.message})`);
     return fromFallback(table, single);
