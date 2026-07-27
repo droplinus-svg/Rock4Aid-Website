@@ -81,12 +81,14 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       .hero-inner { padding-top:8.5% !important; padding-left:3% !important; padding-right:3% !important; }
       .hero-wordmark { width:100% !important; }
       /* Mobil: Sponsorenkasten ~halb so groß */
-      .sp-box { padding:5px 9px 6px !important; gap:4px !important; border-radius:6px !important; }
-      .sp-row { gap:10px !important; }
+      .sp-box { padding:6px 11px 8px !important; gap:6px !important; border-radius:6px !important; }
+      /* Logos untereinander, Höhe steuert die Stufe (Breite nur großzügig gedeckelt,
+         damit sehr breite Logos wie Volksbank nicht zum dünnen Streifen zusammenfallen) */
+      .sp-row { flex-direction:column !important; align-items:flex-start !important; gap:9px !important; }
       .sp-title { font-size:10.5px !important; }
-      .sp-gross { max-height:22px !important; max-width:95px !important; }
-      .sp-mittel { max-height:18px !important; max-width:76px !important; }
-      .sp-klein { max-height:15px !important; max-width:60px !important; }
+      .sp-gross  { max-height:30px !important; max-width:232px !important; }
+      .sp-mittel { max-height:21px !important; max-width:232px !important; }
+      .sp-klein  { max-height:15px !important; max-width:232px !important; }
     }
   </style>
 </Base>
