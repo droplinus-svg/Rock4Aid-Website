@@ -35,7 +35,7 @@ const SCHEMA = {
       { key: 'festival_datum', label: 'Festival-Datum & Uhrzeit (steuert den Countdown; leer = „wird zeitnah veröffentlicht“)', type: 'datetime' },
       { key: 'info_titel', label: 'Titelzeile Startseite (Enter = neue Zeile / Umbruch)', type: 'textarea' },
       { key: 'info_untertitel', label: 'Zweite Zeile (frei – z. B. Ort/Datum, Enter = Umbruch)', type: 'textarea' },
-      { key: 'claim_zeile_1', label: 'Claim-Zeile 1 (das „ I “ dazwischen wird gelb)', type: 'text' },
+      { key: 'claim_zeile_1', label: 'Claim-Zeile 1', type: 'text' },
       { key: 'claim_zeile_2', label: 'Claim-Zeile 2', type: 'text' },
       { key: 'kontakt_email', label: 'Kontakt-E-Mail', type: 'text' },
       { key: 'hero_video', label: 'Hero-Hintergrundvideo (optional, stumme Schleife)', type: 'video' },

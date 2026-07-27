@@ -38,7 +38,7 @@ const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_
     <section style="background:#4b2e83;padding:2.6% 0 3%;flex:0 0 auto">
       <div style="margin:0 auto;padding:0 5.1%">
         <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(21px,4.3vw,66px);line-height:1.06;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoTitel}</p>
-        {infoUntertitel && <p style="margin:clamp(6px,1vw,12px) 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16px,2.6vw,34px);line-height:1.14;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoUntertitel}</p>}
+        {infoUntertitel && <p style="margin:clamp(6px,1vw,12px) 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff;white-space:pre-line">{infoUntertitel}</p>}
         <div style="margin:2.4% 0 0;display:flex;flex-wrap:wrap;gap:clamp(20px,3vw,32px);align-items:flex-end;justify-content:space-between">
           <div style="flex:1 1 340px;min-width:260px">
             <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff" set:html={claim1Html}></p>
@@ -63,9 +63,10 @@ const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_
 
   <style>
     /* Countdown-Ticket: klebt unten rechts am Hero und ragt leicht in den violetten Block */
-    .hero-countdown { position:absolute; right:34px; bottom:-14px; z-index:3; pointer-events:none; }
+    .hero-countdown { position:absolute; right:34px; top:0; z-index:5; pointer-events:none; }
     @media (max-width:640px) {
-      .hero-countdown { right:16px; bottom:-10px; transform:scale(.9); transform-origin:bottom right; }
+      /* Mobil: Header ist zweizeilig → Ticket an die Hero-Unterkante statt an den Header */
+      .hero-countdown { right:12px; top:auto; bottom:-10px; transform:scale(.82); transform-origin:bottom right; }
     }
   </style>
 </Base>
