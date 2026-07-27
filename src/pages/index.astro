@@ -30,7 +30,7 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       <div style="position:absolute;inset:0">
         <video src={heroVideo || '/assets/hero-video.mp4'} poster="/assets/hero-poster.jpg" autoplay muted loop playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
         <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,10,3,.5) 0%,rgba(15,10,3,.08) 26%,rgba(15,10,3,.02) 60%,rgba(15,10,3,.18) 100%)"></div>
-        <div style="position:absolute;inset:0;padding:3.4% 5.1% 0;display:flex;flex-direction:column">
+        <div class="hero-inner" style="position:absolute;inset:0;padding:3.4% 5.1% 0;display:flex;flex-direction:column">
           <p style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(13px,2.83vw,42px);line-height:1.15;letter-spacing:.19em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.55)">Benefiz-Festival</p>
           <div style="width:64%;height:2px;background:rgba(255,255,255,.92);margin:2.2% auto 0"></div>
           <img src="/assets/wordmark.png" alt="Rock4Aid" class="hero-wordmark" style="width:62%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
@@ -69,18 +69,19 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
     /* Countdown-Ticket: klebt unten rechts am Hero und ragt leicht in den violetten Block */
     .hero-countdown { position:absolute; right:34px; top:0; z-index:5; pointer-events:none; }
     @media (max-width:640px) {
-      /* Mobil: Header ist zweizeilig → Ticket an die Hero-Unterkante statt an den Header */
-      .hero-countdown { right:12px; top:auto; bottom:-10px; transform:scale(.82); transform-origin:bottom right; }
-      /* Mobil: Hero-Fenster kompakter, Schriftzug größer */
-      .hero-wrap { min-height:74svh !important; }
-      .hero-wordmark { width:86% !important; }
-      /* Mobil: Sponsorenkasten deutlich kleiner, damit die Termin-Infos dominieren */
-      .sp-box { padding:8px 12px 10px !important; gap:6px !important; border-radius:6px !important; }
-      .sp-row { gap:12px !important; }
-      .sp-title { font-size:12px !important; }
-      .sp-gross { max-height:34px !important; max-width:130px !important; }
-      .sp-mittel { max-height:27px !important; max-width:104px !important; }
-      .sp-klein { max-height:21px !important; max-width:82px !important; }
+      /* Mobil: Ticket vollständig im Hero – keine Überlappung mit dem Info-Kasten */
+      .hero-countdown { right:12px; top:auto; bottom:6px; transform:scale(.8); transform-origin:bottom right; }
+      /* Mobil: Schriftzug füllt den Hero, „Benefiz-Festival" etwas tiefer */
+      .hero-wrap { min-height:76svh !important; }
+      .hero-inner { padding-top:8.5% !important; }
+      .hero-wordmark { width:95% !important; }
+      /* Mobil: Sponsorenkasten ~halb so groß */
+      .sp-box { padding:5px 9px 6px !important; gap:4px !important; border-radius:6px !important; }
+      .sp-row { gap:10px !important; }
+      .sp-title { font-size:10.5px !important; }
+      .sp-gross { max-height:22px !important; max-width:95px !important; }
+      .sp-mittel { max-height:18px !important; max-width:76px !important; }
+      .sp-klein { max-height:15px !important; max-width:60px !important; }
     }
   </style>
 </Base>
