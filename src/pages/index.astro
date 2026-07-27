@@ -39,14 +39,16 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       {terminSichtbar && festivalDatum && <r4a-countdown class="hero-countdown" target={festivalDatum} aria-hidden="true"></r4a-countdown>}
     </section>
 
-    <section style="background:#4b2e83;padding:1.9% 0 2.2%;flex:0 0 auto">
-      <div style="margin:0 auto;padding:0 5.1%">
-        <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(26px,4.6vw,66px);line-height:1.06;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoTitel}</p>
-        {infoUntertitel && <p style="margin:clamp(6px,1vw,12px) 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16.5px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff;white-space:pre-line">{infoUntertitel}</p>}
-        <div style="margin:1.7% 0 0;display:flex;flex-wrap:wrap;gap:clamp(18px,2.4vw,28px);align-items:flex-end;justify-content:space-between">
+    <section class="info-band" style="background:#4b2e83;padding:1.9% 0 2.2%;flex:0 0 auto">
+      <div class="ib-inner" style="margin:0 auto;padding:0 5.1%">
+        <div class="ib-top">
+          <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(30px,4.6vw,66px);line-height:1.06;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoTitel}</p>
+          {infoUntertitel && <p style="margin:clamp(6px,1vw,12px) 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(18px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff;white-space:pre-line">{infoUntertitel}</p>}
+        </div>
+        <div class="ib-claims" style="margin:1.7% 0 0;display:flex;flex-wrap:wrap;gap:clamp(18px,2.4vw,28px);align-items:flex-end;justify-content:space-between">
           <div style="flex:1 1 340px;min-width:260px">
-            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16.5px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff" set:html={claim1Html}></p>
-            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16.5px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff">{claim2}</p>
+            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(18px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff" set:html={claim1Html}></p>
+            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(18px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff">{claim2}</p>
           </div>
           {sponsoren.length > 0 && (
             <div class="sp-box" style="flex:0 0 auto;background:#fbfefd;border-radius:4px;padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px">
@@ -71,8 +73,10 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
     @media (max-width:640px) {
       /* Mobil: Ticket vollständig im Hero – keine Überlappung mit dem Info-Kasten */
       .hero-countdown { right:12px; top:auto; bottom:6px; transform:scale(.8); transform-origin:bottom right; }
-      /* Mobil: Schriftzug füllt den Hero, „Benefiz-Festival" etwas tiefer */
-      .hero-wrap { min-height:76svh !important; }
+      /* Mobil: Seite füllt den Bildschirm; Footer ganz unten, Info-Bereich wächst */
+      .hero-wrap { min-height:calc(100svh - 100px) !important; }
+      .info-band { padding:7% 0 5% !important; }
+      .ib-claims { margin-top:10% !important; }
       .hero-inner { padding-top:8.5% !important; }
       .hero-wordmark { width:95% !important; }
       /* Mobil: Sponsorenkasten ~halb so groß */
