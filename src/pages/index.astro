@@ -75,10 +75,11 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       .hero-countdown { right:12px; top:auto; bottom:6px; transform:scale(.8); transform-origin:bottom right; }
       /* Mobil: Seite füllt den Bildschirm; Footer ganz unten, Info-Bereich wächst */
       .hero-wrap { min-height:calc(100svh - 100px) !important; }
-      .info-band { padding:7% 0 5% !important; }
+      /* Info-Kasten etwas nach oben, sodass das Ticket sanft über die Kante ragt (Text bleibt frei) */
+      .info-band { padding:9% 0 5% !important; margin-top:-22px !important; position:relative; z-index:1; }
       .ib-claims { margin-top:10% !important; }
-      .hero-inner { padding-top:8.5% !important; }
-      .hero-wordmark { width:95% !important; }
+      .hero-inner { padding-top:8.5% !important; padding-left:3% !important; padding-right:3% !important; }
+      .hero-wordmark { width:100% !important; }
       /* Mobil: Sponsorenkasten ~halb so groß */
       .sp-box { padding:5px 9px 6px !important; gap:4px !important; border-radius:6px !important; }
       .sp-row { gap:10px !important; }
