@@ -3,6 +3,7 @@
     "festival_jahr": "2027",
     "festival_datum": "",
     "info_titel": "LineUp & Termin 2027",
+    "info_untertitel": "",
     "claim_zeile_1": "Live Musik I Essen & Getränke",
     "claim_zeile_2": "Eintritt auf Spendenbasis",
     "kontakt_email": "rock4aid2025@gmail.com",
@@ -13,18 +14,78 @@
     "termin_sichtbar": true
   },
   "sponsoren": [
-    { "id": 1, "name": "Volksbank Kurpfalz", "logo": "/assets/sponsor-volksbank.png", "groesse": "mittel", "reihenfolge": 1, "sichtbar": true },
-    { "id": 2, "name": "HEID Heizungs- und Sanitärtechnik", "logo": "/assets/sponsor-heid.png", "groesse": "gross", "reihenfolge": 2, "sichtbar": true }
+    {
+      "id": 1,
+      "name": "Volksbank Kurpfalz",
+      "logo": "/assets/sponsor-volksbank.png",
+      "groesse": "mittel",
+      "reihenfolge": 1,
+      "sichtbar": true
+    },
+    {
+      "id": 2,
+      "name": "HEID Heizungs- und Sanitärtechnik",
+      "logo": "/assets/sponsor-heid.png",
+      "groesse": "gross",
+      "reihenfolge": 2,
+      "sichtbar": true
+    }
   ],
   "bands": [
-    { "id": 1, "name": "K`lydoscope", "spielzeit": "21:30 - 23:00 UHR", "buehne": "", "foto": "/assets/prog-klydoscope.jpg", "reihenfolge": 1, "sichtbar": true, "links": [] },
-    { "id": 2, "name": "Abi Band 86", "spielzeit": "19:30 - 21:00 UHR", "buehne": "", "foto": "/assets/prog-abiband.jpg", "reihenfolge": 2, "sichtbar": true, "links": [] },
-    { "id": 3, "name": "Holger Bläss\nand friends", "spielzeit": "17:45 - 19:00 UHR", "buehne": "", "foto": "/assets/prog-holger.jpg", "reihenfolge": 3, "sichtbar": true, "links": [] },
-    { "id": 4, "name": "Musikschule\nLadenburg", "spielzeit": "16:00 - 17:00 UHR", "buehne": "", "foto": "/assets/prog-musikschule.jpg", "reihenfolge": 4, "sichtbar": true, "links": [] },
-    { "id": 5, "name": "Crushing Jars", "spielzeit": "17:00/ 19:00/ 21:00 UHR", "buehne": "CAMPFIRE STAGE", "foto": "/assets/prog-crushingjars.jpg", "reihenfolge": 5, "sichtbar": true, "links": [] }
+    {
+      "id": 1,
+      "name": "K`lydoscope",
+      "spielzeit": "21:30 - 23:00 UHR",
+      "buehne": "",
+      "foto": "/assets/prog-klydoscope.jpg",
+      "reihenfolge": 1,
+      "sichtbar": true,
+      "links": []
+    },
+    {
+      "id": 2,
+      "name": "Abi Band 86",
+      "spielzeit": "19:30 - 21:00 UHR",
+      "buehne": "",
+      "foto": "/assets/prog-abiband.jpg",
+      "reihenfolge": 2,
+      "sichtbar": true,
+      "links": []
+    },
+    {
+      "id": 3,
+      "name": "Holger Bläss\nand friends",
+      "spielzeit": "17:45 - 19:00 UHR",
+      "buehne": "",
+      "foto": "/assets/prog-holger.jpg",
+      "reihenfolge": 3,
+      "sichtbar": true,
+      "links": []
+    },
+    {
+      "id": 4,
+      "name": "Musikschule\nLadenburg",
+      "spielzeit": "16:00 - 17:00 UHR",
+      "buehne": "",
+      "foto": "/assets/prog-musikschule.jpg",
+      "reihenfolge": 4,
+      "sichtbar": true,
+      "links": []
+    },
+    {
+      "id": 5,
+      "name": "Crushing Jars",
+      "spielzeit": "17:00/ 19:00/ 21:00 UHR",
+      "buehne": "CAMPFIRE STAGE",
+      "foto": "/assets/prog-crushingjars.jpg",
+      "reihenfolge": 5,
+      "sichtbar": true,
+      "links": []
+    }
   ],
   "charity": {
-    "id": 1, "sichtbar": true,
+    "id": 1,
+    "sichtbar": true,
     "hero_titel": "Viele Musiker...ein Ziel: Wasser zum Leben.",
     "hero_bild": "/assets/proj-hero.jpg",
     "intro_text": "<p class=\"rt\">Beim Benefiz-Festival 2026 spielen K´lydoscope, Abi-Band 86, Holger Bläss &amp; friends, Crushing Jars und die Musikschule Ladenburg für den guten Zweck – ganz ohne Gage.</p>",
@@ -39,7 +100,8 @@
     "spenden_text": "<p class=\"rt\">Direkte Spenden sind möglich auf das Konto des Garangovereins<br />IBAN: DE36 6709 2300 0033 3998 55 (Volksbank Kurpfalz)<br />Verwendungszweck: „Rock4Aid / Brunnenbau“.</p>"
   },
   "anfahrt": {
-    "id": 1, "sichtbar": true,
+    "id": 1,
+    "sichtbar": true,
     "eintritt_zeile": "Eintritt frei - Spenden willkommen",
     "ort_titel": "Veranstaltungsort",
     "ort_text": "Freizeithalle Heddesheim\nGroßsachsener Str. 35\n68542 Heddesheim",
@@ -55,51 +117,197 @@
   },
   "rueckblick_jahre": [
     {
-      "id": 1, "jahr": 2026, "slug": "rueckblick-2026", "titel": "Rückblick 2026", "sichtbar": true, "reihenfolge": 2026,
+      "id": 1,
+      "jahr": 2026,
+      "slug": "rueckblick-2026",
+      "titel": "Rückblick 2026",
+      "sichtbar": true,
+      "reihenfolge": 2026,
       "kennzahlen": "Mehr als <strong>500 Besucher</strong>. <strong>Zwei Bühnen</strong>. <strong>Fünf Acts</strong>. Über <strong>5.000 Euro Spenden</strong>.",
       "fliesstext": "<p class=\"rt\">Rock4Aid 2026 hat gezeigt, was entstehen kann, wenn gute Musik und Hilfsbereitschaft zusammenkommen. Der gesamte Erlös fließt in den Bau eines solarbetriebenen Wasserturms in Garango in Burkina Faso. Damit unterstützen wir ein Projekt, das ganz konkret wirkt: Sauberes Trinkwasser für die Menschen vor Ort und Wasser für einen Frauengarten, in dem Gemüse angebaut, Familien versorgt und Perspektiven geschaffen werden.</p><p class=\"rt\">Unser großer Dank gilt allen, die diesen Tag möglich gemacht haben: Allen Besuchern, den Spenderinnen und Spendern, den über 30 Helferinnen und Helfern, dem Garangoverein Ladenburg e.V., Auszeit Streetfood Wallner, der Musikschule Ladenburg, Holger Bläss &amp; Friends, Abi Band 86, K’lydoscope, Crushing Jars sowie allen Unterstützern und Sponsoren (besonders der Volksbank Kurpfalz als Hauptsponsor).</p><p class=\"rt\">Ihr habt Rock4Aid 2026 zu mehr gemacht als einem Festival. Zu einem Tag voller Musik, guter Laune und echter Wirkung.</p>",
       "rueckblick_intro": [
-        { "bild": "/assets/rb26-1.jpg", "alt": "Publikum vor der Bühne bei Rock4Aid 2026", "rahmen": false, "reihenfolge": 1 },
-        { "bild": "/assets/rb26-2.jpg", "alt": "Volle Halle bei Rock4Aid 2026", "rahmen": false, "reihenfolge": 2 },
-        { "bild": "/assets/rb26-3.jpg", "alt": "Campfire Stage im Freien", "rahmen": false, "reihenfolge": 3 },
-        { "bild": "/assets/rb26-4.jpg", "alt": "Rock4Aid Banner auf der Hauptbühne", "rahmen": false, "reihenfolge": 4 }
+        {
+          "bild": "/assets/rb26-1.jpg",
+          "alt": "Publikum vor der Bühne bei Rock4Aid 2026",
+          "rahmen": false,
+          "reihenfolge": 1
+        },
+        {
+          "bild": "/assets/rb26-2.jpg",
+          "alt": "Volle Halle bei Rock4Aid 2026",
+          "rahmen": false,
+          "reihenfolge": 2
+        },
+        {
+          "bild": "/assets/rb26-3.jpg",
+          "alt": "Campfire Stage im Freien",
+          "rahmen": false,
+          "reihenfolge": 3
+        },
+        {
+          "bild": "/assets/rb26-4.jpg",
+          "alt": "Rock4Aid Banner auf der Hauptbühne",
+          "rahmen": false,
+          "reihenfolge": 4
+        }
       ],
       "rueckblick_acts": [
-        { "name": "K`lydoscope", "beschreibung": "Rock Klassiker mit einer unglaublichen Live-Performance", "foto_a": "/assets/klydoscope-a.jpg", "foto_b": "/assets/klydoscope-b.jpg", "reihenfolge": 1, "links": [] },
-        { "name": "Abi Band 86", "beschreibung": "Cover-Rock, bei dem das Publikum nicht stillsitzen konnte", "foto_a": "/assets/abiband-a.jpg", "foto_b": "/assets/abiband-b.jpg", "reihenfolge": 2, "links": [] },
-        { "name": "Holger Bläss and friends", "beschreibung": "Rock und Pop mit einer genialen Leichtigkeit gespielt", "foto_a": "/assets/holger-a.jpg", "foto_b": "/assets/holger-b.jpg", "reihenfolge": 3, "links": [] },
-        { "name": "Musikschule Ladenburg", "beschreibung": "Die Jüngsten auf der Bühne rocken richtig ab", "foto_a": "/assets/musikschule-a.jpg", "foto_b": "/assets/musikschule-b.jpg", "reihenfolge": 4, "links": [] },
-        { "name": "Crushing Jars", "beschreibung": "Rock am Lagerfeuer auf unserer Campfire Stage", "foto_a": "/assets/crushingjars-a.jpg", "foto_b": "/assets/crushingjars-b.jpg", "reihenfolge": 5, "links": [] }
+        {
+          "name": "K`lydoscope",
+          "beschreibung": "Rock Klassiker mit einer unglaublichen Live-Performance",
+          "foto_a": "/assets/klydoscope-a.jpg",
+          "foto_b": "/assets/klydoscope-b.jpg",
+          "reihenfolge": 1,
+          "links": []
+        },
+        {
+          "name": "Abi Band 86",
+          "beschreibung": "Cover-Rock, bei dem das Publikum nicht stillsitzen konnte",
+          "foto_a": "/assets/abiband-a.jpg",
+          "foto_b": "/assets/abiband-b.jpg",
+          "reihenfolge": 2,
+          "links": []
+        },
+        {
+          "name": "Holger Bläss and friends",
+          "beschreibung": "Rock und Pop mit einer genialen Leichtigkeit gespielt",
+          "foto_a": "/assets/holger-a.jpg",
+          "foto_b": "/assets/holger-b.jpg",
+          "reihenfolge": 3,
+          "links": []
+        },
+        {
+          "name": "Musikschule Ladenburg",
+          "beschreibung": "Die Jüngsten auf der Bühne rocken richtig ab",
+          "foto_a": "/assets/musikschule-a.jpg",
+          "foto_b": "/assets/musikschule-b.jpg",
+          "reihenfolge": 4,
+          "links": []
+        },
+        {
+          "name": "Crushing Jars",
+          "beschreibung": "Rock am Lagerfeuer auf unserer Campfire Stage",
+          "foto_a": "/assets/crushingjars-a.jpg",
+          "foto_b": "/assets/crushingjars-b.jpg",
+          "reihenfolge": 5,
+          "links": []
+        }
       ],
       "rueckblick_presse": [
-        { "bild": "/assets/presse26-1.jpg", "alt": "Zeitungsartikel über Rock4Aid 2026", "reihenfolge": 1 },
-        { "bild": "/assets/presse26-2.jpg", "alt": "Zeitungsartikel: Musikfans helfen mit Herzblut", "reihenfolge": 2 },
-        { "bild": "/assets/presse26-3.jpg", "alt": "Zeitungsartikel über das Benefiz-Festival", "reihenfolge": 3 },
-        { "bild": "/assets/presse26-4.jpg", "alt": "Pressebericht über Rock4Aid 2026", "reihenfolge": 4 },
-        { "bild": "/assets/presse26-5.jpg", "alt": "Benefizkonzert für Garango – Bericht", "reihenfolge": 5 },
-        { "bild": "/assets/presse26-6.jpg", "alt": "Dankschreiben des Garangovereins Ladenburg", "reihenfolge": 6 },
-        { "bild": "/assets/presse26-7.jpg", "alt": "Bericht zum Spendenprojekt Garango", "reihenfolge": 7 },
-        { "bild": "/assets/presse26-8.jpg", "alt": "Für solarbetriebenen Wasserturm gerockt", "reihenfolge": 8 }
+        {
+          "bild": "/assets/presse26-1.jpg",
+          "alt": "Zeitungsartikel über Rock4Aid 2026",
+          "reihenfolge": 1
+        },
+        {
+          "bild": "/assets/presse26-2.jpg",
+          "alt": "Zeitungsartikel: Musikfans helfen mit Herzblut",
+          "reihenfolge": 2
+        },
+        {
+          "bild": "/assets/presse26-3.jpg",
+          "alt": "Zeitungsartikel über das Benefiz-Festival",
+          "reihenfolge": 3
+        },
+        {
+          "bild": "/assets/presse26-4.jpg",
+          "alt": "Pressebericht über Rock4Aid 2026",
+          "reihenfolge": 4
+        },
+        {
+          "bild": "/assets/presse26-5.jpg",
+          "alt": "Benefizkonzert für Garango – Bericht",
+          "reihenfolge": 5
+        },
+        {
+          "bild": "/assets/presse26-6.jpg",
+          "alt": "Dankschreiben des Garangovereins Ladenburg",
+          "reihenfolge": 6
+        },
+        {
+          "bild": "/assets/presse26-7.jpg",
+          "alt": "Bericht zum Spendenprojekt Garango",
+          "reihenfolge": 7
+        },
+        {
+          "bild": "/assets/presse26-8.jpg",
+          "alt": "Für solarbetriebenen Wasserturm gerockt",
+          "reihenfolge": 8
+        }
       ]
     },
     {
-      "id": 2, "jahr": 2025, "slug": "rueckblick-2025", "titel": "Rückblick 2025", "sichtbar": true, "reihenfolge": 2025,
+      "id": 2,
+      "jahr": 2025,
+      "slug": "rueckblick-2025",
+      "titel": "Rückblick 2025",
+      "sichtbar": true,
+      "reihenfolge": 2025,
       "kennzahlen": "",
       "fliesstext": "<p class=\"rt\">Rock4Aid 2025 war ein Abend voller Musik, Zusammenhalt und echter Wirkung.</p><p class=\"rt\">Dank Sprengler&amp;Friends, Dawedda, Die Nachbarn und Indeed und allen, die dabei waren, konnten wir gemeinsam 6.015 € für Menschen im Sudan sammeln.</p><p class=\"rt\">Ein riesiges Dankeschön an alle Besucher:innen, Helfer:innen und Bands. Ohne euch wäre dieser besondere Abend nicht möglich gewesen.</p>",
       "rueckblick_intro": [
-        { "bild": "/assets/urkunde.jpg", "alt": "Spendenurkunde der Welthungerhilfe über 6.015 Euro für Rock4Aid", "rahmen": true, "reihenfolge": 1 }
+        {
+          "bild": "/assets/urkunde.jpg",
+          "alt": "Spendenurkunde der Welthungerhilfe über 6.015 Euro für Rock4Aid",
+          "rahmen": true,
+          "reihenfolge": 1
+        }
       ],
       "rueckblick_acts": [
-        { "name": "Die Nachbarn", "beschreibung": "unplugged vom Feinsten !!", "foto_a": "/assets/nachbarn-a.jpg", "foto_b": "/assets/nachbarn-b.jpg", "reihenfolge": 1, "links": [] },
-        { "name": "Sprengler & Friends", "beschreibung": "gute Laune auf und vor der Bühne !!", "foto_a": "/assets/sprengler-a.jpg", "foto_b": "/assets/sprengler-b.jpg", "reihenfolge": 2, "links": [] },
-        { "name": "Indeed", "beschreibung": "Cover-Rock meets Partystimmung !!", "foto_a": "/assets/indeed-a.jpg", "foto_b": "/assets/indeed-b.jpg", "reihenfolge": 3, "links": [] },
-        { "name": "Dawedda", "beschreibung": "Beste Kombi aus Metal und Kurpälzer Dialekt !!", "foto_a": "/assets/dawedda-a.jpg", "foto_b": "/assets/dawedda-b.jpg", "reihenfolge": 4, "links": [] }
+        {
+          "name": "Die Nachbarn",
+          "beschreibung": "unplugged vom Feinsten !!",
+          "foto_a": "/assets/nachbarn-a.jpg",
+          "foto_b": "/assets/nachbarn-b.jpg",
+          "reihenfolge": 1,
+          "links": []
+        },
+        {
+          "name": "Sprengler & Friends",
+          "beschreibung": "gute Laune auf und vor der Bühne !!",
+          "foto_a": "/assets/sprengler-a.jpg",
+          "foto_b": "/assets/sprengler-b.jpg",
+          "reihenfolge": 2,
+          "links": []
+        },
+        {
+          "name": "Indeed",
+          "beschreibung": "Cover-Rock meets Partystimmung !!",
+          "foto_a": "/assets/indeed-a.jpg",
+          "foto_b": "/assets/indeed-b.jpg",
+          "reihenfolge": 3,
+          "links": []
+        },
+        {
+          "name": "Dawedda",
+          "beschreibung": "Beste Kombi aus Metal und Kurpälzer Dialekt !!",
+          "foto_a": "/assets/dawedda-a.jpg",
+          "foto_b": "/assets/dawedda-b.jpg",
+          "reihenfolge": 4,
+          "links": []
+        }
       ],
       "rueckblick_presse": [
-        { "bild": "/assets/presse25-1.jpg", "alt": "Zeitungsartikel: Rock4Aid Benefizkonzert für den Sudan", "reihenfolge": 1 },
-        { "bild": "/assets/presse25-2.jpg", "alt": "Zeitungsartikel: Für Musikfans mit Herz", "reihenfolge": 2 },
-        { "bild": "/assets/presse25-3.jpg", "alt": "Zeitungsartikel: Rocken für die Welthungerhilfe", "reihenfolge": 3 },
-        { "bild": "/assets/presse25-4.jpg", "alt": "Zeitungsausschnitt über Rock4Aid 2025", "reihenfolge": 4 }
+        {
+          "bild": "/assets/presse25-1.jpg",
+          "alt": "Zeitungsartikel: Rock4Aid Benefizkonzert für den Sudan",
+          "reihenfolge": 1
+        },
+        {
+          "bild": "/assets/presse25-2.jpg",
+          "alt": "Zeitungsartikel: Für Musikfans mit Herz",
+          "reihenfolge": 2
+        },
+        {
+          "bild": "/assets/presse25-3.jpg",
+          "alt": "Zeitungsartikel: Rocken für die Welthungerhilfe",
+          "reihenfolge": 3
+        },
+        {
+          "bild": "/assets/presse25-4.jpg",
+          "alt": "Zeitungsausschnitt über Rock4Aid 2025",
+          "reihenfolge": 4
+        }
       ]
     }
   ],

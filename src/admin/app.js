@@ -15,10 +15,10 @@ let sb = null;
 const $ = (sel, el = document) => el.querySelector(sel);
 const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; };
 const esc = (s) => (s == null ? '' : String(s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-function toast(msg, kind = 'ok') {
+function toast(msg, kind = 'ok', ms) {
   const t = h(`<div class="toast ${kind}">${esc(msg)}</div>`);
   $('#toasts').appendChild(t);
-  setTimeout(() => t.remove(), kind === 'err' ? 6000 : 3200);
+  setTimeout(() => t.remove(), ms || (kind === 'err' ? 6000 : 3200));
 }
 
 // ---------------------------------------------------------------------------
@@ -33,7 +33,8 @@ const SCHEMA = {
     felder: [
       { key: 'festival_jahr', label: 'Festival-Jahr', type: 'text' },
       { key: 'festival_datum', label: 'Festival-Datum & Uhrzeit (steuert den Countdown; leer = „wird zeitnah veröffentlicht“)', type: 'datetime' },
-      { key: 'info_titel', label: 'Titelzeile Startseite', type: 'text' },
+      { key: 'info_titel', label: 'Titelzeile Startseite (Enter = neue Zeile / Umbruch)', type: 'textarea' },
+      { key: 'info_untertitel', label: 'Zweite Zeile (frei – z. B. Ort/Datum, Enter = Umbruch)', type: 'textarea' },
       { key: 'claim_zeile_1', label: 'Claim-Zeile 1 (das „ I “ dazwischen wird gelb)', type: 'text' },
       { key: 'claim_zeile_2', label: 'Claim-Zeile 2', type: 'text' },
       { key: 'kontakt_email', label: 'Kontakt-E-Mail', type: 'text' },
@@ -320,7 +321,7 @@ async function renderSingle(key) {
       const row = formSammeln(form, def.felder);
       if (daten.id) row.id = daten.id;
       await speichern(key, row);
-      toast('Gespeichert.');
+      toast('Gespeichert ✓ – aber noch nicht live! Damit die Änderung auf der Website erscheint, oben zusätzlich auf „Veröffentlichen“ klicken.', 'ok', 8000);
     } catch (e) { toast('Fehler: ' + e.message, 'err'); }
   });
   main.append(form, btn);
@@ -371,7 +372,7 @@ async function editForm(key, row) {
       const data = formSammeln(form, def.felder);
       if (row.id) data.id = row.id;
       const gespeichert = await speichern(key, data);
-      toast('Gespeichert.');
+      toast('Gespeichert ✓ – aber noch nicht live! Damit die Änderung auf der Website erscheint, oben zusätzlich auf „Veröffentlichen“ klicken.', 'ok', 8000);
       editForm(key, gespeichert); // neu laden (jetzt mit id für Kinder)
     } catch (e) { toast('Fehler: ' + e.message, 'err'); }
   });
@@ -437,7 +438,7 @@ async function rueckblickForm(row) {
       if (!data.slug && data.jahr) data.slug = 'rueckblick-' + data.jahr;
       if (row.id) data.id = row.id;
       const g = await speichern('rueckblick_jahre', data);
-      toast('Gespeichert.'); rueckblickForm(g);
+      toast('Gespeichert ✓ – aber noch nicht live! Damit die Änderung auf der Website erscheint, oben zusätzlich auf „Veröffentlichen“ klicken.', 'ok', 8000); rueckblickForm(g);
     } catch (e) { toast('Fehler: ' + e.message, 'err'); }
   });
   const back = h(`<button class="btn">Zurück</button>`); back.addEventListener('click', renderRueckblick);

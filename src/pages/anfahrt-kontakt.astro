@@ -29,14 +29,14 @@ const cards = [
     <>
       <section id="anfahrt" style="position:relative;overflow:hidden;background:#e8ecef;padding:clamp(30px,4.8vw,72px) 0 clamp(34px,5vw,75px)">
         {a.karte_bild && <img src={a.karte_bild} alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />}
-        <div style="position:absolute;inset:0;background:rgba(247,249,250,.42)"></div>
+        <div style="position:absolute;inset:0;background:rgba(247,249,250,.12)"></div>
         <div style="position:relative;max-width:1500px;margin:0 auto;padding:0 5.66%">
           <h1 style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#4b2e83">Anfahrt &amp; Kontakt</h1>
           <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(12px,1.8vw,22px) 0 0"></div>
           {a.eintritt_zeile && <p style="margin:clamp(12px,2vw,30px) 0 clamp(22px,3.2vw,48px);text-align:center;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16px,2.93vw,38px);line-height:1.2;color:#4b2e83">{a.eintritt_zeile}</p>}
           <div style="display:flex;flex-wrap:wrap;gap:clamp(14px,1.5vw,22px);align-items:stretch">
             {cards.map((card) => (
-              <div style="flex:1 1 28%;min-width:250px;background:#edf0f2;border-radius:10px;padding:clamp(14px,2.2vw,33px) clamp(12px,2vw,30px) clamp(18px,2.8vw,42px);display:flex;flex-direction:column;align-items:center;gap:clamp(12px,1.8vw,27px)">
+              <div style="flex:1 1 28%;min-width:250px;background:#efc900;border-radius:10px;box-shadow:0 6px 20px rgba(20,10,45,.28);padding:clamp(14px,2.2vw,33px) clamp(12px,2vw,30px) clamp(18px,2.8vw,42px);display:flex;flex-direction:column;align-items:center;gap:clamp(12px,1.8vw,27px)">
                 <p style="margin:0;width:100%;background:#4b2e83;color:#fff;text-align:center;border-radius:999px;padding:clamp(10px,1.4vw,21px) 8px;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(14px,1.86vw,24px);line-height:1;letter-spacing:.02em">{card.titel}</p>
                 <p style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(14px,1.76vw,22px);line-height:1.5;color:#3b2c1e" set:html={card.html}></p>
               </div>
