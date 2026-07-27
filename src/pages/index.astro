@@ -79,16 +79,18 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       .info-band { padding:9% 0 5% !important; margin-top:-22px !important; position:relative; z-index:1; }
       .ib-claims { margin-top:10% !important; }
       .hero-inner { padding-top:8.5% !important; padding-left:3% !important; padding-right:3% !important; }
-      .hero-wordmark { width:100% !important; }
-      /* Mobil: Sponsorenkasten ~halb so groß */
-      .sp-box { padding:6px 11px 8px !important; gap:6px !important; border-radius:6px !important; }
-      /* Logos untereinander, Höhe steuert die Stufe (Breite nur großzügig gedeckelt,
-         damit sehr breite Logos wie Volksbank nicht zum dünnen Streifen zusammenfallen) */
-      .sp-row { flex-direction:column !important; align-items:flex-start !important; gap:9px !important; }
+      /* Logo etwas höher setzen, damit es nicht auf dem Countdown-Störer klebt */
+      .hero-wordmark { width:100% !important; padding-bottom:24% !important; }
+      /* Mobil: Sponsorenkasten kompakt – EINE schlanke Reihe.
+         Stufen klein/mittel/groß über kleine Höhen-/Breiten-Deckel, sodass
+         a) der Kasten niedrig bleibt, b) groß>klein gilt und
+         c) sehr breite Logos (Volksbank 10,6:1) nicht zum dünnen Streifen kollabieren. */
+      .sp-box { padding:5px 10px 7px !important; gap:5px !important; border-radius:6px !important; }
+      .sp-row { flex-direction:row !important; align-items:center !important; gap:12px !important; }
       .sp-title { font-size:10.5px !important; }
-      .sp-gross  { max-height:30px !important; max-width:232px !important; }
-      .sp-mittel { max-height:21px !important; max-width:232px !important; }
-      .sp-klein  { max-height:15px !important; max-width:232px !important; }
+      .sp-gross  { max-height:20px !important; max-width:172px !important; }
+      .sp-mittel { max-height:16px !important; max-width:132px !important; }
+      .sp-klein  { max-height:12px !important; max-width:110px !important; }
     }
   </style>
 </Base>
