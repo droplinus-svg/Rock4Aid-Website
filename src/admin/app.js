@@ -360,8 +360,9 @@ async function editForm(key, row) {
   main.appendChild(form);
 
   // Kinder (z. B. Band-Links) nur bei gespeichertem Datensatz
+  const kinderBoxen = [];
   if (def.kinder && row.id) {
-    for (const kd of def.kinder) main.appendChild(await linkListe(kd.table, kd.fk, row.id, kd.titel));
+    for (const kd of def.kinder) { const b = await linkListe(kd.table, kd.fk, row.id, kd.titel); kinderBoxen.push(b); main.appendChild(b); }
   } else if (def.kinder && !row.id) {
     main.appendChild(h(`<div class="hinweis">Erst speichern, danach können Links hinzugefügt werden.</div>`));
   }
@@ -372,6 +373,8 @@ async function editForm(key, row) {
       const data = formSammeln(form, def.felder);
       if (row.id) data.id = row.id;
       const gespeichert = await speichern(key, data);
+      // Getippte, aber noch nicht per „+ Link“ hinzugefügte Links mitspeichern:
+      for (const b of kinderBoxen) { if (b._flush) { try { await b._flush(); } catch (e) { toast('Link konnte nicht gespeichert werden: ' + e.message, 'err'); } } }
       toast('Gespeichert ✓ – aber noch nicht live! Damit die Änderung auf der Website erscheint, oben zusätzlich auf „Veröffentlichen“ klicken.', 'ok', 8000);
       editForm(key, gespeichert); // neu laden (jetzt mit id für Kinder)
     } catch (e) { toast('Fehler: ' + e.message, 'err'); }
@@ -388,17 +391,34 @@ async function linkListe(table, fk, parentId, titel) {
   (data || []).forEach((l) => {
     const zeile = h(`<div class="linkrow"><span>${esc(l.plattform)}: ${esc(l.url)}</span></div>`);
     const del = h(`<button class="btn small danger">×</button>`);
-    del.addEventListener('click', async () => { await sb.from(table).delete().eq('id', l.id); linkListe(table, fk, parentId, titel).then((n) => box.replaceWith(n)); });
+    del.addEventListener('click', async () => {
+      try { const { error } = await sb.from(table).delete().eq('id', l.id); if (error) throw error; linkListe(table, fk, parentId, titel).then((n) => box.replaceWith(n)); }
+      catch (e) { toast('Fehler beim Löschen: ' + e.message, 'err'); }
+    });
     zeile.appendChild(del); box.appendChild(zeile);
   });
   const sel = h(`<select>${PLATTFORMEN.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>`);
   const url = h(`<input type="url" placeholder="https://…">`);
   const add = h(`<button class="btn small">+ Link</button>`);
+  // Speichert eine getippte URL. Wird von "+ Link" UND vom "Speichern" der Band benutzt.
+  async function flush() {
+    const wert = (url.value || '').trim();
+    if (!wert) return false;
+    const { error } = await sb.from(table).insert({ [fk]: parentId, plattform: sel.value, url: wert });
+    if (error) throw error;           // WICHTIG: Fehler nicht mehr verschlucken
+    url.value = '';
+    return true;
+  }
+  box._flush = flush;
   add.addEventListener('click', async () => {
-    if (!url.value) return;
-    await sb.from(table).insert({ [fk]: parentId, plattform: sel.value, url: url.value });
-    linkListe(table, fk, parentId, titel).then((n) => box.replaceWith(n));
+    try {
+      if (!(url.value || '').trim()) { toast('Bitte zuerst eine URL eingeben.', 'err'); return; }
+      await flush();
+      toast('Link hinzugefügt.');
+      linkListe(table, fk, parentId, titel).then((n) => box.replaceWith(n));
+    } catch (e) { toast('Fehler beim Speichern des Links: ' + e.message, 'err'); }
   });
+  box.append(h('<div class="hinweis">URL eingeben und auf „+ Link“ klicken. Ein getippter Link wird auch beim „Speichern“ der Band automatisch mitgespeichert.</div>'));
   box.append(h('<div class="linkadd"></div>'));
   box.lastChild.append(sel, url, add);
   return box;

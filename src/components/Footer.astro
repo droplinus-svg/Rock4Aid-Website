@@ -2,7 +2,7 @@
 const { einstellungen = {} } = Astro.props;
 const jahr = (einstellungen && einstellungen.festival_jahr) || '2027';
 ---
-<footer style="background:#3d2569;padding:26px 5.1%">
+<footer class="r4a-footer" style="background:#3d2569;padding:26px 5.1%">
   <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between">
     <span style="font-family:'Archivo',sans-serif;font-size:15px;color:rgba(255,255,255,.7)">© {jahr} Rock4Aid · Benefiz-Festival Heddesheim</span>
     <span style="display:flex;gap:20px;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase">
@@ -11,3 +11,10 @@ const jahr = (einstellungen && einstellungen.festival_jahr) || '2027';
     </span>
   </div>
 </footer>
+<style>
+  /* Mobil: Fußzeile kompakter, Impressum/Datenschutz kleiner */
+  @media (max-width:640px) {
+    .r4a-footer { padding:20px 5.1% !important; }
+    .r4a-footer span { font-size:13px !important; gap:16px !important; }
+  }
+</style>
