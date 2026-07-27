@@ -3,7 +3,7 @@ const { einstellungen = {} } = Astro.props;
 const jahr = (einstellungen && einstellungen.festival_jahr) || '2027';
 // Sichtbarer "Stand"-Marker: bestätigt, dass der aktuelle Datei-Stand live ist.
 // SITE_VERSION wird bei jeder Lieferung hochgezählt; BUILD_TS setzt Netlify beim Build automatisch.
-const SITE_VERSION = 'v16';
+const SITE_VERSION = 'v17';
 const BUILD_TS = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 ---
 <footer class="r4a-footer" style="background:#3d2569;padding:26px 5.1%">

@@ -30,7 +30,7 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
           <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(12px,1.8vw,22px) 0 0"></div>
           <div style="margin:clamp(24px,3.8vw,50px) 0 0;display:flex;flex-wrap:wrap;gap:clamp(22px,4vw,60px);align-items:center">
             <img src={c.warum_bild} alt="" style="flex:1 1 40%;min-width:260px;width:100%;aspect-ratio:421/398;object-fit:cover" />
-            <div style="flex:1 1 44%;min-width:280px;display:flex;flex-direction:column;gap:.9em;text-align:left;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(16px,1.6vw,20px);line-height:1.6;letter-spacing:.01em;color:#4b2e83;text-wrap:pretty" set:html={c.warum_text}></div>
+            <div class="ch-warum-text" style="flex:1 1 44%;min-width:280px;display:flex;flex-direction:column;gap:.9em;text-align:left;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(16px,1.6vw,20px);line-height:1.6;letter-spacing:.01em;color:#4b2e83;text-wrap:pretty" set:html={c.warum_text}></div>
           </div>
         </div>
       </section>
@@ -39,7 +39,7 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
         <img src={c.wasser_bild} alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" />
         <div style="position:absolute;inset:0;background:rgba(18,24,12,.28)"></div>
         <div style="position:relative;max-width:1500px;margin:0 auto;padding:clamp(28px,4.4vw,66px) 5.66%;display:flex">
-          <div style="flex:0 1 44%;min-width:260px;background:#fff;padding:clamp(18px,2.6vw,39px) clamp(16px,2.4vw,36px);display:flex;flex-direction:column;gap:.9em;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(15px,1.5vw,19px);line-height:1.62;letter-spacing:.01em;color:#4b2e83;text-wrap:pretty" set:html={c.wasser_text}></div>
+          <div class="ch-wasser-box" style="flex:0 1 44%;min-width:260px;background:#fff;padding:clamp(18px,2.6vw,39px) clamp(16px,2.4vw,36px);display:flex;flex-direction:column;gap:.9em;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(15px,1.5vw,19px);line-height:1.62;letter-spacing:.01em;color:#4b2e83;text-wrap:pretty" set:html={c.wasser_text}></div>
         </div>
       </section>
 
@@ -49,9 +49,8 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
           <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
           <div style="margin:clamp(14px,2.2vw,28px) 0 0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(15px,1.6vw,20px);line-height:1.6;letter-spacing:.02em;color:#fff;text-wrap:pretty" set:html={c.spenden_text}></div>
           {c.spenden_link_url && (
-            <div style="margin:clamp(22px,3.2vw,42px) 0 0">
-              <a href={c.spenden_link_url} target="_blank" rel="noopener" style="display:inline-block;background:#ffdd00;color:#4b2e83;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(15px,1.7vw,19px);letter-spacing:.01em;padding:clamp(10px,1.2vw,13px) clamp(20px,2.4vw,30px);border-radius:999px">Jetzt spenden ↗</a>
-              <p style="margin:clamp(10px,1.4vw,16px) 0 0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(13px,1.2vw,15px);letter-spacing:.02em;color:rgba(255,255,255,.85)">Mehr Infos: <a href={c.spenden_link_url} target="_blank" rel="noopener" style="color:#ffdd00;border-bottom:1px solid #ffdd00">{c.spenden_link_text || c.spenden_link_url}</a></p>
+            <div style="margin:clamp(18px,2.4vw,30px) 0 0">
+              <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(13px,1.2vw,15px);letter-spacing:.02em;color:rgba(255,255,255,.85)">Mehr Infos: <a href={c.spenden_link_url} target="_blank" rel="noopener" style="color:#ffdd00;border-bottom:1px solid #ffdd00">{c.spenden_link_text || c.spenden_link_url}</a></p>
             </div>
           )}
         </div>
@@ -59,10 +58,15 @@ const hidden = einstellungen.charity_sichtbar === false || c.sichtbar === false;
     </>
   )}
   <style>
-    /* Mobil: Charity-Hero höher, damit der Intro-Text mittig zwischen Querstrich
-       und unterem Rand des dunklen Hintergrunds steht (statt an der Überschrift zu kleben) */
     @media (max-width:640px) {
-      .ch-hero, .ch-hero-in { min-height:66vh !important; }
+      /* Charity-Hero: Intro mittig, aber ~30% niedriger (nimmt sonst zu viel Platz) */
+      .ch-hero, .ch-hero-in { min-height:46vh !important; }
+      /* "Warum wir rocken?"-Text: leicht helles Panel, damit Gelb durchscheint
+         und der violette Text besser lesbar wird */
+      .ch-warum-text { background:rgba(255,255,255,.5) !important; padding:14px 16px !important; border-radius:8px !important; }
+      /* "Der gesamte Erlös …"-Kasten: transluzent, damit das Bild sanft durchscheint,
+         der Text aber gut lesbar bleibt */
+      .ch-wasser-box { background:rgba(255,255,255,.86) !important; backdrop-filter:blur(2px) !important; -webkit-backdrop-filter:blur(2px) !important; }
     }
   </style>
 </Base>
