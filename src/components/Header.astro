@@ -14,13 +14,17 @@ const showAnfahrt = s.anfahrt_sichtbar !== false;
     <a href="/" aria-label="Rock4Aid – zur Startseite" style="flex:0 0 auto;line-height:0">
       <img src="/assets/wordmark.png" alt="Rock4Aid" style="width:clamp(88px,9vw,124px);height:auto" />
     </a>
+    <input type="checkbox" id="r4a-burger-cb" class="r4a-burger-cb" />
+    <label class="r4a-burger-btn" for="r4a-burger-cb" aria-label="Menü öffnen/schließen">
+      <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+    </label>
     <nav class="r4a-nav" style="display:flex;align-items:center;gap:clamp(9px,1.5vw,22px);flex-wrap:wrap;justify-content:flex-end;font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;line-height:1">
       <a href={terminHref} style={`color:${col('termin')};padding:4px 0;white-space:nowrap`}>Termin</a>
       {showLineup && <a href="/line-up/" style={`color:${col('lineup')};padding:4px 0;white-space:nowrap`}>Line-Up</a>}
       {showCharity && <a href="/charity/" style={`color:${col('charity')};padding:4px 0;white-space:nowrap`}>Charity</a>}
       {showAnfahrt && <a href="/anfahrt-kontakt/" style={`color:${col('anfahrt')};padding:4px 0;white-space:nowrap`}>Anfahrt & Kontakt</a>}
       {visYears.length > 0 && (
-        <details style="position:relative">
+        <details class="r4a-rueck" style="position:relative">
           <summary style={`cursor:pointer;color:${col('rueckblick')};padding:4px 0;white-space:nowrap;display:flex;align-items:center;gap:5px`}>Rückblick<span style="font-size:9px;line-height:1">▼</span></summary>
           <div class="r4a-drop" style="position:absolute;top:calc(100% + 10px);right:0;min-width:172px;background:#3d2569;border:1px solid rgba(255,255,255,.22);display:flex;flex-direction:column;box-shadow:0 10px 24px rgba(20,10,45,.5)">
             {visYears.map((j, i) => (
@@ -32,3 +36,30 @@ const showAnfahrt = s.anfahrt_sichtbar !== false;
     </nav>
   </div>
 </header>
+<style>
+  /* Burger-Menü nur auf dem Handy – Desktop bleibt die normale Leiste */
+  .r4a-burger-cb { display:none; }
+  .r4a-burger-btn { display:none; }
+  @media (max-width:640px) {
+    .r4a-burger-btn { display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; margin:-4px -6px -4px 0; cursor:pointer; flex:0 0 auto; -webkit-tap-highlight-color:transparent; }
+    .r4a-nav {
+      display:none !important;
+      position:absolute; top:100%; left:0; right:0;
+      flex-direction:column !important; align-items:stretch !important;
+      background:#3d2569; padding:4px 5.1% 12px !important; gap:0 !important;
+      box-shadow:0 14px 26px rgba(20,10,45,.5);
+      font-size:16px !important;
+    }
+    .r4a-burger-cb:checked ~ .r4a-nav { display:flex !important; }
+    .r4a-nav > a, .r4a-nav > .r4a-rueck > summary {
+      padding:14px 2px !important; font-size:16px !important;
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+    .r4a-nav > .r4a-rueck { position:static !important; }
+    .r4a-nav .r4a-drop {
+      position:static !important; border:none !important; box-shadow:none !important;
+      min-width:0 !important; background:transparent !important; padding:0 0 0 14px !important;
+    }
+    .r4a-nav .r4a-drop a { padding:12px 2px !important; border-bottom:none !important; }
+  }
+</style>

@@ -33,27 +33,27 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
         <div style="position:absolute;inset:0;padding:3.4% 5.1% 0;display:flex;flex-direction:column">
           <p style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(13px,2.83vw,42px);line-height:1.15;letter-spacing:.19em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.55)">Benefiz-Festival</p>
           <div style="width:64%;height:2px;background:rgba(255,255,255,.92);margin:2.2% auto 0"></div>
-          <img src="/assets/wordmark.png" alt="Rock4Aid" class="hero-wordmark" style="width:54%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
+          <img src="/assets/wordmark.png" alt="Rock4Aid" class="hero-wordmark" style="width:62%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
         </div>
       </div>
       {terminSichtbar && festivalDatum && <r4a-countdown class="hero-countdown" target={festivalDatum} aria-hidden="true"></r4a-countdown>}
     </section>
 
-    <section style="background:#4b2e83;padding:2.6% 0 3%;flex:0 0 auto">
+    <section style="background:#4b2e83;padding:1.9% 0 2.2%;flex:0 0 auto">
       <div style="margin:0 auto;padding:0 5.1%">
-        <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(21px,4.3vw,66px);line-height:1.06;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoTitel}</p>
-        {infoUntertitel && <p style="margin:clamp(6px,1vw,12px) 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff;white-space:pre-line">{infoUntertitel}</p>}
-        <div style="margin:2.4% 0 0;display:flex;flex-wrap:wrap;gap:clamp(20px,3vw,32px);align-items:flex-end;justify-content:space-between">
+        <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(26px,4.6vw,66px);line-height:1.06;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoTitel}</p>
+        {infoUntertitel && <p style="margin:clamp(6px,1vw,12px) 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16.5px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff;white-space:pre-line">{infoUntertitel}</p>}
+        <div style="margin:1.7% 0 0;display:flex;flex-wrap:wrap;gap:clamp(18px,2.4vw,28px);align-items:flex-end;justify-content:space-between">
           <div style="flex:1 1 340px;min-width:260px">
-            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff" set:html={claim1Html}></p>
-            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff">{claim2}</p>
+            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16.5px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff" set:html={claim1Html}></p>
+            <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(16.5px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff">{claim2}</p>
           </div>
           {sponsoren.length > 0 && (
-            <div style="flex:0 0 auto;background:#fbfefd;border-radius:4px;padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px">
-              <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;line-height:1;color:#4b2e83">Sponsored by:</p>
-              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+            <div class="sp-box" style="flex:0 0 auto;background:#fbfefd;border-radius:4px;padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px">
+              <p class="sp-title" style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;line-height:1;color:#4b2e83">Sponsored by:</p>
+              <div class="sp-row" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
                 {sponsoren.map((sp) => (
-                  <img src={sp.logo} alt={sp.name} style={`max-height:${logoBox(sp).h}px;max-width:${logoBox(sp).w}px;width:auto;height:auto;object-fit:contain`} />
+                  <img src={sp.logo} alt={sp.name} class={`sp-logo sp-${(sp.groesse || 'mittel').toLowerCase()}`} style={`max-height:${logoBox(sp).h}px;max-width:${logoBox(sp).w}px;width:auto;height:auto;object-fit:contain`} />
                 ))}
               </div>
             </div>
@@ -73,7 +73,14 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       .hero-countdown { right:12px; top:auto; bottom:-10px; transform:scale(.82); transform-origin:bottom right; }
       /* Mobil: Hero-Fenster kompakter, Schriftzug größer */
       .hero-wrap { min-height:74svh !important; }
-      .hero-wordmark { width:76% !important; }
+      .hero-wordmark { width:86% !important; }
+      /* Mobil: Sponsorenkasten deutlich kleiner, damit die Termin-Infos dominieren */
+      .sp-box { padding:8px 12px 10px !important; gap:6px !important; border-radius:6px !important; }
+      .sp-row { gap:12px !important; }
+      .sp-title { font-size:12px !important; }
+      .sp-gross { max-height:34px !important; max-width:130px !important; }
+      .sp-mittel { max-height:27px !important; max-width:104px !important; }
+      .sp-klein { max-height:21px !important; max-width:82px !important; }
     }
   </style>
 </Base>

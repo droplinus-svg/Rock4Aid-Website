@@ -1,6 +1,6 @@
 ---
 // Kleine Link-Buttons je Band/Act. links: [{ plattform, url }]
-const { links = [] } = Astro.props;
+const { links = [], mt = '.5em', justify = 'flex-start' } = Astro.props;
 const list = Array.isArray(links) ? links.filter((l) => l && l.url) : [];
 const LABEL = {
   instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube',
@@ -8,12 +8,18 @@ const LABEL = {
 };
 ---
 {list.length > 0 && (
-  <div style="display:flex;flex-wrap:wrap;gap:8px;margin:.5em 0 0">
+  <div style={`display:flex;flex-wrap:wrap;justify-content:${justify};gap:8px;margin:${mt} 0 0`}>
     {list.map((l) => (
-      <a href={l.url} target="_blank" rel="noopener noreferrer"
-         style="display:inline-flex;align-items:center;gap:6px;background:#4b2e83;color:#fff;font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;line-height:1;padding:7px 12px;border-radius:999px;white-space:nowrap">
-        <span style="width:6px;height:6px;border-radius:50%;background:#ffdd00"></span>{LABEL[(l.plattform || '').toLowerCase()] || l.plattform || 'Link'}
+      <a href={l.url} target="_blank" rel="noopener noreferrer" class="r4a-link"
+         style="display:inline-flex;align-items:center;gap:7px;background:#4b2e83;color:#fff;font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;line-height:1;padding:8px 13px;border-radius:999px;white-space:nowrap;text-decoration:none;border:1.5px solid #ffdd00">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffdd00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+        <span>{LABEL[(l.plattform || '').toLowerCase()] || l.plattform || 'Link'}</span>
+        <span aria-hidden="true" style="color:#ffdd00;font-weight:700">↗</span>
       </a>
     ))}
   </div>
 )}
+<style>
+  .r4a-link { transition: background .15s ease, transform .15s ease; }
+  .r4a-link:hover { background:#5d3ba3; transform:translateY(-1px); }
+</style>
