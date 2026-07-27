@@ -21,14 +21,13 @@ const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_
 ---
 <Base active="termin" einstellungen={einstellungen} jahre={jahre}>
   <div style="display:flex;flex-direction:column;min-height:calc(100svh - 52px)">
-    <section id="start" style="position:relative;background:#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat;overflow:hidden;flex:1 1 auto;min-height:230px">
+    <section id="start" style="position:relative;background:#141008;overflow:hidden;flex:1 1 auto;min-height:230px">
       <div style="position:absolute;inset:0">
-        {heroVideo && (
-          <video src={heroVideo} autoplay muted loop playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
-        )}
+        <video src={heroVideo || '/assets/hero-video.mp4'} poster="/assets/hero-poster.jpg" autoplay muted loop playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,10,3,.5) 0%,rgba(15,10,3,.08) 26%,rgba(15,10,3,.02) 60%,rgba(15,10,3,.18) 100%)"></div>
         <div style="position:absolute;inset:0;padding:3.4% 5.1% 0;display:flex;flex-direction:column">
-          <p style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(13px,2.83vw,42px);line-height:1.15;letter-spacing:.19em;text-transform:uppercase;color:#4b2e83">Benefiz-Festival</p>
-          <div style="width:64%;height:2px;background:#4b2e83;margin:2.2% auto 0"></div>
+          <p style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(13px,2.83vw,42px);line-height:1.15;letter-spacing:.19em;text-transform:uppercase;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.55)">Benefiz-Festival</p>
+          <div style="width:64%;height:2px;background:rgba(255,255,255,.92);margin:2.2% auto 0"></div>
           <img src="/assets/wordmark.png" alt="Rock4Aid" style="width:54%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
         </div>
       </div>
