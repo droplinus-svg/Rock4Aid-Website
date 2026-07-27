@@ -17,8 +17,12 @@ const heroVideo = einstellungen.hero_video || '';
 // " I " (Trennzeichen) gelb hervorheben – wie im Design
 const claim1Html = claim1.split(' I ').join(' <span style="color:#fff">I</span> ');
 // Sponsoren-Logogröße: Stufen klein/mittel/groß → Höhe in px
-const LOGO_H = { klein: 18, mittel: 25, gross: 34 };
-const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_hoehe || 25;
+// Sponsoren-Anzeigegröße: pro Stufe eine feste FLÄCHE (Höhe × Max-Breite).
+// Das Logo wird proportional darin eingepasst – unabhängig von seiner Form.
+// So bekommt der Hauptsponsor (groß) sichtbar mehr Platz als ein kleiner Sponsor,
+// statt dass ein breites Logo die Größe bestimmt.
+const LOGO_BOX = { klein: { h: 26, w: 104 }, mittel: { h: 42, w: 165 }, gross: { h: 62, w: 240 } };
+const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO_BOX.mittel;
 ---
 <Base active="termin" einstellungen={einstellungen} jahre={jahre}>
   <div style="display:flex;flex-direction:column;min-height:calc(100svh - 52px)">
@@ -49,7 +53,7 @@ const logoH = (sp) => LOGO_H[(sp.groesse || 'mittel').toLowerCase()] || sp.logo_
               <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;line-height:1;color:#4b2e83">Sponsored by:</p>
               <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
                 {sponsoren.map((sp) => (
-                  <img src={sp.logo} alt={sp.name} style={`height:${logoH(sp)}px;width:auto`} />
+                  <img src={sp.logo} alt={sp.name} style={`max-height:${logoBox(sp).h}px;max-width:${logoBox(sp).w}px;width:auto;height:auto;object-fit:contain`} />
                 ))}
               </div>
             </div>

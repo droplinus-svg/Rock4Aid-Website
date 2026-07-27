@@ -500,7 +500,6 @@ async function actListe(jahrId) {
 // ---------------------------------------------------------------------------
 async function veroeffentlichen() {
   if (!BUILD_HOOK) { toast('Kein Build-Hook hinterlegt (PUBLIC_NETLIFY_BUILD_HOOK in Netlify setzen).', 'err'); return; }
-  if (!confirm('Jetzt veröffentlichen? Die öffentliche Website wird mit dem aktuellen Stand neu gebaut (dauert 1–2 Minuten).')) return;
   try { await fetch(BUILD_HOOK, { method: 'POST' }); toast('Veröffentlichung gestartet – in 1–2 Minuten ist der neue Stand live.'); }
   catch (e) { toast('Fehler beim Veröffentlichen: ' + e.message, 'err'); }
 }
