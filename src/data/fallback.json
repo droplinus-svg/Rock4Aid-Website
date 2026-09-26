@@ -348,7 +348,10 @@
     "mindestbetrag": 12,
     "vorschlagsbetraege": "24, 60, 120",
     "glaeubiger_id": "",
-    "danke_text": ""
+    "danke_text": "",
+    "formular_titel": "",
+    "formular_text": "",
+    "formular_nachtext": ""
   },
   "mitglied_abschnitte": []
 }

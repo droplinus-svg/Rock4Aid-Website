@@ -8,7 +8,9 @@ const m = await getTable('mitglied', { single: true });
 const abschnitte = (await getTable('mitglied_abschnitte', { order: 'reihenfolge.asc' }))
   .filter((a) => a.sichtbar !== false);
 // Abwechselnd gelb/weiß wie auf der Seite „Über uns“
-const bg = (i) => (i % 2 === 0 ? '#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat' : '#fff');
+// Der letzte Abschnitt vor dem (weißen) Formular ist immer gelb
+const versatz = abschnitte.length % 2 === 0 ? 1 : 0;
+const bg = (i) => ((i + versatz) % 2 === 0 ? '#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat' : '#fff');
 const hidden = einstellungen.mitglied_sichtbar === false || m.sichtbar === false;
 
 const SB_URL = cleanUrl(import.meta.env.PUBLIC_SUPABASE_URL);
@@ -58,15 +60,17 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
 
       <section id="antrag" style="background:#fff;padding:clamp(30px,4.8vw,72px) 0 clamp(40px,6vw,90px)">
         <div style="max-width:900px;margin:0 auto;padding:0 5.66%">
-          <h2 style={`${H2};color:#4b2e83`}>Fördermitgliedschaft beantragen</h2>
+          <h2 style={`${H2};color:#4b2e83`}>{formularAktiv ? (m.formular_titel || 'Fördermitgliedschaft beantragen') : 'So werdet ihr Fördermitglied'}</h2>
           <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(12px,1.8vw,22px) 0 clamp(20px,3vw,36px)"></div>
 
+          {formularAktiv && m.formular_text && <div class="mw-text mw-vor" set:html={m.formular_text}></div>}
+
           {!formularAktiv ? (
-            <p class="mw-hinweis">Anträge sind im Moment nicht online möglich. Schreib uns gern an {einstellungen.kontakt_email || 'unsere Kontaktadresse'}.</p>
+            <p class="mw-hinweis mw-vor">Den Online-Antrag schalten wir in Kürze frei. Bis dahin schreibt uns einfach eine E-Mail, dann melden wir uns bei euch.</p>
           ) : (
             <form id="mw-form" class="mw-form" novalidate>
               <fieldset>
-                <legend>Dein jährlicher Förderbetrag</legend>
+                <legend>Euer jährlicher Förderbeitrag</legend>
                 <div class="mw-betraege">
                   {vorschlaege.map((b) => (
                     <label class="mw-chip"><input type="radio" name="betrag_wahl" value={String(b)} /> {b} €</label>
@@ -79,7 +83,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
               </fieldset>
 
               <fieldset>
-                <legend>Deine Angaben</legend>
+                <legend>Eure Angaben</legend>
                 <div class="mw-grid">
                   <label class="mw-feld">Vorname<input name="vorname" required autocomplete="given-name" /></label>
                   <label class="mw-feld">Nachname<input name="nachname" required autocomplete="family-name" /></label>
@@ -107,7 +111,8 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
               <button type="submit" id="mw-senden" class="mw-senden">Fördermitgliedschaft beantragen</button>
             </form>
           )}
-          <div id="mw-danke" class="mw-danke" hidden set:html={m.danke_text || '<p>Vielen Dank! Wir haben deinen Antrag erhalten.</p>'}></div>
+          <div id="mw-danke" class="mw-danke" hidden set:html={m.danke_text || '<p>Vielen Dank! Wir haben euren Antrag erhalten.</p>'}></div>
+          {m.formular_nachtext && <div class="mw-text mw-nach" set:html={m.formular_nachtext}></div>}
         </div>
       </section>
     </>
@@ -166,7 +171,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
             }),
           });
           if (!res.ok) {
-            let msg = 'Der Antrag konnte nicht gesendet werden. Bitte versuche es später noch einmal.';
+            let msg = 'Der Antrag konnte nicht gesendet werden. Bitte versucht es später noch einmal.';
             try { const j = await res.json(); if (j && j.message) msg = j.message; } catch (_) { /* ignore */ }
             throw new Error(msg);
           }
@@ -183,6 +188,9 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
 
   <style>
     .mw-text :global(p) { margin:0 0 .7em; }
+    .mw-vor, .mw-nach { font-family:'Archivo',sans-serif; font-size:clamp(16px,1.6vw,20px); line-height:1.6; color:#4b2e83; }
+    .mw-vor { margin:0 0 clamp(20px,3vw,34px); }
+    .mw-nach { margin:clamp(26px,3.6vw,44px) 0 0; text-align:center; }
     .mw-text :global(a) { color:inherit; font-weight:600; text-decoration:underline; text-underline-offset:.15em; }
     .mw-text :global(ul) { margin:0; padding-left:1.2em; }
     .mw-text :global(li) { margin:.3em 0; }
