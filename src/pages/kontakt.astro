@@ -1,0 +1,173 @@
+---
+import Base from '../layouts/Base.astro';
+import { getTable } from '../lib/content.js';
+
+const einstellungen = await getTable('einstellungen', { single: true });
+const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
+const helferLink = (einstellungen.helfer_link || '').trim();
+
+// Anliegen werden im Redaktionssystem gepflegt (Tabelle kontakt_anliegen).
+// Links auf der Website können eines vorauswählen, zum Beispiel /kontakt/?anliegen=band
+const STANDARD = [
+  { bezeichnung: 'Allgemeine Frage', kuerzel: 'allgemein' },
+  { bezeichnung: 'Fördermitglied werden', kuerzel: 'mitglied' },
+  { bezeichnung: 'Als Band auftreten', kuerzel: 'band', zeige_musiklink: true },
+  { bezeichnung: 'Sponsor werden', kuerzel: 'sponsor' },
+  { bezeichnung: 'Spende oder Spendenquittung', kuerzel: 'spende' },
+  { bezeichnung: 'Beim Festival mithelfen', kuerzel: 'helfer' },
+  { bezeichnung: 'Presseanfrage', kuerzel: 'presse' },
+  { bezeichnung: 'Sonstiges', kuerzel: 'sonstiges' },
+];
+const ausDb = (await getTable('kontakt_anliegen', { order: 'reihenfolge.asc' }))
+  .filter((x) => x && x.sichtbar !== false && x.bezeichnung && x.kuerzel);
+const ANLIEGEN = (ausDb.length ? ausDb : STANDARD).map((x) => ({
+  ...x,
+  // Für "helfer" ohne eigenen Hinweis: automatisch auf die Helferanmeldung verweisen
+  hinweis: x.hinweis || (x.kuerzel === 'helfer' && helferLink
+    ? `<p>Für Schichten beim Festival könnt ihr euch auch direkt eintragen: <a href="${helferLink}">zur Helferanmeldung</a>.</p>` : ''),
+}));
+const mitMusik = ANLIEGEN.filter((x) => x.zeige_musiklink).map((x) => x.kuerzel).join(' ');
+const BILD = '/assets/crushingjars-b.jpg';
+---
+<Base active="kontakt" einstellungen={einstellungen} jahre={jahre} title="Kontakt – Rock4Aid">
+  <section class="kt-hero">
+    <img class="r4a-anim" src={BILD} alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:r4aPan 30s ease-in-out infinite" />
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,10,32,.5) 0%,rgba(18,10,32,.35) 35%,rgba(30,16,58,.6) 100%)"></div>
+    <div style="position:relative;max-width:1500px;margin:0 auto;padding:clamp(28px,4vw,52px) 5.66% clamp(30px,4.4vw,56px)">
+      <h1 class="kt-h1">Schreibt uns, wir freuen uns auf eure Nachricht</h1>
+      <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
+      <p class="kt-intro">Ob ihr bei uns spielen, uns als Sponsor unterstützen oder einfach etwas fragen wollt: Wählt euer Anliegen aus, und wir melden uns so schnell wie möglich bei euch.</p>
+    </div>
+
+    <div class="kt-spalte kt-glas">
+      <form id="kt-form" class="kt-form" name="kontakt" method="POST" action="/kontakt/?gesendet=1" data-netlify="true" netlify-honeypot="bot-feld" novalidate>
+        <input type="hidden" name="form-name" value="kontakt" />
+        <input type="hidden" name="subject" value="Kontaktformular Rock4Aid" />
+        <p hidden><label>Nicht ausfüllen <input name="bot-feld" /></label></p>
+
+        <fieldset>
+          <legend>Worum geht es?</legend>
+          <div class="kt-chips">
+            {ANLIEGEN.map((x, i) => (
+              <label class="kt-chip"><input type="radio" name="anliegen" value={x.bezeichnung} data-key={x.kuerzel} checked={i === 0} /> {x.bezeichnung}</label>
+            ))}
+          </div>
+          {ANLIEGEN.filter((x) => x.hinweis).map((x) => <div class="kt-hinweis" data-zeige={x.kuerzel} hidden set:html={x.hinweis}></div>)}
+        </fieldset>
+
+        <fieldset>
+          <legend>Wer seid ihr?</legend>
+          <div class="kt-grid">
+            <label class="kt-feld kt-breit">Name, bei Bands gern auch der Bandname<input name="name" required autocomplete="name" /></label>
+            <label class="kt-feld">E-Mail<input name="email" type="email" required autocomplete="email" /></label>
+            <label class="kt-feld">Telefon (freiwillig)<input name="telefon" type="tel" autocomplete="tel" /></label>
+            <label class="kt-feld kt-breit" data-zeige={mitMusik} hidden>Link zu eurer Musik (freiwillig, z. B. YouTube, Spotify, Instagram)<input name="musik_link" type="url" inputmode="url" /></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Eure Nachricht</legend>
+          <label class="kt-feld"><span class="kt-unsichtbar">Nachricht</span><textarea name="nachricht" rows="6" required></textarea></label>
+        </fieldset>
+
+        <p class="kt-klein">Wir nutzen eure Angaben nur, um eure Anfrage zu beantworten. Mehr dazu steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <p id="kt-fehler" class="kt-fehler" role="alert" hidden></p>
+        <button type="submit" id="kt-senden" class="kt-senden">Nachricht senden</button>
+      </form>
+      <div id="kt-danke" class="kt-danke" hidden>
+        <p><strong>Danke für eure Nachricht!</strong></p>
+        <p>Wir haben sie erhalten und melden uns so schnell wie möglich bei euch.</p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .kt-hero { position:relative; background:#2e1a52; overflow:hidden; padding-bottom:clamp(36px,6vw,90px); }
+    /* Formular liegt als halbtransparente Glasfläche auf dem Foto */
+    .kt-glas { position:relative; box-sizing:border-box; width:min(760px, calc(100% - 32px)); background:rgba(255,255,255,.8); -webkit-backdrop-filter:blur(10px) saturate(1.1); backdrop-filter:blur(10px) saturate(1.1); border-radius:18px; padding:clamp(18px,3vw,34px); box-shadow:0 18px 50px rgba(10,5,25,.35); }
+    .kt-glas .kt-form fieldset { background:rgba(255,255,255,.55); }
+    .kt-glas .kt-feld input, .kt-glas .kt-feld textarea { background:rgba(255,255,255,.95); }
+    .kt-glas .kt-danke { box-shadow:none; }
+    .kt-h1 { margin:0; text-align:center; font-family:'Archivo',sans-serif; font-weight:700; font-size:clamp(28px,4.4vw,48px); line-height:1.05; letter-spacing:-.013em; color:#fff; text-wrap:balance; }
+    .kt-intro { max-width:760px; margin:clamp(16px,2.4vw,28px) auto 0; font-family:'Archivo',sans-serif; font-size:clamp(17px,1.8vw,21px); line-height:1.55; color:#fff; text-align:center; text-wrap:pretty; }
+    .kt-spalte { max-width:760px; margin:0 auto; }
+    .kt-form { display:flex; flex-direction:column; gap:22px; font-family:'Archivo',sans-serif; color:#4b2e83; }
+    .kt-form fieldset { border:2px solid #4b2e83; border-radius:10px; padding:16px clamp(14px,2.4vw,24px) 20px; margin:0; }
+    .kt-form legend { font-weight:700; font-size:clamp(17px,1.8vw,21px); padding:0 8px; }
+    .kt-chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .kt-chip { display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border:1.5px solid #b9acd3; border-radius:999px; font-weight:600; font-size:15px; cursor:pointer; }
+    .kt-chip input { accent-color:#4b2e83; margin:0; }
+    .kt-chip:has(input:checked) { background:#4b2e83; border-color:#4b2e83; color:#fff; }
+    .kt-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 18px; }
+    .kt-breit { grid-column:1 / -1; }
+    .kt-feld { display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:15px; }
+    .kt-feld[hidden], .kt-hinweis[hidden] { display:none; }
+    .kt-feld input, .kt-feld textarea { padding:12px 14px; border:1.5px solid #b9acd3; border-radius:8px; font:inherit; font-weight:400; font-size:16px; color:#2a1a4a; resize:vertical; }
+    .kt-feld input:focus, .kt-feld textarea:focus { outline:2px solid #ffdd00; border-color:#4b2e83; }
+    .kt-hinweis { margin:12px 0 0; font-size:15px; line-height:1.5; }
+    .kt-hinweis :global(p) { margin:0; }
+    .kt-hinweis :global(a) { color:#4b2e83; font-weight:600; text-decoration:underline; }
+    .kt-hinweis a, .kt-klein a { color:#4b2e83; font-weight:600; text-decoration:underline; }
+    .kt-klein { margin:0; font-size:14px; line-height:1.5; color:#5b4a7d; }
+    .kt-unsichtbar { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+    .kt-fehler { background:#fde8e8; color:#a12020; border-radius:8px; padding:12px 14px; font-weight:600; margin:0; }
+    .kt-senden { background:#4b2e83; color:#fff; border:0; border-radius:999px; padding:16px 30px; font:inherit; font-weight:700; font-size:18px; cursor:pointer; align-self:center; }
+    .kt-senden:hover { background:#3d2569; }
+    .kt-senden:disabled { opacity:.6; cursor:wait; }
+    .kt-danke { background:#ffdd00; color:#4b2e83; border-radius:12px; padding:26px; font-family:'Archivo',sans-serif; font-size:clamp(17px,1.9vw,21px); line-height:1.5; text-align:center; }
+    .kt-danke p { margin:.3em 0; }
+    @media (max-width:640px) { .kt-h1, .kt-intro { text-align:left; } }
+    @media (max-width:640px) { .kt-grid { grid-template-columns:1fr; } .kt-chip { font-size:14px; padding:8px 12px; } }
+  </style>
+
+  <script>
+    (function () {
+      const form = document.getElementById('kt-form');
+      if (!form) return;
+      const danke = document.getElementById('kt-danke');
+      const fehler = document.getElementById('kt-fehler');
+      const knopf = document.getElementById('kt-senden');
+      const radios = [...form.querySelectorAll('input[name="anliegen"]')];
+      const params = new URLSearchParams(location.search);
+
+      // Nach dem Absenden ohne JavaScript landet man wieder hier
+      if (params.get('gesendet') === '1') { form.hidden = true; danke.hidden = false; return; }
+
+      const aktualisiere = () => {
+        const key = (radios.find((r) => r.checked) || radios[0]).dataset.key;
+        document.querySelectorAll('[data-zeige]').forEach((el) => { el.hidden = !el.dataset.zeige.split(' ').includes(key); });
+      };
+      const vorwahl = params.get('anliegen');
+      const treffer = radios.find((r) => r.dataset.key === vorwahl);
+      if (treffer) treffer.checked = true;
+      radios.forEach((r) => r.addEventListener('change', aktualisiere));
+      aktualisiere();
+
+      const zeigeFehler = (t) => { fehler.textContent = t; fehler.hidden = false; };
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        fehler.hidden = true;
+        const f = form.elements;
+        if (!f.name.value.trim() || !f.nachricht.value.trim()) return zeigeFehler('Bitte Namen und Nachricht ausfüllen.');
+        if (!/^\S+@\S+\.\S+$/.test(f.email.value.trim())) return zeigeFehler('Bitte eine gültige E-Mail-Adresse eingeben, damit wir antworten können.');
+        const anliegen = (radios.find((r) => r.checked) || radios[0]).value;
+        f.subject.value = `Kontaktformular: ${anliegen} – ${f.name.value.trim()}`;
+        knopf.disabled = true;
+        try {
+          const res = await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(new FormData(form)).toString(),
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          form.hidden = true;
+          danke.hidden = false;
+          danke.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (err) {
+          knopf.disabled = false;
+          zeigeFehler('Die Nachricht konnte gerade nicht gesendet werden. Bitte versucht es gleich noch einmal oder schreibt an rock4aid2025@gmail.com.');
+        }
+      });
+    })();
+  </script>
+</Base>

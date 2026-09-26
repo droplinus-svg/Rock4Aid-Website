@@ -43,6 +43,10 @@ const SCHEMA = {
       { key: 'lineup_sichtbar', label: 'Seite „Line-Up“ anzeigen', type: 'bool' },
       { key: 'charity_sichtbar', label: 'Seite „Charity“ anzeigen', type: 'bool' },
       { key: 'anfahrt_sichtbar', label: 'Seite „Anfahrt & Kontakt“ anzeigen', type: 'bool' },
+      { key: 'ueberuns_sichtbar', label: 'Seite „Über uns“ anzeigen', type: 'bool' },
+      { key: 'mitglied_sichtbar', label: 'Seite „Mitglied werden“ anzeigen', type: 'bool' },
+      { key: 'helfer_sichtbar', label: 'Menüpunkt „Helfer“ anzeigen', type: 'bool' },
+      { key: 'helfer_link', label: 'Link zur Helferanmeldung (vollständige Adresse, z. B. https://…)', type: 'text' },
     ],
   },
   sponsoren: {
@@ -94,12 +98,95 @@ const SCHEMA = {
       { key: 'datum_titel', label: 'Karte 2 – Überschrift', type: 'text' },
       { key: 'datum_text', label: 'Karte 2 – Text (mehrzeilig)', type: 'textarea' },
       { key: 'kontakt_titel', label: 'Karte 3 – Überschrift', type: 'text' },
-      { key: 'kontakt_text', label: 'Karte 3 – Text (E-Mail wird automatisch verlinkt)', type: 'textarea' },
+      { key: 'kontakt_text', label: 'Karte 3 – Text (E-Mail-Adressen werden nicht angezeigt, darunter erscheint automatisch der Button zum Kontaktformular)', type: 'textarea' },
       { key: 'karte_bild', label: 'Kartenbild (statischer Screenshot)', type: 'image', minW: 900 },
       { key: 'karte_link', label: '„Route planen“-Link (Google Maps)', type: 'text' },
       { key: 'veranstalter_titel', label: 'Veranstalter – Überschrift', type: 'text' },
       { key: 'veranstalter_bild', label: 'Veranstalter – Bild', type: 'image', minW: 700 },
       { key: 'veranstalter_text', label: 'Veranstalter – Text', type: 'richtext' },
+    ],
+  },
+  ueber_uns: {
+    titel: 'Über uns – Kopfbereich', single: true,
+    felder: [
+      { key: 'uu_hint', label: '', type: 'hinweis', text: 'Die Abschnitte darunter (Text und Bild) pflegst du unter „Über uns – Abschnitte“. Die ganze Seite blendest du unter „Start & Einstellungen“ ein und aus.' },
+      { key: 'hero_titel', label: 'Überschrift', type: 'text' },
+      { key: 'hero_bild', label: 'Hintergrundbild (optional, groß)', type: 'image', minW: 1200 },
+      { key: 'intro_text', label: 'Text auf dem Titelbild', type: 'richtext' },
+      { key: 'nav_titel', label: 'Name dieses Teils in der Sprungleiste (Standard: Das Festival)', type: 'text' },
+    ],
+  },
+  ueber_uns_abschnitte: {
+    titel: 'Über uns – Abschnitte', order: 'reihenfolge', labelKey: 'titel',
+    felder: [
+      { key: 'titel', label: 'Überschrift des Abschnitts', type: 'text' },
+      { key: 'kurztitel', label: 'Kurztitel für die Sprungleiste oben (leer = nicht in der Leiste)', type: 'text' },
+      { key: 'text', label: 'Text', type: 'richtext' },
+      { key: 'bild', label: 'Bild (optional)', type: 'image', minW: 800 },
+      { key: 'bild_nach_absatz', label: 'Bild nach Absatz Nr. (0 = über dem Text)', type: 'number' },
+      { key: 'reihenfolge', label: 'Reihenfolge', type: 'number' },
+      { key: 'sichtbar', label: 'Sichtbar', type: 'bool' },
+    ],
+  },
+  mitglied: {
+    titel: 'Mitglied werden', single: true,
+    felder: [
+      { key: 'mw_hint', label: '', type: 'hinweis', text: 'Eingegangene Anträge findest du unter „Förderanträge“. Die ganze Seite blendest du unter „Start & Einstellungen“ ein und aus.' },
+      { key: 'hero_titel', label: 'Überschrift', type: 'text' },
+      { key: 'hero_bild', label: 'Hintergrundbild (optional, groß)', type: 'image', minW: 1200 },
+      { key: 'intro_text', label: 'Einleitungstext (Werbung für die Fördermitgliedschaft)', type: 'richtext' },
+      { key: 'formular_aktiv', label: 'Antragsformular anzeigen', type: 'bool' },
+      { key: 'formular_titel', label: 'Überschrift über dem Formular', type: 'text' },
+      { key: 'formular_text', label: 'Text direkt über dem Formular', type: 'richtext' },
+      { key: 'formular_nachtext', label: 'Text unter dem Formular (z. B. Kontakt bei Fragen)', type: 'richtext' },
+      { key: 'mindestbetrag', label: 'Mindestbetrag pro Jahr in Euro', type: 'number' },
+      { key: 'vorschlagsbetraege', label: 'Vorschlagsbeträge (mit Komma getrennt, z. B. 24, 60, 120)', type: 'text' },
+      { key: 'glaeubiger_id', label: 'Gläubiger-Identifikationsnummer des Vereins (für das SEPA-Mandat)', type: 'text' },
+      { key: 'danke_text', label: 'Text nach dem Absenden', type: 'richtext' },
+    ],
+  },
+  mitglied_abschnitte: {
+    titel: 'Mitglied werden – Abschnitte', order: 'reihenfolge', labelKey: 'titel',
+    felder: [
+      { key: 'ma_hint', label: '', type: 'hinweis', text: 'Diese Abschnitte stehen zwischen der Überschrift und dem Antragsformular.' },
+      { key: 'titel', label: 'Überschrift des Abschnitts', type: 'text' },
+      { key: 'text', label: 'Text', type: 'richtext' },
+      { key: 'bild', label: 'Bild (optional)', type: 'image', minW: 800 },
+      { key: 'reihenfolge', label: 'Reihenfolge', type: 'number' },
+      { key: 'sichtbar', label: 'Sichtbar', type: 'bool' },
+    ],
+  },
+  kontakt_anliegen: {
+    titel: 'Kontaktformular – Anliegen', order: 'reihenfolge', labelKey: 'bezeichnung',
+    felder: [
+      { key: 'ka_hint', label: '', type: 'hinweis', text: 'Diese Anliegen stehen zur Auswahl im Kontaktformular. Das Kürzel wird in Links verwendet, zum Beispiel /kontakt/?anliegen=band. Ändere es bei bestehenden Einträgen bitte nicht, sonst funktionieren solche Links nicht mehr.' },
+      { key: 'bezeichnung', label: 'Bezeichnung im Formular', type: 'text' },
+      { key: 'kuerzel', label: 'Kürzel für Links (nur Kleinbuchstaben, ohne Leerzeichen)', type: 'text' },
+      { key: 'hinweis', label: 'Hinweis, der bei diesem Anliegen erscheint (optional)', type: 'richtext' },
+      { key: 'zeige_musiklink', label: 'Feld „Link zu eurer Musik“ anzeigen', type: 'bool' },
+      { key: 'reihenfolge', label: 'Reihenfolge', type: 'number' },
+      { key: 'sichtbar', label: 'Sichtbar', type: 'bool' },
+    ],
+  },
+  foerderantraege: {
+    titel: 'Förderanträge', order: 'created_at', labelKey: 'nachname', csv: true, keinNeu: true,
+    felder: [
+      { key: 'fa_hint', label: '', type: 'hinweis', text: 'Enthält Bankdaten. Bitte vertraulich behandeln und nicht weitergeben. Neue Anträge haben den Status „neu“.' },
+      { key: 'status', label: 'Status', type: 'select', options: [['neu', 'neu'], ['in Bearbeitung', 'in Bearbeitung'], ['aktiv', 'aktiv'], ['abgelehnt', 'abgelehnt'], ['beendet', 'beendet']] },
+      { key: 'mandatsreferenz', label: 'Mandatsreferenz (vergibt der Verein)', type: 'text' },
+      { key: 'notiz', label: 'Interne Notiz', type: 'textarea' },
+      { key: 'vorname', label: 'Vorname', type: 'text' },
+      { key: 'nachname', label: 'Nachname', type: 'text' },
+      { key: 'strasse', label: 'Straße', type: 'text' },
+      { key: 'plz', label: 'PLZ', type: 'text' },
+      { key: 'ort', label: 'Ort', type: 'text' },
+      { key: 'email', label: 'E-Mail', type: 'text' },
+      { key: 'telefon', label: 'Telefon', type: 'text' },
+      { key: 'betrag_jahr', label: 'Betrag pro Jahr (€)', type: 'number' },
+      { key: 'kontoinhaber', label: 'Kontoinhaber', type: 'text' },
+      { key: 'iban', label: 'IBAN', type: 'text' },
+      { key: 'bic', label: 'BIC', type: 'text' },
+      { key: 'mandat_text', label: 'Mandatstext, dem zugestimmt wurde', type: 'textarea' },
     ],
   },
   rechtstexte: {
@@ -285,7 +372,7 @@ function normalisiereRichtext(html) {
 // ---------------------------------------------------------------------------
 async function ladeListe(table, order) {
   let q = sb.from(table).select('*');
-  if (order) q = q.order(order, { ascending: true });
+  if (order) q = q.order(order, { ascending: order !== 'created_at' });
   const { data, error } = await q;
   if (error) throw error;
   return data || [];
@@ -332,14 +419,24 @@ async function renderListe(key) {
   const rows = await ladeListe(key, def.order);
   const main = $('#main'); main.innerHTML = '';
   main.appendChild(h(`<h1>${esc(def.titel)}</h1>`));
-  const addBtn = h(`<button class="btn">+ Neu anlegen</button>`);
-  addBtn.addEventListener('click', () => editForm(key, {}));
-  main.appendChild(addBtn);
+  if (!def.keinNeu) {
+    const addBtn = h(`<button class="btn">+ Neu anlegen</button>`);
+    addBtn.addEventListener('click', () => editForm(key, {}));
+    main.appendChild(addBtn);
+  }
+  if (def.csv) {
+    const csvBtn = h(`<button class="btn">⬇ Als CSV-Datei herunterladen</button>`);
+    csvBtn.addEventListener('click', () => csvExport(key, rows));
+    main.appendChild(csvBtn);
+    if (rows.length === 0) main.appendChild(h(`<div class="hinweis">Noch keine Einträge vorhanden.</div>`));
+  }
   const list = h(`<div class="liste"></div>`);
   rows.forEach((r) => {
     const zeile = h(`<div class="listrow">
-      <span class="lr-name">${esc(r[def.labelKey] || '(ohne Namen)').replace(/\n/g, ' ')}</span>
-      <span class="lr-flag">${r.sichtbar === false ? '<em>ausgeblendet</em>' : 'sichtbar'}</span>
+      <span class="lr-name">${key === 'foerderantraege'
+        ? esc(`${r.vorname || ''} ${r.nachname || ''} · ${Number(r.betrag_jahr || 0).toLocaleString('de-DE')} € / Jahr · ${new Date(r.created_at).toLocaleDateString('de-DE')}`)
+        : esc(r[def.labelKey] || '(ohne Namen)').replace(/\n/g, ' ')}</span>
+      <span class="lr-flag">${key === 'foerderantraege' ? esc(r.status || 'neu') : (r.sichtbar === false ? '<em>ausgeblendet</em>' : 'sichtbar')}</span>
     </div>`);
     const edit = h(`<button class="btn small">Bearbeiten</button>`);
     edit.addEventListener('click', () => editForm(key, r));
@@ -349,6 +446,18 @@ async function renderListe(key) {
     list.appendChild(zeile);
   });
   main.appendChild(list);
+}
+
+function csvExport(key, rows) {
+  const def = SCHEMA[key];
+  const spalten = ['created_at', ...def.felder.filter((f) => f.type !== 'hinweis').map((f) => f.key)];
+  const zelle = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const zeilen = [spalten.join(';'), ...rows.map((r) => spalten.map((k) => zelle(r[k])).join(';'))];
+  const blob = new Blob(['\ufeff' + zeilen.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = window.URL.createObjectURL(blob);
+  a.download = `${key}_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
 }
 
 async function editForm(key, row) {
@@ -533,6 +642,12 @@ const NAV = [
   ['bands', 'Bands', renderListe],
   ['charity', 'Charity', renderSingle],
   ['anfahrt', 'Anfahrt & Kontakt', renderSingle],
+  ['kontakt_anliegen', 'Kontaktformular – Anliegen', renderListe],
+  ['ueber_uns', 'Über uns – Kopfbereich', renderSingle],
+  ['ueber_uns_abschnitte', 'Über uns – Abschnitte', renderListe],
+  ['mitglied', 'Mitglied werden', renderSingle],
+  ['mitglied_abschnitte', 'Mitglied werden – Abschnitte', renderListe],
+  ['foerderantraege', 'Förderanträge', renderListe],
   ['rueckblick', 'Rückblick', renderRueckblick],
   ['rechtstexte', 'Impressum & Datenschutz', renderSingle],
 ];
