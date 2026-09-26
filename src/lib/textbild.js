@@ -12,3 +12,11 @@ export function teileText(html, n) {
   }
   return [text.slice(0, pos + 4), text.slice(pos + 4)];
 }
+
+// Macht aus einem Kurztitel einen Anker für die Sprungnavigation, z. B. "Für Bands" -> "fuer-bands"
+export function anker(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}

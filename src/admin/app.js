@@ -113,12 +113,14 @@ const SCHEMA = {
       { key: 'hero_titel', label: 'Überschrift', type: 'text' },
       { key: 'hero_bild', label: 'Hintergrundbild (optional, groß)', type: 'image', minW: 1200 },
       { key: 'intro_text', label: 'Text auf dem Titelbild', type: 'richtext' },
+      { key: 'nav_titel', label: 'Name dieses Teils in der Sprungleiste (Standard: Das Festival)', type: 'text' },
     ],
   },
   ueber_uns_abschnitte: {
     titel: 'Über uns – Abschnitte', order: 'reihenfolge', labelKey: 'titel',
     felder: [
       { key: 'titel', label: 'Überschrift des Abschnitts', type: 'text' },
+      { key: 'kurztitel', label: 'Kurztitel für die Sprungleiste oben (leer = nicht in der Leiste)', type: 'text' },
       { key: 'text', label: 'Text', type: 'richtext' },
       { key: 'bild', label: 'Bild (optional)', type: 'image', minW: 800 },
       { key: 'bild_nach_absatz', label: 'Bild nach Absatz Nr. (0 = über dem Text)', type: 'number' },

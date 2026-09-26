@@ -2,18 +2,18 @@
 // Alle Abschnitte als ein zusammenhängender Text auf gelbem Grund.
 // Die Textspalte ist schmal, zentriert und liegt auf einem hellen Kasten,
 // damit sie gut lesbar ist. Bilder stehen zwischen den Absätzen.
-import { teileText } from '../lib/textbild.js';
+import { teileText, anker } from '../lib/textbild.js';
 const { abschnitte = [] } = Astro.props;
 const bloecke = abschnitte.map((a) => {
   const [vor, nach] = a.bild ? teileText(a.text, a.bild_nach_absatz ?? 1) : [a.text || '', ''];
-  return { ...a, vor, nach };
+  return { ...a, vor, nach, id: a.kurztitel ? anker(a.kurztitel) : undefined };
 });
 ---
 {bloecke.length > 0 && (
   <section class="tf-grund">
     <div class="tf-kasten">
       {bloecke.map((a) => (
-        <div class="tf-block">
+        <div class="tf-block" id={a.id} data-sprungziel={a.id ? '' : undefined}>
           {a.titel && <h2 class="tf-h2">{a.titel}</h2>}
           <div class="tf-text">
             <Fragment set:html={a.vor} />
