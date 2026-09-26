@@ -21,7 +21,7 @@ const glaeubigerId = (m.glaeubiger_id || '').trim();
 // Pflichttext des SEPA-Lastschriftmandats. Er wird so, wie der Antragsteller
 // ihn gesehen hat, mit dem Antrag gespeichert.
 const verein = 'Rock4Aid e.V.';
-const mandatText = `SEPA-Lastschriftmandat: Ich ermächtige ${verein}${glaeubigerId ? ` (Gläubiger-Identifikationsnummer ${glaeubigerId})` : ''}, den jährlichen Förderbeitrag von meinem Konto mittels Lastschrift einzuziehen. Zugleich weise ich mein Kreditinstitut an, die von ${verein} auf mein Konto gezogenen Lastschriften einzulösen. Die Mandatsreferenz wird mir gesondert mitgeteilt. Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen.`;
+const mandatText = `SEPA-Lastschriftmandat: Ich ermächtige ${verein}${glaeubigerId ? ` (Gläubiger-Identifikationsnummer ${glaeubigerId})` : ''}, den jährlichen Förderbeitrag von meinem Konto mittels Lastschrift einzuziehen. Zugleich weise ich mein Kreditinstitut an, die von ${verein} auf mein Konto gezogenen Lastschriften einzulösen. ${glaeubigerId ? 'Die Mandatsreferenz wird mir gesondert mitgeteilt.' : 'Die Gläubiger-Identifikationsnummer und die Mandatsreferenz werden mir vor dem ersten Einzug gesondert mitgeteilt.'} Hinweis: Ich kann innerhalb von acht Wochen, beginnend mit dem Belastungsdatum, die Erstattung des belasteten Betrages verlangen. Es gelten dabei die mit meinem Kreditinstitut vereinbarten Bedingungen.`;
 
 const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(26px,4.2vw,44px);line-height:1.05;letter-spacing:-.013em;text-wrap:balance";
 ---
@@ -175,6 +175,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
   <style>
     .mw-text :global(p) { margin:0; }
     .mw-hero-kasten { padding:clamp(10px,2vw,24px) 0; }
+    .mw-hero-kasten :global(h3) { margin:.9em 0 .1em; font-family:'Archivo',sans-serif; font-weight:700; font-size:clamp(20px,2.3vw,27px); line-height:1.2; color:#fff; text-align:left; text-wrap:balance; }
     .mw-hero-kasten { position:relative; isolation:isolate; }
     .mw-hero-kasten::before { content:''; position:absolute; inset:-28px -110px; z-index:-1; background:rgba(30,16,58,.55); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
       -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 120px,#000 calc(100% - 120px),transparent 100%),linear-gradient(180deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);

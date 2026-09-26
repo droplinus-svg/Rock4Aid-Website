@@ -11,14 +11,15 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
   </nav>
 )}
 <style>
-  .sn { position:sticky; top:52px; z-index:70; background:rgba(46,26,82,.94); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-top:1px solid rgba(255,255,255,.12); box-shadow:0 2px 10px rgba(20,10,45,.25); }
-  .sn-innen { max-width:1500px; margin:0 auto; padding:9px 5.66%; display:flex; gap:8px; justify-content:center; overflow-x:auto; scrollbar-width:none; }
+  /* Bewusst zurückhaltend: wirkt wie eine zweite, leise Zeile des Seitenkopfs */
+  .sn { position:sticky; top:52px; z-index:70; background:rgba(75,46,131,.96); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-top:1px solid rgba(255,255,255,.08); }
+  .sn-innen { max-width:1500px; margin:0 auto; padding:0 5.66%; display:flex; gap:clamp(14px,2.2vw,30px); justify-content:center; overflow-x:auto; scrollbar-width:none; }
   .sn-innen::-webkit-scrollbar { display:none; }
-  .sn-link { flex:0 0 auto; font-family:'Archivo',sans-serif; font-weight:600; font-size:14px; line-height:1; color:#fff; text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.35); white-space:nowrap; transition:background .15s,color .15s; }
-  .sn-link:hover { background:rgba(255,255,255,.14); }
-  .sn-link.aktiv { background:#ffdd00; border-color:#ffdd00; color:#4b2e83; }
-  @media (max-width:760px) { .sn-innen { justify-content:flex-start; padding:8px 16px; } .sn-link { font-size:13px; padding:7px 12px; } }
-  :global([data-sprungziel]) { scroll-margin-top:120px; }
+  .sn-link { flex:0 0 auto; font-family:'Archivo',sans-serif; font-weight:500; font-size:13px; letter-spacing:.02em; line-height:1; color:rgba(255,255,255,.62); text-decoration:none; padding:11px 0 9px; border-bottom:2px solid transparent; white-space:nowrap; transition:color .15s,border-color .15s; }
+  .sn-link:hover { color:#fff; }
+  .sn-link.aktiv { color:#fff; border-bottom-color:#ffdd00; }
+  @media (max-width:760px) { .sn-innen { justify-content:flex-start; padding:0 16px; gap:18px; } .sn-link { font-size:12.5px; } }
+  :global([data-sprungziel]) { scroll-margin-top:100px; }
 </style>
 <script>
   const nav = document.querySelector('.sn');
