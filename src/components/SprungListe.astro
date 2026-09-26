@@ -1,0 +1,24 @@
+---
+// Übersicht der Abschnitte am Seitenanfang. Nur auf dem Handy sichtbar,
+// am Computer übernimmt das die Leiste SprungNavi.
+const { eintraege = [] } = Astro.props; // [{ id, label }]
+---
+{eintraege.length > 1 && (
+  <nav class="sl" aria-label="Auf dieser Seite">
+    <p class="sl-titel">Auf dieser Seite</p>
+    <ul>
+      {eintraege.map((e) => <li><a href={`#${e.id}`}>{e.label}</a></li>)}
+    </ul>
+  </nav>
+)}
+<style>
+  .sl { display:none; }
+  @media (max-width:760px) {
+    .sl { display:block; margin:18px 0 4px; font-family:'Archivo',sans-serif; }
+    .sl-titel { margin:0 0 8px; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+    .sl ul { margin:0; padding:0; list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
+    .sl a { display:block; padding:6px 0; color:#fff; font-size:15px; font-weight:500; text-decoration:none; border-bottom:1px solid rgba(255,255,255,.18); }
+    .sl a::before { content:'↓ '; color:#ffdd00; }
+    :global([data-sprungziel]) { scroll-margin-top:64px !important; }
+  }
+</style>

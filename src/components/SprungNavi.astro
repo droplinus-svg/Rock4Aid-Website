@@ -5,15 +5,15 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
 ---
 {eintraege.length > 1 && (
   <nav class="sn" aria-label="Abschnitte dieser Seite">
-    <button type="button" class="sn-knopf" aria-expanded="false">
-      <span class="sn-knopf-vor">Auf dieser Seite:</span>
-      <span class="sn-knopf-akt">{eintraege[0].label}</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
-    </button>
     <div class="sn-innen">
       {eintraege.map((e) => <a class="sn-link" href={`#${e.id}`} data-ziel={e.id}>{e.label}</a>)}
     </div>
   </nav>
+)}
+{eintraege.length > 1 && (
+  <a class="sn-hoch" href={`#${eintraege[0].id}`} aria-label="Zurück zum Seitenanfang">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+  </a>
 )}
 <style>
   /* Schwebt ohne eigenen Balken über dem Inhalt. Nur ein weicher, halbtransparenter
@@ -34,24 +34,22 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
   .sn-link { flex:0 0 auto; font-family:'Archivo',sans-serif; font-weight:500; font-size:13px; letter-spacing:.02em; line-height:1; color:rgba(255,255,255,.75); text-decoration:none; padding:10px 0 8px; border-bottom:2px solid transparent; white-space:nowrap; transition:color .15s,border-color .15s; }
   .sn-link:hover { color:#fff; }
   .sn-link.aktiv { color:#fff; border-bottom-color:#ffdd00; }
-  /* Handy: statt einer abgeschnittenen Zeile ein Knopf mit dem aktuellen Abschnitt,
-     der alle Abschnitte als Liste aufklappt */
-  .sn-knopf { display:none; }
+  /* Handy: keine schwebende Leiste. Die Übersicht steht als Liste am Seitenanfang
+     (SprungListe), dazu erscheint beim Scrollen ein kleiner Pfeil nach oben. */
+  .sn-hoch { position:fixed; right:16px; bottom:18px; z-index:75; width:42px; height:42px; border-radius:50%; background:rgba(75,46,131,.88); color:#fff; display:none; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(10,5,25,.3); opacity:0; transition:opacity .25s; }
+  .sn-hoch.sichtbar { opacity:1; }
   @media (max-width:760px) {
-    .sn-knopf { display:flex; align-items:center; gap:8px; margin:8px auto 0; max-width:calc(100% - 32px); padding:9px 16px; border:0; border-radius:999px; background:rgba(30,16,58,.72); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); color:#fff; font:500 13.5px/1 'Archivo',sans-serif; cursor:pointer; box-shadow:0 4px 16px rgba(10,5,25,.25); }
-    .sn-knopf-vor { opacity:.7; }
-    .sn-knopf-akt { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .sn-knopf svg { flex:0 0 auto; transition:transform .2s; }
-    .sn.offen .sn-knopf svg { transform:rotate(180deg); }
-    .sn.hell .sn-knopf { background:rgba(75,46,131,.9); }
-    .sn-innen { display:none; }
-    .sn.offen .sn-innen { display:flex; flex-direction:column; gap:0; width:calc(100% - 32px); min-width:0; max-width:none; margin:6px auto 0; padding:6px 0; border-radius:14px; background:rgba(30,16,58,.94) !important; -webkit-mask-image:none; mask-image:none; box-shadow:0 10px 30px rgba(10,5,25,.35); }
-    .sn.offen .sn-link { color:rgba(255,255,255,.85) !important; font-size:15px; padding:13px 18px; border-bottom:0; border-left:3px solid transparent; }
-    .sn.offen .sn-link.aktiv { color:#fff !important; border-left-color:#ffdd00 !important; background:rgba(255,255,255,.06); }
+    .sn { display:none; }
+    .sn-hoch { display:flex; }
   }
   :global([data-sprungziel]) { scroll-margin-top:110px; }
 </style>
 <script>
+  const hoch = document.querySelector('.sn-hoch');
+  if (hoch) {
+    const zeige = () => hoch.classList.toggle('sichtbar', scrollY > 700);
+    addEventListener('scroll', zeige, { passive: true }); zeige();
+  }
   const nav = document.querySelector('.sn');
   if (nav) {
     const links = [...nav.querySelectorAll('.sn-link')];
@@ -68,12 +66,6 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
       nav.classList.toggle('hell', dunkel.getBoundingClientRect().bottom < unten);
     };
     addEventListener('scroll', pruefeHell, { passive: true }); pruefeHell();
-    const knopf = nav.querySelector('.sn-knopf');
-    const aktLabel = nav.querySelector('.sn-knopf-akt');
-    const setzeOffen = (auf) => { nav.classList.toggle('offen', auf); knopf.setAttribute('aria-expanded', String(auf)); };
-    knopf.addEventListener('click', () => setzeOffen(!nav.classList.contains('offen')));
-    links.forEach((l) => l.addEventListener('click', () => setzeOffen(false)));
-    document.addEventListener('click', (e) => { if (!nav.contains(e.target)) setzeOffen(false); });
     const markiere = () => {
       const grenze = (kopf ? kopf.offsetHeight : 52) + nav.firstElementChild.offsetHeight + 60;
       let akt = ziele[0];
@@ -81,8 +73,6 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
       if (!akt || akt.id === letzte) return;
       letzte = akt.id;
       links.forEach((l) => l.classList.toggle('aktiv', l.dataset.ziel === akt.id));
-      const aktLink = links.find((x) => x.dataset.ziel === akt.id);
-      if (aktLabel && aktLink) aktLabel.textContent = aktLink.textContent;
       const l = links.find((x) => x.dataset.ziel === akt.id);
       const innen = nav.firstElementChild;
       if (l && innen.scrollWidth > innen.clientWidth) innen.scrollTo({ left: l.offsetLeft - 16, behavior: 'smooth' });

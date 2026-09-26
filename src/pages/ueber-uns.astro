@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import TextFluss from '../components/TextFluss.astro';
 import SprungNavi from '../components/SprungNavi.astro';
+import SprungListe from '../components/SprungListe.astro';
 import { anker } from '../lib/textbild.js';
 import { getTable } from '../lib/content.js';
 
@@ -30,6 +31,7 @@ const hidden = einstellungen.ueberuns_sichtbar === false || u.sichtbar === false
         <div style="position:relative;max-width:1500px;margin:0 auto;padding:calc(clamp(22px,3.2vw,40px) + 40px) 5.66% clamp(40px,6vw,80px)">
           <h1 class="hero-h1" style="margin:0;text-align:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#fff;text-wrap:balance">{u.hero_titel || 'Über uns'}</h1>
           <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
+          <SprungListe eintraege={navi.slice(1)} />
           {u.intro_text && <div class="uu-hero-text" set:html={u.intro_text}></div>}
         </div>
       </section>
@@ -45,6 +47,7 @@ const hidden = einstellungen.ueberuns_sichtbar === false || u.sichtbar === false
       -webkit-mask-composite:source-in; mask-image:linear-gradient(90deg,transparent 0,#000 120px,#000 calc(100% - 120px),transparent 100%),linear-gradient(180deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%); mask-composite:intersect; }
     @media (max-width:760px) { .uu-hero-text::before { inset:-16px -16px; -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 16px),transparent 100%),linear-gradient(180deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%); mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 16px),transparent 100%),linear-gradient(180deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%); } }
     @media (max-width:640px) { .hero-h1 { text-align:left !important; } }
+    @media (max-width:760px) { .uu-hero > div:last-child { padding-top:clamp(22px,3.2vw,40px) !important; } }
     .uu-hero-text :global(p) { margin:0; }
     .uu-hero-text :global(p:first-child) { font-size:1.12em; }
     .uu-hero-text :global(ul) { margin:0; padding-left:1.2em; display:flex; flex-direction:column; gap:.5em; }
