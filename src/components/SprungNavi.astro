@@ -69,6 +69,8 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
       const r = nav.firstElementChild.getBoundingClientRect();
       const darunter = document.elementsFromPoint(innerWidth / 2, r.bottom + 2).find((el) => el.closest && el.closest('[data-band]'));
       nav.dataset.grund = darunter ? darunter.closest('[data-band]').dataset.band : '';
+      // Über einem Foto-Bereich wie über dem Titelbild: helle Schrift auf dunklem Grund
+      if (nav.dataset.grund === 'bild') nav.classList.remove('hell');
     };
     addEventListener('scroll', pruefeHell, { passive: true }); pruefeHell();
     const markiere = () => {

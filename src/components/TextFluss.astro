@@ -11,21 +11,24 @@ const bloecke = abschnitte.map((a) => {
 // Aufeinanderfolgende Abschnitte mit gleichem Hintergrund bilden einen Bereich.
 const bereiche = [];
 for (const b of bloecke) {
-  const farbe = b.hintergrund === 'weiss' ? 'weiss' : 'gelb';
+  const farbe = b.hintergrund === 'weiss' ? 'weiss' : (b.hintergrund === 'bild' && b.hintergrund_bild ? 'bild' : 'gelb');
   const letzter = bereiche[bereiche.length - 1];
-  if (letzter && letzter.farbe === farbe) letzter.bloecke.push(b);
-  else bereiche.push({ farbe, bloecke: [b] });
+  // Foto-Abschnitte stehen immer für sich, weil jeder sein eigenes Bild hat
+  if (letzter && letzter.farbe === farbe && farbe !== 'bild') letzter.bloecke.push(b);
+  else bereiche.push({ farbe, bild: farbe === 'bild' ? b.hintergrund_bild : null, bloecke: [b] });
 }
 ---
 {bereiche.map((ber) => (
   <section class={`tf-grund tf-${ber.farbe}`} data-band={ber.farbe}>
+    {ber.bild && <img class="tf-foto" src={ber.bild} alt="" loading="lazy" />}
+    {ber.bild && <div class="tf-foto-dunkel"></div>}
     <div class="tf-kasten">
       {ber.bloecke.map((a) => (
         <div class="tf-block" id={a.id} data-sprungziel={a.id ? '' : undefined}>
           {a.titel && <h2 class="tf-h2">{a.titel}</h2>}
           <div class="tf-text">
             <Fragment set:html={a.vor} />
-            {a.bild && <img class="tf-bild" src={a.bild} alt="" loading="lazy" />}
+            {a.bild && <img class="tf-inbild" src={a.bild} alt="" loading="lazy" />}
             {a.nach && <Fragment set:html={a.nach} />}
           </div>
         </div>
@@ -38,6 +41,14 @@ for (const b of bloecke) {
   /* Weiße Bereiche: gleiche Spalte, ohne Aufhellung und mit etwas mehr Luft */
   .tf-weiss { background:#fff; padding-top:clamp(26px,3.6vw,48px); padding-bottom:clamp(30px,4vw,54px); }
   .tf-weiss .tf-kasten::before { display:none; }
+  /* Foto-Bereiche: Text liegt hell auf einem abgedunkelten Foto, wie im Titelbild */
+  .tf-grund.tf-bild { position:relative; background:#2e1a52; padding-top:clamp(40px,6vw,90px); padding-bottom:clamp(44px,6.5vw,96px); }
+  .tf-foto { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .tf-foto-dunkel { position:absolute; inset:0; background:linear-gradient(180deg,rgba(18,10,32,.34) 0%,rgba(18,10,32,.22) 50%,rgba(18,10,32,.4) 100%); }
+  .tf-grund.tf-bild .tf-kasten::before { background:rgba(30,16,58,.55); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+  .tf-grund.tf-bild .tf-h2 { color:#fff; }
+  .tf-grund.tf-bild .tf-text { color:#fff; }
+  .tf-grund.tf-bild .tf-text :global(a) { color:#ffdd00; }
   .tf-kasten { max-width:760px; margin:0 auto; padding:clamp(10px,2vw,24px) 0; }
   .tf-kasten { position:relative; isolation:isolate; }
   .tf-kasten::before { content:''; position:absolute; inset:-28px -110px; z-index:-1; background:rgba(255,240,140,.6);
@@ -52,5 +63,5 @@ for (const b of bloecke) {
   .tf-text :global(a) { color:#4b2e83; font-weight:600; text-decoration:underline; text-underline-offset:.15em; }
   /* Auf schmalen Bildschirmen erzeugt Blocksatz große Lücken, dort linksbündig */
   @media (max-width:640px) { .tf-text { text-align:left; } }
-  .tf-bild { display:block; width:100%; height:auto; margin:.4em 0; border-radius:8px; }
+  .tf-inbild { display:block; width:100%; height:auto; margin:.4em 0; border-radius:8px; }
 </style>
