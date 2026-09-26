@@ -4,20 +4,28 @@
 const { eintraege = [] } = Astro.props; // [{ id, label }]
 ---
 {eintraege.length > 1 && (
-  <nav class="sl" aria-label="Auf dieser Seite">
+  <nav class="sl" aria-label="Abschnitte dieser Seite">
     <ul>
-      {eintraege.map((e) => <li><a href={`#${e.id}`}>{e.label}</a></li>)}
+      {eintraege.map((e) => (
+        <li>
+          <a href={`#${e.id}`}>
+            <span>{e.label}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+          </a>
+        </li>
+      ))}
     </ul>
   </nav>
 )}
 <style>
   .sl { display:none; }
   @media (max-width:760px) {
-    .sl { display:block; margin:16px 0 4px; font-family:'Archivo',sans-serif; }
-    .sl-titel { margin:0 0 8px; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.6); }
-    .sl ul { margin:0; padding:0; list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
-    .sl a { display:block; padding:6px 0; color:#fff; font-size:15px; font-weight:500; text-decoration:none; border-bottom:1px solid rgba(255,255,255,.18); }
-    .sl a::before { content:'↓ '; color:#ffdd00; }
+    .sl { display:block; margin:14px 0 2px; font-family:'Archivo',sans-serif; }
+    .sl ul { margin:0; padding:0; list-style:none; border-top:1px solid rgba(255,255,255,.16); }
+    .sl li { border-bottom:1px solid rgba(255,255,255,.16); }
+    .sl a { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:42px; color:#fff; font-size:15px; font-weight:500; letter-spacing:.01em; text-decoration:none; }
+    .sl a svg { flex:0 0 auto; color:rgba(255,255,255,.55); }
+    .sl a:active { color:#ffdd00; }
     :global([data-sprungziel]) { scroll-margin-top:64px !important; }
   }
 </style>

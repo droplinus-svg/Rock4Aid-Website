@@ -6,18 +6,27 @@ const einstellungen = await getTable('einstellungen', { single: true });
 const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
 const helferLink = (einstellungen.helfer_link || '').trim();
 
-// Anliegen zum Vorauswählen. Links auf der Website können eines davon mitgeben,
-// zum Beispiel /kontakt/?anliegen=band
-const ANLIEGEN = [
-  ['allgemein', 'Allgemeine Frage'],
-  ['mitglied', 'Fördermitglied werden'],
-  ['band', 'Als Band auftreten'],
-  ['sponsor', 'Sponsor werden'],
-  ['spende', 'Spende oder Spendenquittung'],
-  ['helfer', 'Beim Festival mithelfen'],
-  ['presse', 'Presseanfrage'],
-  ['sonstiges', 'Sonstiges'],
+// Anliegen werden im Redaktionssystem gepflegt (Tabelle kontakt_anliegen).
+// Links auf der Website können eines vorauswählen, zum Beispiel /kontakt/?anliegen=band
+const STANDARD = [
+  { bezeichnung: 'Allgemeine Frage', kuerzel: 'allgemein' },
+  { bezeichnung: 'Fördermitglied werden', kuerzel: 'mitglied' },
+  { bezeichnung: 'Als Band auftreten', kuerzel: 'band', zeige_musiklink: true },
+  { bezeichnung: 'Sponsor werden', kuerzel: 'sponsor' },
+  { bezeichnung: 'Spende oder Spendenquittung', kuerzel: 'spende' },
+  { bezeichnung: 'Beim Festival mithelfen', kuerzel: 'helfer' },
+  { bezeichnung: 'Presseanfrage', kuerzel: 'presse' },
+  { bezeichnung: 'Sonstiges', kuerzel: 'sonstiges' },
 ];
+const ausDb = (await getTable('kontakt_anliegen', { order: 'reihenfolge.asc' }))
+  .filter((x) => x && x.sichtbar !== false && x.bezeichnung && x.kuerzel);
+const ANLIEGEN = (ausDb.length ? ausDb : STANDARD).map((x) => ({
+  ...x,
+  // Für "helfer" ohne eigenen Hinweis: automatisch auf die Helferanmeldung verweisen
+  hinweis: x.hinweis || (x.kuerzel === 'helfer' && helferLink
+    ? `<p>Für Schichten beim Festival könnt ihr euch auch direkt eintragen: <a href="${helferLink}">zur Helferanmeldung</a>.</p>` : ''),
+}));
+const mitMusik = ANLIEGEN.filter((x) => x.zeige_musiklink).map((x) => x.kuerzel).join(' ');
 const BILD = '/assets/crushingjars-b.jpg';
 ---
 <Base active="kontakt" einstellungen={einstellungen} jahre={jahre} title="Kontakt – Rock4Aid">
@@ -39,11 +48,11 @@ const BILD = '/assets/crushingjars-b.jpg';
         <fieldset>
           <legend>Worum geht es?</legend>
           <div class="kt-chips">
-            {ANLIEGEN.map(([wert, text], i) => (
-              <label class="kt-chip"><input type="radio" name="anliegen" value={text} data-key={wert} checked={i === 0} /> {text}</label>
+            {ANLIEGEN.map((x, i) => (
+              <label class="kt-chip"><input type="radio" name="anliegen" value={x.bezeichnung} data-key={x.kuerzel} checked={i === 0} /> {x.bezeichnung}</label>
             ))}
           </div>
-          {helferLink && <p class="kt-hinweis" data-zeige="helfer" hidden>Für Schichten beim Festival könnt ihr euch auch direkt eintragen: <a href={helferLink}>zur Helferanmeldung</a>.</p>}
+          {ANLIEGEN.filter((x) => x.hinweis).map((x) => <div class="kt-hinweis" data-zeige={x.kuerzel} hidden set:html={x.hinweis}></div>)}
         </fieldset>
 
         <fieldset>
@@ -52,7 +61,7 @@ const BILD = '/assets/crushingjars-b.jpg';
             <label class="kt-feld kt-breit">Name, bei Bands gern auch der Bandname<input name="name" required autocomplete="name" /></label>
             <label class="kt-feld">E-Mail<input name="email" type="email" required autocomplete="email" /></label>
             <label class="kt-feld">Telefon (freiwillig)<input name="telefon" type="tel" autocomplete="tel" /></label>
-            <label class="kt-feld kt-breit" data-zeige="band" hidden>Link zu eurer Musik (freiwillig, z. B. YouTube, Spotify, Instagram)<input name="musik_link" type="url" inputmode="url" /></label>
+            <label class="kt-feld kt-breit" data-zeige={mitMusik} hidden>Link zu eurer Musik (freiwillig, z. B. YouTube, Spotify, Instagram)<input name="musik_link" type="url" inputmode="url" /></label>
           </div>
         </fieldset>
 
@@ -96,6 +105,8 @@ const BILD = '/assets/crushingjars-b.jpg';
     .kt-feld input, .kt-feld textarea { padding:12px 14px; border:1.5px solid #b9acd3; border-radius:8px; font:inherit; font-weight:400; font-size:16px; color:#2a1a4a; resize:vertical; }
     .kt-feld input:focus, .kt-feld textarea:focus { outline:2px solid #ffdd00; border-color:#4b2e83; }
     .kt-hinweis { margin:12px 0 0; font-size:15px; line-height:1.5; }
+    .kt-hinweis :global(p) { margin:0; }
+    .kt-hinweis :global(a) { color:#4b2e83; font-weight:600; text-decoration:underline; }
     .kt-hinweis a, .kt-klein a { color:#4b2e83; font-weight:600; text-decoration:underline; }
     .kt-klein { margin:0; font-size:14px; line-height:1.5; color:#5b4a7d; }
     .kt-unsichtbar { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
@@ -124,7 +135,7 @@ const BILD = '/assets/crushingjars-b.jpg';
 
       const aktualisiere = () => {
         const key = (radios.find((r) => r.checked) || radios[0]).dataset.key;
-        document.querySelectorAll('[data-zeige]').forEach((el) => { el.hidden = el.dataset.zeige !== key; });
+        document.querySelectorAll('[data-zeige]').forEach((el) => { el.hidden = !el.dataset.zeige.split(' ').includes(key); });
       };
       const vorwahl = params.get('anliegen');
       const treffer = radios.find((r) => r.dataset.key === vorwahl);

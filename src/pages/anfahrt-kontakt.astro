@@ -9,10 +9,10 @@ const hidden = einstellungen.anfahrt_sichtbar === false || a.sichtbar === false;
 
 const esc = (s) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const multiline = (s) => esc(s).split('\n').join('<br />');
-const kontaktHtml = esc(a.kontakt_text || '').split('\n')
-  .map((line) => (line.includes('@')
-    ? `<a href="mailto:${line.trim()}" style="color:#4b2e83;border-bottom:1px solid rgba(75,46,131,.45)">${line.trim()}</a>`
-    : line)).join('<br />');
+// Alle Anfragen laufen über das Kontaktformular: E-Mail-Zeilen werden durch einen Button ersetzt
+const kontaktZeilen = esc(a.kontakt_text || '').split('\n').filter((line) => line.trim() && !line.includes('@'));
+const kontaktHtml = (kontaktZeilen.length ? kontaktZeilen.join('<br />') + '<br /><br />' : 'Schreibt uns, wir melden uns so schnell wie möglich.<br /><br />')
+  + '<a href="/kontakt/" style="display:inline-block;background:#4b2e83;color:#fff;font-weight:700;padding:11px 20px;border-radius:999px;text-decoration:none">Zum Kontaktformular</a>';
 
 const cards = [
   { titel: a.ort_titel || 'Veranstaltungsort', html: multiline(a.ort_text) },
