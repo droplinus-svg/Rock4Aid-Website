@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import TextFluss from '../components/TextFluss.astro';
 import { getTable, cleanUrl } from '../lib/content.js';
 
 const einstellungen = await getTable('einstellungen', { single: true });
@@ -7,10 +8,6 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
 const m = await getTable('mitglied', { single: true });
 const abschnitte = (await getTable('mitglied_abschnitte', { order: 'reihenfolge.asc' }))
   .filter((a) => a.sichtbar !== false);
-// Abwechselnd gelb/weiß wie auf der Seite „Über uns“
-// Der letzte Abschnitt vor dem (weißen) Formular ist immer gelb
-const versatz = abschnitte.length % 2 === 0 ? 1 : 0;
-const bg = (i) => ((i + versatz) % 2 === 0 ? '#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat' : '#fff');
 const hidden = einstellungen.mitglied_sichtbar === false || m.sichtbar === false;
 
 const SB_URL = cleanUrl(import.meta.env.PUBLIC_SUPABASE_URL);
@@ -41,25 +38,14 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
         <div style="position:relative;max-width:1500px;margin:0 auto;padding:clamp(34px,5.2vw,64px) 5.66% clamp(40px,6vw,80px)">
           <h1 style={`${H2};color:#fff;font-size:clamp(28px,4.88vw,50px)`}>{m.hero_titel || 'Mitglied werden'}</h1>
           <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
-          {m.intro_text && <div class="mw-text" style="margin:clamp(18px,2.6vw,34px) auto 0;max-width:min(80%,860px);text-align:center;font-family:'Archivo',sans-serif;font-size:clamp(17px,1.9vw,23px);line-height:1.55;color:#fff" set:html={m.intro_text}></div>}
+          {m.intro_text && <div class="mw-text mw-spalte" style="margin-top:clamp(18px,2.6vw,34px);font-size:clamp(17px,1.8vw,21px);color:#fff" set:html={m.intro_text}></div>}
         </div>
       </section>
 
-      {abschnitte.map((a, i) => (
-        <section style={`background:${bg(i)};padding:clamp(30px,4.8vw,72px) 0 clamp(36px,5.5vw,82px)`}>
-          <div style="max-width:1500px;margin:0 auto;padding:0 5.66%">
-            {a.titel && <h2 style={`${H2};color:#4b2e83`}>{a.titel}</h2>}
-            {a.titel && <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(12px,1.8vw,22px) 0 0"></div>}
-            <div style={`margin:clamp(24px,3.8vw,50px) 0 0;display:flex;flex-wrap:wrap;gap:clamp(22px,4vw,60px);align-items:center;flex-direction:${a.bild_rechts ? 'row-reverse' : 'row'}`}>
-              {a.bild && <img src={a.bild} alt="" loading="lazy" style="flex:1 1 40%;min-width:260px;width:100%;height:auto;max-height:560px;object-fit:contain" />}
-              <div class="mw-text" style={`flex:1 1 ${a.bild ? '44%' : '100%'};min-width:280px;display:flex;flex-direction:column;gap:.9em;text-align:left;font-family:'Archivo',sans-serif;font-size:clamp(16px,1.6vw,20px);line-height:1.6;color:#4b2e83;text-wrap:pretty`} set:html={a.text}></div>
-            </div>
-          </div>
-        </section>
-      ))}
+      <TextFluss abschnitte={abschnitte} />
 
-      <section id="antrag" style="background:#fff;padding:clamp(30px,4.8vw,72px) 0 clamp(40px,6vw,90px)">
-        <div style="max-width:900px;margin:0 auto;padding:0 5.66%">
+      <section id="antrag" style="background:#fff;padding:clamp(28px,4vw,56px) 0 clamp(40px,6vw,80px)">
+        <div class="mw-spalte" style="padding:0 5.66%;box-sizing:content-box">
           <h2 style={`${H2};color:#4b2e83`}>{formularAktiv ? (m.formular_titel || 'Fördermitgliedschaft beantragen') : 'So werdet ihr Fördermitglied'}</h2>
           <div style="width:100%;height:2px;background:#4b2e83;margin:clamp(12px,1.8vw,22px) 0 clamp(20px,3vw,36px)"></div>
 
@@ -187,7 +173,10 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
   </script>
 
   <style>
-    .mw-text :global(p) { margin:0 0 .7em; }
+    .mw-text :global(p) { margin:0; }
+    .mw-spalte { max-width:760px; margin-left:auto; margin-right:auto; }
+    .mw-text { display:flex; flex-direction:column; gap:.9em; font-family:'Archivo',sans-serif; line-height:1.6; text-align:justify; hyphens:auto; -webkit-hyphens:auto; }
+    @media (max-width:640px) { .mw-text { text-align:left; } }
     .mw-vor, .mw-nach { font-family:'Archivo',sans-serif; font-size:clamp(16px,1.6vw,20px); line-height:1.6; color:#4b2e83; }
     .mw-vor { margin:0 0 clamp(20px,3vw,34px); }
     .mw-nach { margin:clamp(26px,3.6vw,44px) 0 0; text-align:center; }

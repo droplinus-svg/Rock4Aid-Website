@@ -333,9 +333,9 @@
       "titel": "Wer wir sind",
       "text": "<p>Hier stellen wir den Verein und die Menschen dahinter vor.</p>",
       "bild": "",
-      "bild_rechts": false,
       "reihenfolge": 1,
-      "sichtbar": true
+      "sichtbar": true,
+      "bild_nach_absatz": 1
     }
   ],
   "mitglied": {
