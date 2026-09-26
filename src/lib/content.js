@@ -16,8 +16,16 @@ export function cleanUrl(u) {
   return s;
 }
 
-const SUPABASE_URL = cleanUrl(import.meta.env.PUBLIC_SUPABASE_URL);
-const SUPABASE_KEY = (import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '').trim();
+// Datenquelle: Seit dem Umzug liegen die Inhalte in der Festival-App
+// (Supabase-Projekt der App, Schema "web"). Sind die neuen Variablen
+// PUBLIC_WEB_SUPABASE_URL und PUBLIC_WEB_SUPABASE_ANON_KEY gesetzt, werden
+// sie genutzt. Sonst gilt die alte Quelle (eigenes Website-Projekt, Schema "public").
+const NEU_URL = cleanUrl(import.meta.env.PUBLIC_WEB_SUPABASE_URL);
+const NEU_KEY = (import.meta.env.PUBLIC_WEB_SUPABASE_ANON_KEY || '').trim();
+const NEU = Boolean(NEU_URL && NEU_KEY);
+export const SUPABASE_URL = NEU ? NEU_URL : cleanUrl(import.meta.env.PUBLIC_SUPABASE_URL);
+export const SUPABASE_KEY = NEU ? NEU_KEY : (import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '').trim();
+export const SUPABASE_SCHEMA = NEU ? 'web' : 'public';
 const CONFIGURED = Boolean(SUPABASE_URL && SUPABASE_KEY);
 
 export const usingFallback = !CONFIGURED;
@@ -41,7 +49,7 @@ export async function getTable(table, { select = '*', order, filters = {}, singl
     if (order) params.set('order', order);
     for (const [k, v] of Object.entries(filters)) params.set(k, v);
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params.toString()}`, {
-      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Accept-Profile': SUPABASE_SCHEMA },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
