@@ -23,16 +23,14 @@ const BILD = '/assets/crushingjars-b.jpg';
 <Base active="kontakt" einstellungen={einstellungen} jahre={jahre} title="Kontakt – Rock4Aid">
   <section class="kt-hero">
     <img class="r4a-anim" src={BILD} alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:r4aPan 30s ease-in-out infinite" />
-    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,10,32,.55) 0%,rgba(18,10,32,.45) 100%)"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,10,32,.5) 0%,rgba(18,10,32,.35) 35%,rgba(30,16,58,.6) 100%)"></div>
     <div style="position:relative;max-width:1500px;margin:0 auto;padding:clamp(28px,4vw,52px) 5.66% clamp(30px,4.4vw,56px)">
       <h1 class="kt-h1">Schreibt uns, wir freuen uns auf eure Nachricht</h1>
       <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
       <p class="kt-intro">Ob ihr bei uns spielen, uns als Sponsor unterstützen oder einfach etwas fragen wollt: Wählt euer Anliegen aus, und wir melden uns so schnell wie möglich bei euch.</p>
     </div>
-  </section>
 
-  <section style="background:#fff;padding:clamp(28px,4vw,56px) 5.66% clamp(40px,6vw,80px)">
-    <div class="kt-spalte">
+    <div class="kt-spalte kt-glas">
       <form id="kt-form" class="kt-form" name="kontakt" method="POST" action="/kontakt/?gesendet=1" data-netlify="true" netlify-honeypot="bot-feld" novalidate>
         <input type="hidden" name="form-name" value="kontakt" />
         <input type="hidden" name="subject" value="Kontaktformular Rock4Aid" />
@@ -75,7 +73,12 @@ const BILD = '/assets/crushingjars-b.jpg';
   </section>
 
   <style>
-    .kt-hero { position:relative; background:#4b2e83; overflow:hidden; }
+    .kt-hero { position:relative; background:#2e1a52; overflow:hidden; padding-bottom:clamp(36px,6vw,90px); }
+    /* Formular liegt als halbtransparente Glasfläche auf dem Foto */
+    .kt-glas { position:relative; box-sizing:border-box; width:min(760px, calc(100% - 32px)); background:rgba(255,255,255,.8); -webkit-backdrop-filter:blur(10px) saturate(1.1); backdrop-filter:blur(10px) saturate(1.1); border-radius:18px; padding:clamp(18px,3vw,34px); box-shadow:0 18px 50px rgba(10,5,25,.35); }
+    .kt-glas .kt-form fieldset { background:rgba(255,255,255,.55); }
+    .kt-glas .kt-feld input, .kt-glas .kt-feld textarea { background:rgba(255,255,255,.95); }
+    .kt-glas .kt-danke { box-shadow:none; }
     .kt-h1 { margin:0; text-align:center; font-family:'Archivo',sans-serif; font-weight:700; font-size:clamp(28px,4.4vw,48px); line-height:1.05; letter-spacing:-.013em; color:#fff; text-wrap:balance; }
     .kt-intro { max-width:760px; margin:clamp(16px,2.4vw,28px) auto 0; font-family:'Archivo',sans-serif; font-size:clamp(17px,1.8vw,21px); line-height:1.55; color:#fff; text-align:center; text-wrap:pretty; }
     .kt-spalte { max-width:760px; margin:0 auto; }
