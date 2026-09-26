@@ -52,7 +52,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
           {formularAktiv && m.formular_text && <div class="mw-text mw-vor" set:html={m.formular_text}></div>}
 
           {!formularAktiv ? (
-            <p class="mw-hinweis mw-vor">Den Online-Antrag schalten wir in Kürze frei. Bis dahin schreibt uns einfach eine E-Mail, dann melden wir uns bei euch.</p>
+            <div class="mw-vor mw-bald"><p>Den Online-Antrag schalten wir in Kürze frei. Bis dahin schreibt uns einfach über unser Kontaktformular, dann melden wir uns bei euch.</p><a class="mw-knopf" href="/kontakt/?anliegen=mitglied">Zum Kontaktformular</a></div>
           ) : (
             <form id="mw-form" class="mw-form" novalidate>
               <fieldset>
@@ -98,7 +98,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
             </form>
           )}
           <div id="mw-danke" class="mw-danke" hidden set:html={m.danke_text || '<p>Vielen Dank! Wir haben euren Antrag erhalten.</p>'}></div>
-          {m.formular_nachtext && <div class="mw-text mw-nach" set:html={m.formular_nachtext}></div>}
+          {formularAktiv && m.formular_nachtext && <div class="mw-text mw-nach" set:html={m.formular_nachtext}></div>}
         </div>
       </section>
     </>
@@ -184,6 +184,10 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
     .mw-spalte { max-width:760px; margin-left:auto; margin-right:auto; }
     .mw-text { display:flex; flex-direction:column; gap:.9em; font-family:'Archivo',sans-serif; line-height:1.6; text-align:justify; hyphens:auto; -webkit-hyphens:auto; }
     @media (max-width:640px) { .mw-text { text-align:left; } }
+    .mw-bald { text-align:center; display:flex; flex-direction:column; align-items:center; gap:22px; }
+    .mw-bald p { margin:0; }
+    .mw-knopf { display:inline-block; background:#4b2e83; color:#fff; border-radius:999px; padding:15px 30px; font-family:'Archivo',sans-serif; font-weight:700; font-size:18px; text-decoration:none; }
+    .mw-knopf:hover { background:#3d2569; }
     .mw-vor, .mw-nach { font-family:'Archivo',sans-serif; font-size:clamp(16px,1.6vw,20px); line-height:1.6; color:#4b2e83; }
     .mw-vor { margin:0 0 clamp(20px,3vw,34px); }
     .mw-nach { margin:clamp(26px,3.6vw,44px) 0 0; text-align:center; }
