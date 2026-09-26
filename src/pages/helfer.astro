@@ -1,0 +1,476 @@
+---
+import Base from '../layouts/Base.astro';
+import { getTable, SUPABASE_URL, SUPABASE_KEY, SUPABASE_SCHEMA } from '../lib/content.js';
+
+// Helferseite. Die Daten kommen LIVE beim Aufruf aus der Festival-App
+// (Datenbankfunktionen helfer_portal_laden usw.), nicht beim Build.
+// Gepflegt wird alles in der App unter „Helfer & Schichten“.
+const einstellungen = await getTable('einstellungen', { single: true });
+const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
+const aktiv = SUPABASE_SCHEMA === 'web';
+const BILD = '/assets/rb26-1.jpg';
+const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Aufbau', 'Abbau', 'Kuchentheke', 'Da, wo ihr mich braucht'];
+---
+<Base active="helfer" einstellungen={einstellungen} jahre={jahre} title="Helfer werden – Rock4Aid"
+  description="Werde Teil der Rock4Aid-Crew: Registriere dich als Helferin oder Helfer für das Benefiz-Festival in Heddesheim.">
+  <section class="hf-hero">
+    <img class="r4a-anim" src={BILD} alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:r4aPan 30s ease-in-out infinite" />
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,10,32,.55) 0%,rgba(18,10,32,.4) 35%,rgba(30,16,58,.7) 100%)"></div>
+    <div class="hf-kopf">
+      <h1 class="hf-h1">Werde Teil der Rock4Aid-Crew</h1>
+      <div class="hf-linie"></div>
+      <p class="hf-intro" id="hf-intro">Ohne Helferinnen und Helfer gibt es kein Festival. Trag dich ein, und wir melden uns bei dir, sobald die Schichten stehen.</p>
+      <p class="hf-meta" id="hf-meta" hidden></p>
+    </div>
+
+    <div class="hf-glas" id="hf-app" data-url={SUPABASE_URL} data-key={SUPABASE_KEY} data-aktiv={aktiv ? '1' : ''}>
+      <p class="hf-laden" id="hf-laden">Einen Moment, die Helferseite wird geladen …</p>
+
+      <!-- Meldungen (Erfolg, Fehler) -->
+      <div id="hf-meldung" class="hf-meldung" role="status" hidden></div>
+
+      <!-- Reiter, nur wenn Schichten freigeschaltet sind -->
+      <div id="hf-reiter" class="hf-reiter" role="tablist" hidden>
+        <button type="button" data-reiter="schichten" class="aktiv">In eine Schicht eintragen</button>
+        <button type="button" data-reiter="pool">Allgemein registrieren</button>
+        <button type="button" data-reiter="kuchen" hidden>Kuchen spenden</button>
+      </div>
+
+      <!-- Schichten -->
+      <div id="hf-schichten" data-bereich="schichten" hidden>
+        <p class="hf-text">Wähle eine Schicht und einen Dienst. Wir zeigen nur, wie viele Plätze schon belegt sind, keine Namen.</p>
+        <div id="hf-schichtwahl" class="hf-schichtwahl"></div>
+        <div id="hf-dienste" class="hf-dienste"></div>
+      </div>
+
+      <!-- Helferpool -->
+      <form id="hf-pool" class="hf-form" data-bereich="pool" novalidate hidden>
+        <p class="hf-text" id="hf-pool-text">Die Schichten planen wir einige Wochen vor dem Festival. Registriere dich schon jetzt. Sobald die Schichten stehen, schreiben wir dir und du suchst dir deine Schicht aus.</p>
+        <fieldset>
+          <legend>Wer bist du?</legend>
+          <div class="hf-grid">
+            <label class="hf-feld hf-breit">Vor- und Nachname<input name="name" autocomplete="name" required /></label>
+            <label class="hf-feld">E-Mail<input name="email" type="email" autocomplete="email" required /></label>
+            <label class="hf-feld">Handynummer<input name="telefon" type="tel" autocomplete="tel" required /></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Wo hilfst du am liebsten? (freiwillig)</legend>
+          <div class="hf-chips">
+            {WUENSCHE.map((w) => <label class="hf-chip"><input type="checkbox" name="wunsch" value={w} /> {w}</label>)}
+          </div>
+          <label class="hf-feld" style="margin-top:14px">Möchtest du uns noch etwas sagen? (freiwillig)<textarea name="anmerkung" rows="3" placeholder="z. B. nur nachmittags, mit Freundin zusammen, Erfahrung an der Bar"></textarea></label>
+        </fieldset>
+        <div class="hf-einwilligung">
+          <label><input type="checkbox" name="kontakt" /> <span><strong>Ihr dürft mich kontaktieren</strong>, um meinen Einsatz beim Festival zu organisieren (per E-Mail und Telefon).</span></label>
+          <label><input type="checkbox" name="kuenftig" /> <span>Ihr dürft mich auch für <strong>künftige Rock4Aid-Veranstaltungen</strong> als Helfer ansprechen. (freiwillig)</span></label>
+        </div>
+        <p class="hf-klein">Deine Angaben sehen nur die Organisatoren von Rock4Aid. Du kannst dich jederzeit über den Link in der Bestätigungsmail wieder austragen. Mehr dazu in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <p class="hf-fehler" role="alert" hidden></p>
+        <button type="submit" class="hf-knopf">Als Helfer registrieren</button>
+      </form>
+
+      <!-- Kuchen -->
+      <form id="hf-kuchen" class="hf-form" data-bereich="kuchen" novalidate hidden>
+        <p class="hf-text" id="hf-kuchen-text">Selbstgebackener Kuchen ist bei uns heiß begehrt. Der Erlös geht vollständig an unser Spendenprojekt.</p>
+        <div id="hf-kuchenliste" class="hf-kuchenliste" hidden></div>
+        <fieldset>
+          <legend>Dein Kuchen</legend>
+          <div class="hf-grid">
+            <label class="hf-feld hf-breit">Welchen Kuchen bringst du mit?<input name="kuchen" placeholder="z. B. Käsekuchen" required /></label>
+            <label class="hf-feld">Vor- und Nachname<input name="name" autocomplete="name" required /></label>
+            <label class="hf-feld">E-Mail<input name="email" type="email" autocomplete="email" required /></label>
+          </div>
+        </fieldset>
+        <div class="hf-einwilligung">
+          <label><input type="checkbox" name="kontakt" /> <span><strong>Ihr dürft mich kontaktieren</strong>, um die Kuchenspende zu organisieren.</span></label>
+        </div>
+        <p class="hf-fehler" role="alert" hidden></p>
+        <button type="submit" class="hf-knopf">Kuchen eintragen</button>
+      </form>
+
+      <!-- Austragen -->
+      <div id="hf-storno" hidden></div>
+    </div>
+  </section>
+
+  <!-- Eintragen in eine Schicht (Dialog) -->
+  <dialog id="hf-dialog" class="hf-dialog">
+    <form id="hf-schichtform" class="hf-form" method="dialog" novalidate>
+      <h2 id="hf-dialog-titel"></h2>
+      <p class="hf-klein" id="hf-dialog-zeit"></p>
+      <label class="hf-feld">Vor- und Nachname<input name="name" autocomplete="name" required /></label>
+      <label class="hf-feld">E-Mail<input name="email" type="email" autocomplete="email" required /></label>
+      <label class="hf-feld">Handynummer<input name="telefon" type="tel" autocomplete="tel" required /></label>
+      <div class="hf-einwilligung">
+        <label><input type="checkbox" name="kontakt" /> <span><strong>Ihr dürft mich kontaktieren</strong>, um meinen Einsatz zu organisieren.</span></label>
+        <label><input type="checkbox" name="kuenftig" /> <span>Auch für <strong>künftige Veranstaltungen</strong> (freiwillig)</span></label>
+      </div>
+      <p class="hf-fehler" role="alert" hidden></p>
+      <div class="hf-dialog-knoepfe">
+        <button type="button" class="hf-link" id="hf-abbrechen">Abbrechen</button>
+        <button type="submit" class="hf-knopf">Verbindlich eintragen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <style is:global>
+    /* global, weil die Schichtkarten erst im Browser entstehen. Alle Klassen beginnen mit hf- */
+    .hf-hero { position:relative; background:#2e1a52; overflow:hidden; padding-bottom:clamp(36px,6vw,90px); min-height:70vh; }
+    .hf-kopf { position:relative; max-width:1500px; margin:0 auto; padding:clamp(28px,4vw,52px) 5.66% clamp(30px,4.4vw,56px); }
+    .hf-h1 { margin:0; text-align:center; font-family:'Archivo',sans-serif; font-weight:700; font-size:clamp(28px,4.4vw,48px); line-height:1.05; letter-spacing:-.013em; color:#fff; text-wrap:balance; }
+    .hf-linie { width:100%; height:2px; background:rgba(255,255,255,.9); margin:clamp(12px,1.8vw,22px) 0 0; }
+    .hf-intro { max-width:760px; margin:clamp(16px,2.4vw,28px) auto 0; font-size:clamp(17px,1.8vw,21px); line-height:1.55; color:#fff; text-align:center; text-wrap:pretty; white-space:pre-line; }
+    .hf-meta { margin:14px auto 0; text-align:center; color:#ffdd00; font-weight:700; font-size:clamp(16px,1.6vw,19px); display:flex; gap:6px 22px; justify-content:center; flex-wrap:wrap; }
+    .hf-meta[hidden] { display:none; }
+    .hf-glas { position:relative; box-sizing:border-box; width:min(820px, calc(100% - 32px)); margin:0 auto; background:rgba(255,255,255,.84); -webkit-backdrop-filter:blur(10px) saturate(1.1); backdrop-filter:blur(10px) saturate(1.1); border-radius:18px; padding:clamp(18px,3vw,34px); box-shadow:0 18px 50px rgba(10,5,25,.35); color:#4b2e83; font-family:'Archivo',sans-serif; }
+    .hf-laden { text-align:center; margin:10px 0; }
+    .hf-text { margin:0 0 16px; font-size:17px; line-height:1.55; }
+    .hf-klein { margin:0; font-size:14px; line-height:1.5; color:#5b4a7d; }
+    .hf-klein a { color:#4b2e83; font-weight:600; text-decoration:underline; }
+    .hf-glas [hidden], .hf-dialog [hidden] { display:none !important; }
+    .hf-reiter { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .hf-reiter button { flex:1 1 180px; padding:12px 14px; border:2px solid #4b2e83; background:rgba(255,255,255,.7); color:#4b2e83; border-radius:999px; font:inherit; font-weight:700; font-size:15px; cursor:pointer; }
+    .hf-reiter button.aktiv { background:#4b2e83; color:#fff; }
+    .hf-form { display:flex; flex-direction:column; gap:18px; }
+    .hf-form fieldset { border:2px solid #4b2e83; border-radius:10px; padding:16px clamp(14px,2.4vw,24px) 20px; margin:0; background:rgba(255,255,255,.55); }
+    .hf-form legend { font-weight:700; font-size:clamp(17px,1.8vw,20px); padding:0 8px; }
+    .hf-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 18px; }
+    .hf-breit { grid-column:1 / -1; }
+    .hf-feld { display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:15px; }
+    .hf-feld input, .hf-feld textarea { padding:12px 14px; border:1.5px solid #b9acd3; border-radius:8px; font:inherit; font-weight:400; font-size:16px; color:#2a1a4a; background:rgba(255,255,255,.95); resize:vertical; }
+    .hf-feld input:focus, .hf-feld textarea:focus { outline:2px solid #ffdd00; border-color:#4b2e83; }
+    .hf-chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .hf-chip { display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border:1.5px solid #b9acd3; border-radius:999px; font-weight:600; font-size:15px; cursor:pointer; background:rgba(255,255,255,.7); }
+    .hf-chip input { accent-color:#4b2e83; margin:0; }
+    .hf-chip:has(input:checked) { background:#4b2e83; border-color:#4b2e83; color:#fff; }
+    .hf-einwilligung { display:flex; flex-direction:column; gap:10px; }
+    .hf-einwilligung label { display:flex; gap:10px; align-items:flex-start; font-size:15px; line-height:1.45; cursor:pointer; }
+    .hf-einwilligung input { width:20px; height:20px; margin:1px 0 0; flex:0 0 auto; accent-color:#4b2e83; }
+    .hf-einwilligung label.hf-pflicht-fehlt { color:#a12020; }
+    .hf-fehler { background:#fde8e8; color:#a12020; border-radius:8px; padding:12px 14px; font-weight:600; margin:0; }
+    .hf-knopf { background:#4b2e83; color:#fff; border:0; border-radius:999px; padding:15px 28px; font:inherit; font-weight:700; font-size:17px; cursor:pointer; align-self:center; }
+    .hf-knopf:hover { background:#3d2569; }
+    .hf-knopf:disabled { opacity:.6; cursor:wait; }
+    .hf-knopf.rot { background:#b3261e; }
+    .hf-link { background:none; border:0; color:#4b2e83; font:inherit; font-weight:600; text-decoration:underline; cursor:pointer; padding:8px; }
+    .hf-meldung { background:#ffdd00; color:#4b2e83; border-radius:12px; padding:18px 20px; margin-bottom:20px; font-size:17px; line-height:1.5; }
+    .hf-meldung p { margin:.2em 0; }
+    .hf-schichtwahl { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:16px; }
+    .hf-schicht { flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:10px 16px; border-radius:12px; border:2px solid #b9acd3; background:rgba(255,255,255,.8); color:#4b2e83; font:inherit; cursor:pointer; text-align:left; }
+    .hf-schicht span { font-size:13px; color:#5b4a7d; }
+    .hf-schicht em { font-style:normal; font-size:12px; font-weight:700; color:#1f7a35; }
+    .hf-schicht.aktiv { border-color:#4b2e83; background:#4b2e83; color:#fff; }
+    .hf-schicht.aktiv span, .hf-schicht.aktiv em { color:#ffdd00; }
+    .hf-dienste { display:grid; gap:14px; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); }
+    .hf-dienst { background:rgba(255,255,255,.85); border:2px solid #d8cfe8; border-radius:12px; padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+    .hf-dienst h3 { margin:0; font-size:18px; display:flex; gap:8px; align-items:center; }
+    .hf-dienst p { margin:0; font-size:14px; color:#5b4a7d; }
+    .hf-balken { height:8px; border-radius:99px; background:#e6e0f0; overflow:hidden; }
+    .hf-balken > div { height:100%; background:#4b2e83; border-radius:99px; }
+    .hf-belegt { font-size:14px; font-weight:600; }
+    .hf-dienst .hf-knopf { padding:10px 18px; font-size:15px; align-self:flex-start; }
+    .hf-dienst.voll { opacity:.6; }
+    .hf-kuchenliste { background:rgba(255,255,255,.7); border-radius:10px; padding:12px 16px; font-size:15px; line-height:1.6; }
+    .hf-dialog { border:0; border-radius:16px; padding:22px; width:min(440px, calc(100% - 32px)); color:#4b2e83; font-family:'Archivo',sans-serif; }
+    .hf-dialog::backdrop { background:rgba(18,10,32,.6); }
+    .hf-dialog h2 { margin:0; font-size:22px; }
+    .hf-dialog .hf-form { gap:12px; }
+    .hf-dialog-knoepfe { display:flex; justify-content:flex-end; align-items:center; gap:8px; flex-wrap:wrap; }
+    .hf-storno h2 { margin:0 0 10px; }
+    .hf-storno p { font-size:17px; line-height:1.5; }
+    @media (max-width:640px) { .hf-h1, .hf-intro { text-align:left; } .hf-meta { justify-content:flex-start; } .hf-grid { grid-template-columns:1fr; } .hf-chip { font-size:14px; padding:8px 12px; } }
+  </style>
+
+  <script>
+    (function () {
+      const app = document.getElementById('hf-app');
+      if (!app) return;
+      const URL_ = app.dataset.url;
+      const KEY = app.dataset.key;
+      const SLUG = 'rock4aid';
+      const HIER = location.origin + '/helfer/';
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      const KONTAKT_FEHLT = 'Du kannst dich hier nur als Helfer registrieren, wenn wir dich kontaktieren dürfen.';
+      let daten = null;
+      let schichtId = null;
+
+      // Aufruf einer Datenbankfunktion der Festival-App
+      async function rpc(name, args) {
+        const r = await fetch(`${URL_}/rest/v1/rpc/${name}`, {
+          method: 'POST',
+          headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json', 'Content-Profile': 'public', 'Accept-Profile': 'public' },
+          body: JSON.stringify(args),
+        });
+        const text = await r.text();
+        const json = text ? JSON.parse(text) : null;
+        if (!r.ok) throw new Error((json && json.message) || 'Das hat leider nicht geklappt. Bitte versuche es gleich noch einmal.');
+        return json;
+      }
+
+      // Bestätigungsmail über EmailJS. Ein Fehler hier verhindert die Anmeldung nicht.
+      async function mail(template, params) {
+        const e = (daten && daten.einstellungen) || {};
+        if (!e.emailjs_service || !e.emailjs_public_key || !template) return null; // Mails nicht eingerichtet
+        try {
+          const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service_id: e.emailjs_service, template_id: template, user_id: e.emailjs_public_key, template_params: params }),
+          });
+          return r.ok;
+        } catch { return false; }
+      }
+
+      function merke(k) { try { localStorage.setItem('r4a_helfer', JSON.stringify(k)); } catch { /* egal */ } }
+      function gemerkt() { try { return JSON.parse(localStorage.getItem('r4a_helfer') || '{}') || {}; } catch { return {}; } }
+      function vorbelegen(form, k) {
+        ['name', 'email', 'telefon'].forEach((f) => { if (form.elements[f] && k[f] && !form.elements[f].value) form.elements[f].value = k[f]; });
+      }
+
+      function meldung(html) {
+        const m = $('hf-meldung');
+        m.innerHTML = html; m.hidden = false;
+        m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Einwilligung und Pflichtfelder prüfen. Liefert einen Fehlertext oder null.
+      function pruefe(form, { telefon = true, kuchen = false } = {}) {
+        const f = form.elements;
+        const box = f.kontakt.closest('label');
+        box.classList.toggle('hf-pflicht-fehlt', !f.kontakt.checked);
+        if (!f.kontakt.checked) return KONTAKT_FEHLT;
+        if (kuchen && !f.kuchen.value.trim()) return 'Welchen Kuchen bringst du mit?';
+        if (!f.name.value.trim()) return 'Bitte gib deinen Namen an.';
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.value.trim())) return 'Bitte gib eine gültige E-Mail-Adresse an.';
+        if (telefon && !f.telefon.value.trim()) return 'Bitte gib deine Handynummer an, damit wir dich am Festivaltag erreichen.';
+        return null;
+      }
+      function fehler(form, text) {
+        const p = form.querySelector('.hf-fehler');
+        p.textContent = text || ''; p.hidden = !text;
+        if (text) p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // ---------- Reiter ----------
+      function zeige(bereich) {
+        document.querySelectorAll('[data-reiter]').forEach((b) => b.classList.toggle('aktiv', b.dataset.reiter === bereich));
+        document.querySelectorAll('[data-bereich]').forEach((el) => { el.hidden = el.dataset.bereich !== bereich; });
+      }
+      document.querySelectorAll('[data-reiter]').forEach((b) => b.addEventListener('click', () => zeige(b.dataset.reiter)));
+
+      // ---------- Schichten ----------
+      function platz(sId, dId) {
+        return (daten.plaetze || []).find((p) => p.schicht_id === sId && p.dienst_id === dId);
+      }
+      function zeichneSchichten() {
+        const wahl = $('hf-schichtwahl');
+        wahl.innerHTML = '';
+        (daten.schichten || []).forEach((s) => {
+          const frei = (daten.plaetze || []).filter((p) => p.schicht_id === s.id).reduce((x, p) => x + Math.max(0, p.anzahl - p.belegt), 0);
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'hf-schicht' + (s.id === schichtId ? ' aktiv' : '');
+          b.innerHTML = `<strong>${esc(s.bezeichnung)}</strong>${s.zeit_text ? `<span>${esc(s.zeit_text)}</span>` : ''}<em>${frei > 0 ? `${frei} ${frei === 1 ? 'Platz' : 'Plätze'} frei` : 'voll besetzt'}</em>`;
+          b.addEventListener('click', () => { schichtId = s.id; zeichneSchichten(); });
+          wahl.appendChild(b);
+        });
+        const box = $('hf-dienste');
+        box.innerHTML = '';
+        const dienste = (daten.dienste || []).filter((d) => platz(schichtId, d.id));
+        if (!dienste.length) { box.innerHTML = '<p class="hf-text">In dieser Schicht sind keine Dienste geplant.</p>'; return; }
+        dienste.forEach((d) => {
+          const p = platz(schichtId, d.id);
+          const voll = p.belegt >= p.anzahl;
+          const karte = document.createElement('div');
+          karte.className = 'hf-dienst' + (voll ? ' voll' : '');
+          karte.innerHTML = `<h3><span>${esc(d.icon || '⭐')}</span>${esc(d.bezeichnung)}</h3>
+            ${d.beschreibung ? `<p>${esc(d.beschreibung)}</p>` : ''}
+            <div class="hf-balken"><div style="width:${Math.min(100, Math.round((p.belegt / p.anzahl) * 100))}%"></div></div>
+            <span class="hf-belegt">${p.belegt} von ${p.anzahl} Plätzen belegt</span>
+            ${voll ? '' : '<button type="button" class="hf-knopf">Hier eintragen</button>'}`;
+          const k = karte.querySelector('button');
+          if (k) k.addEventListener('click', () => oeffneDialog(d));
+          box.appendChild(karte);
+        });
+      }
+
+      let dialogDienst = null;
+      const dialog = $('hf-dialog');
+      const sform = $('hf-schichtform');
+      function oeffneDialog(d) {
+        dialogDienst = d;
+        const s = daten.schichten.find((x) => x.id === schichtId);
+        $('hf-dialog-titel').textContent = `${d.icon || '⭐'} ${d.bezeichnung}`;
+        $('hf-dialog-zeit').textContent = [s.bezeichnung, s.zeit_text].filter(Boolean).join(' · ');
+        fehler(sform, null);
+        vorbelegen(sform, gemerkt());
+        if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
+      }
+      $('hf-abbrechen').addEventListener('click', () => dialog.close());
+      sform.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const t = pruefe(sform);
+        if (t) return fehler(sform, t);
+        fehler(sform, null);
+        const f = sform.elements;
+        const knopf = sform.querySelector('button[type=submit]');
+        knopf.disabled = true;
+        try {
+          const k = { name: f.name.value.trim(), email: f.email.value.trim(), telefon: f.telefon.value.trim() };
+          const r = (await rpc('helfer_eintragen', {
+            p_slug: SLUG, p_schicht: schichtId, p_dienst: dialogDienst.id, p_name: k.name, p_email: k.email, p_telefon: k.telefon,
+            p_kontakt: true, p_kuenftig: f.kuenftig.checked,
+          }))[0];
+          merke(k);
+          const s = daten.schichten.find((x) => x.id === schichtId);
+          const e = daten.einstellungen || {};
+          const ok = await mail(e.vorlage_bestaetigung_helfer, {
+            to_email: k.email, name: k.name, role: dialogDienst.bezeichnung,
+            shift: [s.bezeichnung, s.zeit_text].filter(Boolean).join(' · '),
+            event_date: e.datum_text || '', event_location: e.ort_text || '',
+            cancel_link: `${HIER}?storno=helfer&id=${r.id}&token=${r.cancel_token}`,
+          });
+          dialog.close();
+          meldung(`<p><strong>Danke, ${esc(k.name.split(/\s+/)[0])}!</strong> Du bist eingetragen für ${esc(dialogDienst.bezeichnung)} (${esc([s.bezeichnung, s.zeit_text].filter(Boolean).join(', '))}).</p>
+            <p>${ok ? 'Eine Bestätigung mit Link zum Austragen kommt per E-Mail.' : ok === false ? 'Die Bestätigungsmail konnte leider nicht verschickt werden. Deine Anmeldung ist trotzdem gespeichert.' : ''}</p>`);
+          await laden();
+        } catch (x) { fehler(sform, x.message); }
+        finally { knopf.disabled = false; }
+      });
+
+      // ---------- Helferpool ----------
+      const pform = $('hf-pool');
+      pform.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const t = pruefe(pform);
+        if (t) return fehler(pform, t);
+        fehler(pform, null);
+        const f = pform.elements;
+        const knopf = pform.querySelector('button[type=submit]');
+        knopf.disabled = true;
+        try {
+          const k = { name: f.name.value.trim(), email: f.email.value.trim(), telefon: f.telefon.value.trim() };
+          const wunsch = [...pform.querySelectorAll('input[name=wunsch]:checked')].map((x) => x.value).join(', ');
+          const r = (await rpc('helfer_pool_eintragen', {
+            p_slug: SLUG, p_name: k.name, p_email: k.email, p_telefon: k.telefon, p_wunsch: wunsch,
+            p_anmerkung: f.anmerkung.value.trim(), p_kontakt: true, p_kuenftig: f.kuenftig.checked,
+          }))[0];
+          merke(k);
+          const e = daten.einstellungen || {};
+          const vorname = k.name.split(/\s+/)[0];
+          const ok = await mail(e.vorlage_frei, {
+            to_email: k.email, to_name: k.name,
+            subject: 'Danke, du bist als Helfer bei Rock4Aid registriert',
+            message: `Hallo ${vorname},\n\ndanke, dass du beim Rock4Aid-Festival mithelfen möchtest! Du bist jetzt in unserem Helferpool registriert.\n\nSobald die Schichten geplant sind, schreiben wir dir. Dann suchst du dir deine Schicht aus.\n\nFalls du dich wieder austragen möchtest, genügt ein Klick:\n${HIER}?storno=pool&id=${r.id}&token=${r.cancel_token}\n\nBis bald!\nDein Rock4Aid-Team`,
+          });
+          pform.reset();
+          pform.hidden = true;
+          $('hf-reiter').hidden = true;
+          meldung(`<p><strong>Danke, ${esc(vorname)}! Du bist als Helfer registriert.</strong></p>
+            <p>Sobald die Schichten stehen, melden wir uns bei dir. ${ok ? 'Eine Bestätigung kommt per E-Mail.' : ''}</p>`);
+        } catch (x) { fehler(pform, x.message); }
+        finally { knopf.disabled = false; }
+      });
+
+      // ---------- Kuchen ----------
+      const kform = $('hf-kuchen');
+      kform.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const t = pruefe(kform, { telefon: false, kuchen: true });
+        if (t) return fehler(kform, t);
+        fehler(kform, null);
+        const f = kform.elements;
+        const knopf = kform.querySelector('button[type=submit]');
+        knopf.disabled = true;
+        try {
+          const k = { name: f.name.value.trim(), email: f.email.value.trim() };
+          const r = (await rpc('kuchen_eintragen', { p_slug: SLUG, p_name: k.name, p_email: k.email, p_kuchen: f.kuchen.value.trim(), p_kontakt: true }))[0];
+          merke({ ...gemerkt(), ...k });
+          const e = daten.einstellungen || {};
+          const ok = await mail(e.vorlage_bestaetigung_kuchen, {
+            to_email: k.email, name: k.name, cake: f.kuchen.value.trim(),
+            event_date: e.datum_text || '', event_location: e.ort_text || '',
+            cancel_link: `${HIER}?storno=kuchen&id=${r.id}&token=${r.cancel_token}`,
+          });
+          kform.reset();
+          meldung(`<p><strong>Danke, ${esc(k.name.split(/\s+/)[0])}!</strong> Dein Kuchen ist eingetragen.</p><p>${ok ? 'Eine Bestätigung kommt per E-Mail.' : ''}</p>`);
+          await laden();
+        } catch (x) { fehler(kform, x.message); }
+        finally { knopf.disabled = false; }
+      });
+
+      // ---------- Austragen über den Link aus der Mail ----------
+      async function storno(art, id, token) {
+        const box = $('hf-storno');
+        box.className = 'hf-storno'; box.hidden = false;
+        let eintrag = null;
+        try { eintrag = await rpc('helfer_eintrag_ansehen', { p_art: art, p_id: id, p_token: token }); } catch { /* ungültig */ }
+        const zurueck = '<p><a class="hf-link" href="/helfer/">Zur Helferseite</a></p>';
+        if (!eintrag) { box.innerHTML = `<h2>Eintrag nicht gefunden</h2><p>Der Link ist ungültig, oder du hast dich bereits ausgetragen.</p>${zurueck}`; return; }
+        const was = art === 'helfer' ? `deine Schicht <strong>${esc(eintrag.dienst)}</strong> (${esc([eintrag.schicht, eintrag.zeit].filter(Boolean).join(', '))})`
+          : art === 'kuchen' ? `deine Kuchenspende <strong>${esc(eintrag.kuchen)}</strong>`
+          : 'deine Registrierung im Helferpool';
+        box.innerHTML = `<h2>Wirklich austragen?</h2><p>${esc(eintrag.name)}, du möchtest ${was} zurückziehen.</p>
+          <div class="hf-dialog-knoepfe"><a class="hf-link" href="/helfer/">Nein, ich bleibe dabei</a><button type="button" class="hf-knopf rot">Ja, austragen</button></div>`;
+        box.querySelector('button').addEventListener('click', async (ev) => {
+          ev.target.disabled = true;
+          let ok = false;
+          try { ok = await rpc('helfer_eintrag_stornieren', { p_art: art, p_id: id, p_token: token }); } catch { ok = false; }
+          box.innerHTML = ok ? `<h2>Du bist ausgetragen</h2><p>Schade, dass es nicht klappt. Danke, dass du Bescheid gegeben hast!</p>${zurueck}`
+            : `<h2>Das hat nicht geklappt</h2><p>Bitte versuche es noch einmal oder schreib uns über das <a class="hf-link" href="/kontakt/">Kontaktformular</a>.</p>`;
+        });
+      }
+
+      // ---------- Laden ----------
+      async function laden() {
+        daten = await rpc('helfer_portal_laden', { p_slug: SLUG });
+        if (!daten) throw new Error('aus');
+        const e = daten.einstellungen || {};
+        if (e.pool_einleitung && !daten.schichten_offen) $('hf-intro').textContent = e.pool_einleitung;
+        if (daten.schichten_offen) $('hf-intro').textContent = e.einleitung || 'Die Schichten stehen! Such dir aus, wann und wo du mit anpacken möchtest.';
+        const meta = [e.datum_text && `📅 ${e.datum_text}`, e.ort_text && `📍 ${e.ort_text}`].filter(Boolean);
+        $('hf-meta').innerHTML = meta.map((m) => `<span>${esc(m)}</span>`).join('');
+        $('hf-meta').hidden = !meta.length;
+        if (daten.schichten_offen) {
+          if (!schichtId || !daten.schichten.some((s) => s.id === schichtId)) schichtId = daten.schichten[0] && daten.schichten[0].id;
+          zeichneSchichten();
+          const kuchen = !!e.kuchen_aktiv;
+          document.querySelector('[data-reiter=kuchen]').hidden = !kuchen;
+          if (e.kuchen_hinweis) $('hf-kuchen-text').textContent = e.kuchen_hinweis;
+          const liste = daten.kuchen || [];
+          $('hf-kuchenliste').hidden = !liste.length;
+          $('hf-kuchenliste').innerHTML = liste.length ? `<strong>Schon angekündigt:</strong> ${liste.map(esc).join(', ')}` : '';
+          $('hf-pool-text').textContent = 'Du weißt noch nicht, wann du Zeit hast? Registriere dich allgemein. Wir melden uns bei dir, wenn wir noch Unterstützung brauchen.';
+        }
+      }
+
+      async function start() {
+        const p = new URLSearchParams(location.search);
+        if (!app.dataset.aktiv || !URL_ || !KEY) {
+          $('hf-laden').textContent = 'Die Helferseite ist gerade nicht erreichbar. Schreib uns gern über das Kontaktformular.';
+          return;
+        }
+        if (p.get('storno')) { $('hf-laden').hidden = true; return storno(p.get('storno'), p.get('id'), p.get('token')); }
+        try { await laden(); }
+        catch {
+          $('hf-laden').innerHTML = 'Die Helferseite ist gerade nicht erreichbar. Schreib uns gern über das <a class="hf-link" href="/kontakt/">Kontaktformular</a>.';
+          return;
+        }
+        $('hf-laden').hidden = true;
+        // Einladungslink aus dem Helferpool füllt die Daten vor
+        if (p.get('pool') && p.get('token')) {
+          try {
+            const k = await rpc('helfer_pool_ansehen', { p_id: p.get('pool'), p_token: p.get('token') });
+            if (k) { merke(k); }
+          } catch { /* egal */ }
+        }
+        const k = gemerkt();
+        [pform, kform].forEach((f) => vorbelegen(f, k));
+        if (daten.schichten_offen) { $('hf-reiter').hidden = false; zeige(p.get('bereich') === 'pool' ? 'pool' : 'schichten'); }
+        else zeige('pool');
+      }
+      start();
+    })();
+  </script>
+</Base>

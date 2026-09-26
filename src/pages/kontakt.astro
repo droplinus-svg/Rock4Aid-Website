@@ -4,7 +4,7 @@ import { getTable } from '../lib/content.js';
 
 const einstellungen = await getTable('einstellungen', { single: true });
 const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
-const helferLink = (einstellungen.helfer_link || '').trim();
+const helferLink = '/helfer/';
 
 // Anliegen werden im Redaktionssystem gepflegt (Tabelle kontakt_anliegen).
 // Links auf der Website können eines vorauswählen, zum Beispiel /kontakt/?anliegen=band
@@ -23,8 +23,10 @@ const ausDb = (await getTable('kontakt_anliegen', { order: 'reihenfolge.asc' }))
 const ANLIEGEN = (ausDb.length ? ausDb : STANDARD).map((x) => ({
   ...x,
   // Für "helfer" ohne eigenen Hinweis: automatisch auf die Helferanmeldung verweisen
-  hinweis: x.hinweis || (x.kuerzel === 'helfer' && helferLink
-    ? `<p>Für Schichten beim Festival könnt ihr euch auch direkt eintragen: <a href="${helferLink}">zur Helferanmeldung</a>.</p>` : ''),
+  // "helfer" hat eine eigene Seite. Dort registriert man sich direkt, statt eine Nachricht zu schreiben.
+  hinweis: x.kuerzel === 'helfer'
+    ? `<p>Als Helfer registrierst du dich direkt auf unserer Helferseite. Dort kannst du dich jederzeit eintragen, auch wenn die Schichten noch nicht feststehen.</p><p style="margin-top:14px"><a class="kt-helferknopf" href="${helferLink}">Zur Helferseite</a></p>`
+    : (x.hinweis || ''),
 }));
 const mitMusik = ANLIEGEN.filter((x) => x.zeige_musiklink).map((x) => x.kuerzel).join(' ');
 const BILD = '/assets/crushingjars-b.jpg';
@@ -55,7 +57,7 @@ const BILD = '/assets/crushingjars-b.jpg';
           {ANLIEGEN.filter((x) => x.hinweis).map((x) => <div class="kt-hinweis" data-zeige={x.kuerzel} hidden set:html={x.hinweis}></div>)}
         </fieldset>
 
-        <fieldset>
+        <fieldset data-nicht-helfer>
           <legend>Wer seid ihr?</legend>
           <div class="kt-grid">
             <label class="kt-feld kt-breit">Name, bei Bands gern auch der Bandname<input name="name" required autocomplete="name" /></label>
@@ -65,15 +67,20 @@ const BILD = '/assets/crushingjars-b.jpg';
           </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset data-nicht-helfer>
           <legend>Eure Nachricht</legend>
           <label class="kt-feld"><span class="kt-unsichtbar">Nachricht</span><textarea name="nachricht" rows="6" required></textarea></label>
         </fieldset>
 
-        <p class="kt-klein">Wir nutzen eure Angaben nur, um eure Anfrage zu beantworten. Mehr dazu steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <p class="kt-klein" data-nicht-helfer>Wir nutzen eure Angaben nur, um eure Anfrage zu beantworten. Mehr dazu steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
         <p id="kt-fehler" class="kt-fehler" role="alert" hidden></p>
-        <button type="submit" id="kt-senden" class="kt-senden">Nachricht senden</button>
+        <button type="submit" id="kt-senden" class="kt-senden" data-nicht-helfer>Nachricht senden</button>
       </form>
+      <a class="kt-helferband" href={helferLink}>
+        <span class="kt-hb-titel">Hilf uns als Helfer</span>
+        <span class="kt-hb-text">Ohne Helferinnen und Helfer gibt es kein Festival. Registriere dich jetzt, auch wenn die Schichten noch nicht feststehen.</span>
+        <span class="kt-hb-pfeil">Zur Helferseite →</span>
+      </a>
       <div id="kt-danke" class="kt-danke" hidden>
         <p><strong>Danke für eure Nachricht!</strong></p>
         <p>Wir haben sie erhalten und melden uns so schnell wie möglich bei euch.</p>
@@ -114,6 +121,13 @@ const BILD = '/assets/crushingjars-b.jpg';
     .kt-senden { background:#4b2e83; color:#fff; border:0; border-radius:999px; padding:16px 30px; font:inherit; font-weight:700; font-size:18px; cursor:pointer; align-self:center; }
     .kt-senden:hover { background:#3d2569; }
     .kt-senden:disabled { opacity:.6; cursor:wait; }
+    .kt-hinweis :global(.kt-helferknopf) { display:inline-block; background:#4b2e83; color:#fff !important; text-decoration:none !important; border-radius:999px; padding:13px 26px; font-weight:700; font-size:17px; }
+    [data-nicht-helfer][hidden] { display:none !important; }
+    .kt-helferband { display:flex; flex-direction:column; gap:6px; margin-top:22px; background:#ffdd00; color:#4b2e83; border-radius:14px; padding:18px 22px; text-decoration:none; font-family:'Archivo',sans-serif; transition:transform .15s; }
+    .kt-helferband:hover { transform:translateY(-2px); }
+    .kt-hb-titel { font-weight:700; font-size:clamp(19px,2vw,23px); }
+    .kt-hb-text { font-size:16px; line-height:1.45; }
+    .kt-hb-pfeil { font-weight:700; font-size:16px; }
     .kt-danke { background:#ffdd00; color:#4b2e83; border-radius:12px; padding:26px; font-family:'Archivo',sans-serif; font-size:clamp(17px,1.9vw,21px); line-height:1.5; text-align:center; }
     .kt-danke p { margin:.3em 0; }
     @media (max-width:640px) { .kt-h1, .kt-intro { text-align:left; } }
@@ -136,6 +150,8 @@ const BILD = '/assets/crushingjars-b.jpg';
       const aktualisiere = () => {
         const key = (radios.find((r) => r.checked) || radios[0]).dataset.key;
         document.querySelectorAll('[data-zeige]').forEach((el) => { el.hidden = !el.dataset.zeige.split(' ').includes(key); });
+        // Beim Anliegen "helfer" führt der Weg auf die Helferseite, nicht über eine Nachricht
+        document.querySelectorAll('[data-nicht-helfer]').forEach((el) => { el.hidden = key === 'helfer'; });
       };
       const vorwahl = params.get('anliegen');
       const treffer = radios.find((r) => r.dataset.key === vorwahl);
