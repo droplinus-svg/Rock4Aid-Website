@@ -89,8 +89,8 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
                   <label class="mw-feld">BIC (freiwillig)<input name="bic" autocomplete="off" spellcheck="false" /></label>
                 </div>
                 <p class="mw-mandat">{mandatText}</p>
-                <label class="mw-check"><input type="checkbox" name="mandat" required /> Ich erteile dieses SEPA-Lastschriftmandat.</label>
-                <label class="mw-check"><input type="checkbox" name="datenschutz" required /> Ich habe die <a href="/datenschutz/" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen und bin mit der Verarbeitung meiner Angaben für die Fördermitgliedschaft einverstanden.</label>
+                <label class="mw-check"><input type="checkbox" name="mandat" required /> <span>Ich erteile dieses SEPA-Lastschriftmandat.</span></label>
+                <label class="mw-check"><input type="checkbox" name="datenschutz" required /> <span>Ich habe die <a href="/datenschutz/" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen und bin mit der Verarbeitung meiner Angaben für die Fördermitgliedschaft einverstanden.</span></label>
               </fieldset>
 
               <p id="mw-fehler" class="mw-fehler" role="alert" hidden></p>
@@ -209,6 +209,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
     .mw-mandat { font-size:14px; line-height:1.55; background:#f4f0fa; border-radius:8px; padding:12px 14px; margin:18px 0 12px; }
     .mw-check { display:flex; gap:10px; align-items:flex-start; font-size:15px; line-height:1.5; margin:8px 0; }
     .mw-check input { width:20px; height:20px; margin-top:2px; flex:0 0 auto; }
+    .mw-check span { flex:1 1 auto; text-align:left; }
     .mw-check a { color:#4b2e83; text-decoration:underline; }
     .mw-fehler { background:#fde8e8; color:#a12020; border-radius:8px; padding:12px 14px; font-weight:600; margin:0; }
     .mw-senden { background:#4b2e83; color:#fff; border:0; border-radius:999px; padding:16px 28px; font:inherit; font-weight:700; font-size:18px; cursor:pointer; align-self:center; }
