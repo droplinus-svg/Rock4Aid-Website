@@ -27,6 +27,7 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
      darunter durchlaufenden Text. */
   .sn-innen { transition:background-color .25s; }
   .sn.hell .sn-innen { background:rgba(249,226,92,.98); -webkit-backdrop-filter:none; backdrop-filter:none; }
+  .sn.hell[data-grund='weiss'] .sn-innen { background:rgba(255,255,255,.97); }
   .sn.hell .sn-link { color:rgba(75,46,131,.7); }
   .sn.hell .sn-link:hover { color:#4b2e83; }
   .sn.hell .sn-link.aktiv { color:#4b2e83; border-bottom-color:#4b2e83; font-weight:600; }
@@ -42,7 +43,7 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
     .sn { display:none; }
     .sn-hoch { display:flex; }
   }
-  :global([data-sprungziel]) { scroll-margin-top:110px; }
+  :global([data-sprungziel]) { scroll-margin-top:135px; }
 </style>
 <script>
   const hoch = document.querySelector('.sn-hoch');
@@ -64,6 +65,10 @@ const { eintraege = [] } = Astro.props; // [{ id, label }]
       if (!dunkel) return;
       const unten = nav.firstElementChild.getBoundingClientRect().bottom;
       nav.classList.toggle('hell', dunkel.getBoundingClientRect().bottom < unten);
+      // Liegt die Leiste über einem weißen Bereich, bekommt sie einen weißen Hintergrund
+      const r = nav.firstElementChild.getBoundingClientRect();
+      const darunter = document.elementsFromPoint(innerWidth / 2, r.bottom + 2).find((el) => el.closest && el.closest('[data-band]'));
+      nav.dataset.grund = darunter ? darunter.closest('[data-band]').dataset.band : '';
     };
     addEventListener('scroll', pruefeHell, { passive: true }); pruefeHell();
     const markiere = () => {
