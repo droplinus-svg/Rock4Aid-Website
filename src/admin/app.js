@@ -691,6 +691,14 @@ function renderLogin(fehler) {
 }
 
 export async function start() {
+  // Nach dem Umzug werden die Inhalte in der Rock4Aid-App gepflegt.
+  if ((import.meta.env.PUBLIC_WEB_SUPABASE_URL || '').trim()) {
+    const app = (import.meta.env.PUBLIC_APP_URL || 'https://rock4aid.netlify.app').trim().replace(/\/+$/, '');
+    document.body.innerHTML = `<div id="login"><div class="brand">ROCK4AID<br><small>Redaktion</small></div>
+      <p style="max-width:420px;line-height:1.5">Die Redaktion der Website ist in die Rock4Aid-App umgezogen. Melde dich dort an und öffne im Admin-Bereich den Reiter <b>„Website“</b>.</p>
+      <a class="btn primary" style="text-align:center;text-decoration:none" href="${app}/admin/website">Zur Rock4Aid-App</a></div>`;
+    return;
+  }
   if (!URL || !KEY) { document.body.innerHTML = '<div id="login"><div class="brand">ROCK4AID</div><p style="max-width:420px">Das Redaktionssystem ist noch nicht konfiguriert. Trage in Netlify die Variablen <b>PUBLIC_SUPABASE_URL</b> und <b>PUBLIC_SUPABASE_ANON_KEY</b> ein und veröffentliche neu.</p></div>'; return; }
   sb = createClient(URL, KEY);
   const { data } = await sb.auth.getSession();

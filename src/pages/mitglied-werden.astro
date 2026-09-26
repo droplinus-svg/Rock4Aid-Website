@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import TextFluss from '../components/TextFluss.astro';
-import { getTable, cleanUrl } from '../lib/content.js';
+import { getTable, SUPABASE_URL, SUPABASE_KEY, SUPABASE_SCHEMA } from '../lib/content.js';
 
 const einstellungen = await getTable('einstellungen', { single: true });
 const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
@@ -10,8 +10,9 @@ const abschnitte = (await getTable('mitglied_abschnitte', { order: 'reihenfolge.
   .filter((a) => a.sichtbar !== false);
 const hidden = einstellungen.mitglied_sichtbar === false || m.sichtbar === false;
 
-const SB_URL = cleanUrl(import.meta.env.PUBLIC_SUPABASE_URL);
-const SB_KEY = (import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '').trim();
+const SB_URL = SUPABASE_URL;
+const SB_KEY = SUPABASE_KEY;
+const SB_SCHEMA = SUPABASE_SCHEMA;
 const formularAktiv = m.formular_aktiv !== false && Boolean(SB_URL && SB_KEY);
 const mindest = Number(m.mindestbetrag || 12);
 const vorschlaege = String(m.vorschlagsbetraege || '24, 60, 120')
@@ -104,7 +105,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
     </>
   )}
 
-  <script define:vars={{ SB_URL, SB_KEY, mandatText, mindest }}>
+  <script define:vars={{ SB_URL, SB_KEY, SB_SCHEMA, mandatText, mindest }}>
     (function () {
       const form = document.getElementById('mw-form');
       if (!form) return;
@@ -148,7 +149,7 @@ const H2 = "margin:0;text-align:center;font-family:'Archivo',sans-serif;font-wei
         try {
           const res = await fetch(`${SB_URL}/rest/v1/rpc/foerderantrag_stellen`, {
             method: 'POST',
-            headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+            headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Content-Profile': SB_SCHEMA },
             body: JSON.stringify({
               p_vorname: f.vorname.value, p_nachname: f.nachname.value, p_strasse: f.strasse.value,
               p_plz: f.plz.value, p_ort: f.ort.value, p_email: f.email.value, p_telefon: f.telefon.value,
