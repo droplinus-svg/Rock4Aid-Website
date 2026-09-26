@@ -11,7 +11,11 @@
     "lineup_sichtbar": true,
     "charity_sichtbar": true,
     "anfahrt_sichtbar": true,
-    "termin_sichtbar": true
+    "termin_sichtbar": true,
+    "ueberuns_sichtbar": true,
+    "mitglied_sichtbar": true,
+    "helfer_sichtbar": true,
+    "helfer_link": ""
   },
   "sponsoren": [
     {
@@ -315,5 +319,36 @@
     "id": 1,
     "impressum_html": "<p class=\"rt\">Angaben gemäß § 5 DDG (ehemals § 5 TMG).</p><h2>Verantwortlich für den Inhalt</h2><p class=\"rt\">Rock4Aid e.&nbsp;V.<br />Bismarckstr. 27<br />68542 Heddesheim</p><h2>Kontakt</h2><p class=\"rt\">E-Mail: <a href=\"mailto:rock4aid2025@gmail.com\">rock4aid2025@gmail.com</a></p><h2>Vertreten durch</h2><p class=\"rt\">Vorstand: Tobias Richter, Steffen Block, Marcus Gärtner, Linus Drop</p><h2>Registereintrag</h2><p class=\"rt\">Eingetragen im Vereinsregister des Amtsgerichts Mannheim, VR 704658.<br />Der Rock4Aid e.&nbsp;V. ist als gemeinnütziger Verein im Sinne des § 52 AO anerkannt.</p><h2>Verwendung der Spenden</h2><p class=\"rt\">Die Verwendung der Spendengelder wird transparent gemacht und öffentlich kommuniziert.</p><h2>Haftung für Inhalte</h2><p class=\"rt\">Als Diensteanbieter sind wir für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Wir sind jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden entsprechender Rechtsverletzungen entfernen wir diese Inhalte umgehend.</p><h2>Haftung für Links</h2><p class=\"rt\">Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.</p><h2>Urheberrecht</h2><p class=\"rt\">Die auf dieser Website veröffentlichten Fotos und Texte sind urheberrechtlich geschützt. Fotos: Rock4Aid Organisationsteam und Unterstützer. Presseausschnitte sind Eigentum der jeweiligen Verlage und werden hier ausschließlich zur Dokumentation der Berichterstattung gezeigt.</p><p class=\"rt\"><em>Hinweis: Telefonnummer ggf. ergänzen.</em></p>",
     "datenschutz_html": "<p class=\"rt\">Wir nehmen den Schutz deiner Daten ernst. Diese Website ist bewusst schlank gebaut: kein Tracking, keine Analyse-Cookies, keine Werbenetzwerke. Die Schriftart wird lokal von unserem eigenen Server geladen (keine Google-Fonts-Verbindung), und es sind keine Karten oder anderen externen Dienste eingebettet.</p><h2>Verantwortliche Stelle</h2><p class=\"rt\">Rock4Aid e.&nbsp;V.<br />Bismarckstr. 27, 68542 Heddesheim<br />Vertreten durch den Vorstand: Tobias Richter, Steffen Block, Marcus Gärtner, Linus Drop<br />E-Mail: <a href=\"mailto:rock4aid2025@gmail.com\">rock4aid2025@gmail.com</a></p><h2>Server-Logfiles</h2><p class=\"rt\">Unser Hoster erhebt beim Aufruf der Seite technisch notwendige Daten (IP-Adresse, Datum und Uhrzeit, aufgerufene Datei, Browsertyp, Referrer). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO – berechtigtes Interesse am sicheren und störungsfreien Betrieb. Diese Daten werden nicht mit anderen Datenquellen zusammengeführt.</p><p class=\"rt\">Hosting-Anbieter: Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA. Die Website wird auf Servern von Netlify bereitgestellt; dabei werden die oben genannten Zugriffsdaten verarbeitet und teilweise in die USA übermittelt. Grundlage der Übermittlung ist ein Auftragsverarbeitungsvertrag mit Netlify samt EU-Standardvertragsklauseln nach Art. 46 DSGVO.</p><h2>Karte / Route planen</h2><p class=\"rt\">Auf der Seite „Anfahrt“ zeigen wir ein statisches Kartenbild. Es wird nichts von Dritten nachgeladen. Erst wenn du auf „Route planen“ klickst, öffnet sich Google Maps in einem neuen Tab – dann gelten die Datenschutzbestimmungen von Google.</p><h2>Bilder-Uploads / Redaktionssystem</h2><p class=\"rt\">Inhalte werden über einen passwortgeschützten Redaktionsbereich gepflegt und in der EU (Supabase, Frankfurt) gespeichert. Für normale Besucher der Website werden dabei keine personenbezogenen Daten verarbeitet.</p><h2>Kontaktaufnahme per E-Mail</h2><p class=\"rt\">Wenn du uns eine E-Mail schreibst, speichern wir deine Angaben, um die Anfrage zu bearbeiten. Rechtsgrundlage: Art. 6 Abs. 1 lit. b und f DSGVO. Wir löschen die Daten, sobald sie nicht mehr benötigt werden.</p><h2>Fotos der Veranstaltung</h2><p class=\"rt\">Auf dieser Website veröffentlichen wir Fotos unserer Veranstaltungen. Wenn du auf einem Bild zu sehen bist und die Veröffentlichung nicht möchtest, schreib uns kurz – wir entfernen das Foto zeitnah.</p><h2>Deine Rechte</h2><p class=\"rt\">Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Außerdem kannst du dich bei der zuständigen Datenschutz-Aufsichtsbehörde beschweren. Wende dich dafür einfach an die oben genannte Adresse.</p>"
-  }
+  },
+  "ueber_uns": {
+    "id": 1,
+    "sichtbar": true,
+    "hero_titel": "Über uns",
+    "hero_bild": "",
+    "intro_text": "<p>Wir sind Rock4Aid e.V. aus Heddesheim. Mit unserem Benefiz-Festival sammeln wir Geld für konkrete Hilfsprojekte.</p>"
+  },
+  "ueber_uns_abschnitte": [
+    {
+      "id": 1,
+      "titel": "Wer wir sind",
+      "text": "<p>Hier stellen wir den Verein und die Menschen dahinter vor.</p>",
+      "bild": "",
+      "bild_rechts": false,
+      "reihenfolge": 1,
+      "sichtbar": true
+    }
+  ],
+  "mitglied": {
+    "id": 1,
+    "sichtbar": true,
+    "hero_titel": "Werde Fördermitglied",
+    "hero_bild": "",
+    "intro_text": "<p>Mit einer Fördermitgliedschaft unterstützt du Rock4Aid dauerhaft.</p>",
+    "formular_aktiv": false,
+    "mindestbetrag": 12,
+    "vorschlagsbetraege": "24, 60, 120",
+    "glaeubiger_id": "",
+    "danke_text": ""
+  },
+  "mitglied_abschnitte": []
 }

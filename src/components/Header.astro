@@ -8,6 +8,10 @@ const visYears = (jahre || []).filter((j) => j.sichtbar !== false)
 const showLineup = s.lineup_sichtbar !== false;
 const showCharity = s.charity_sichtbar !== false;
 const showAnfahrt = s.anfahrt_sichtbar !== false;
+const showUeberUns = s.ueberuns_sichtbar !== false;
+const showMitglied = s.mitglied_sichtbar !== false;
+const helferLink = (s.helfer_link || '').trim();
+const showHelfer = s.helfer_sichtbar !== false && Boolean(helferLink);
 ---
 <header style="position:fixed;top:0;left:0;right:0;z-index:80;background:rgba(75,46,131,.96);backdrop-filter:blur(8px);box-shadow:0 2px 14px rgba(20,10,45,.35)">
   <div style="padding:7px 5.1%;display:flex;align-items:center;justify-content:space-between;gap:18px">
@@ -23,6 +27,9 @@ const showAnfahrt = s.anfahrt_sichtbar !== false;
       {showLineup && <a href="/line-up/" style={`color:${col('lineup')};padding:4px 0;white-space:nowrap`}>Line-Up</a>}
       {showCharity && <a href="/charity/" style={`color:${col('charity')};padding:4px 0;white-space:nowrap`}>Charity</a>}
       {showAnfahrt && <a href="/anfahrt-kontakt/" style={`color:${col('anfahrt')};padding:4px 0;white-space:nowrap`}>Anfahrt & Kontakt</a>}
+      {showUeberUns && <a href="/ueber-uns/" style={`color:${col('ueberuns')};padding:4px 0;white-space:nowrap`}>Über uns</a>}
+      {showMitglied && <a href="/mitglied-werden/" style={`color:${col('mitglied')};padding:4px 0;white-space:nowrap`}>Mitglied werden</a>}
+      {showHelfer && <a href={helferLink} style="color:#fff;padding:4px 0;white-space:nowrap">Helfer</a>}
       {visYears.length > 0 && (
         <details class="r4a-rueck" style="position:relative">
           <summary style={`cursor:pointer;color:${col('rueckblick')};padding:4px 0;white-space:nowrap;display:flex;align-items:center;gap:5px`}>Rückblick<span style="font-size:9px;line-height:1">▼</span></summary>
