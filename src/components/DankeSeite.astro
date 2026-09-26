@@ -1,0 +1,508 @@
+---
+// Dankesseite für Helfer, eine pro Jahr. Inhalte aus dem Website-Editor der App
+// (Website → Helfer-Dankesseiten, Tabellen web.danke_*). Design der früheren
+// Dankesseite 2026, Schriften lokal (keine Verbindung zu Google).
+const { seite, zahlen = [], bilder = [], presse = [], jahre = [] } = Astro.props;
+const dankTitel = seite.dank_titel || `Ihr habt Rock4Aid ${seite.jahr} möglich gemacht.`;
+const andereJahre = jahre.filter((j) => j !== seite.jahr);
+---
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{`Rock4Aid ${seite.jahr} – Danke!`}</title>
+  <meta name="description" content={`Rock4Aid ${seite.jahr} – Eine Zusammenfassung des Events mit Fotos und Pressestimmen. Danke an alle Helfer, Kuchenspender und Unterstützer.`}/>
+  <meta property="og:title" content={`Rock4Aid ${seite.jahr} – Danke!`}/>
+  <meta property="og:type" content="website"/>
+  <meta name="robots" content="noindex"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <style is:global>
+    @font-face{font-family:'Oswald';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/oswald-latin-400-normal.woff2') format('woff2');}
+    @font-face{font-family:'Oswald';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/oswald-latin-600-normal.woff2') format('woff2');}
+    @font-face{font-family:'Oswald';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/oswald-latin-700-normal.woff2') format('woff2');}
+    @font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/barlow-latin-400-normal.woff2') format('woff2');}
+    @font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/barlow-latin-500-normal.woff2') format('woff2');}
+    @font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/barlow-latin-600-normal.woff2') format('woff2');}
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --yellow:#F5C800;
+      --blue:#1E1B6E;
+      --blue-dark:#14125A;
+      --blue-deep:#0C0A3E;
+      --white:#FFFFFF;
+      --muted:rgba(255,255,255,0.6);
+    }
+    html{scroll-behavior:smooth;}
+    body{
+      background:var(--blue-deep);
+      color:var(--white);
+      font-family:'Barlow',sans-serif;
+      font-size:17px;
+      line-height:1.65;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:var(--yellow);text-decoration:none;}
+    a:hover{text-decoration:underline;}
+
+    /* HERO */
+    .hero{
+      min-height:78vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:60px 24px;
+      background:
+        radial-gradient(ellipse at top, rgba(245,200,0,0.12), transparent 60%),
+        linear-gradient(180deg, var(--blue) 0%, var(--blue-deep) 100%);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;inset:0;
+      background:radial-gradient(circle at 20% 80%, rgba(245,200,0,0.08), transparent 50%);
+      pointer-events:none;
+    }
+    .brand{
+      font-family:'Oswald',sans-serif;
+      font-size:clamp(38px,8vw,72px);
+      font-weight:700;
+      color:var(--yellow);
+      letter-spacing:0.04em;
+      line-height:0.95;
+      margin-bottom:8px;
+      position:relative;
+    }
+    .brand .four{
+      color:var(--white);
+      -webkit-text-stroke:2px var(--yellow);
+      paint-order:stroke;
+    }
+    .hero-sub{
+      font-family:'Oswald',sans-serif;
+      font-size:13px;
+      letter-spacing:0.3em;
+      color:var(--muted);
+      text-transform:uppercase;
+      margin-bottom:46px;
+      position:relative;
+    }
+    .danke{
+      font-family:'Oswald',sans-serif;
+      font-size:clamp(80px,18vw,180px);
+      font-weight:700;
+      color:var(--yellow);
+      letter-spacing:0.02em;
+      line-height:0.9;
+      text-shadow:0 8px 40px rgba(245,200,0,0.25);
+      position:relative;
+    }
+    .hero-lead{
+      max-width:640px;
+      margin:36px auto 0;
+      font-size:clamp(17px,2.4vw,21px);
+      color:rgba(255,255,255,0.85);
+      line-height:1.6;
+      position:relative;
+    }
+    /* SECTIONS */
+    section{padding:80px 24px;}
+    .container{max-width:1100px;margin:0 auto;}
+    .section-label{
+      font-family:'Oswald',sans-serif;
+      font-size:12px;
+      letter-spacing:0.3em;
+      color:var(--yellow);
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+    .section-title{
+      font-family:'Oswald',sans-serif;
+      font-size:clamp(28px,5vw,44px);
+      font-weight:700;
+      color:var(--white);
+      letter-spacing:0.02em;
+      margin-bottom:24px;
+      line-height:1.1;
+    }
+    .section-intro{
+      max-width:680px;
+      color:rgba(255,255,255,0.75);
+      font-size:17px;
+      line-height:1.7;
+      margin-bottom:40px;
+    }
+
+    /* SECTION DIVIDERS */
+    .section-alt{background:var(--blue-dark);}
+    .section-blue{background:var(--blue);}
+
+    /* STATS */
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:18px;
+    }
+    .stats.stats-3{grid-template-columns:repeat(3, 1fr);}
+    .stat{
+      text-align:center;
+      padding:22px 10px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(245,200,0,0.18);
+      border-radius:12px;
+      transition:transform 0.3s ease, border-color 0.3s ease;
+    }
+    .stat:hover{
+      transform:translateY(-4px);
+      border-color:rgba(245,200,0,0.45);
+    }
+    .stat-number{
+      font-family:'Oswald',sans-serif;
+      font-size:clamp(40px,7vw,76px);
+      font-weight:700;
+      color:var(--yellow);
+      line-height:1;
+      letter-spacing:0.02em;
+      text-shadow:0 4px 24px rgba(245,200,0,0.15);
+    }
+    .stat-label{
+      font-family:'Oswald',sans-serif;
+      font-size:12px;
+      letter-spacing:0.2em;
+      color:var(--muted);
+      text-transform:uppercase;
+      margin-top:10px;
+    }
+    @media (max-width:640px){
+      .stats,.stats.stats-3{grid-template-columns:repeat(2, 1fr); gap:12px;}
+      .stat{padding:18px 8px;}
+    }
+
+    /* GALLERY (masonry via CSS columns) */
+    .gallery{
+      columns:4;
+      column-gap:12px;
+    }
+    .gallery .ph{
+      break-inside:avoid;
+      margin:0 0 12px;
+      border-radius:8px;
+      overflow:hidden;
+      cursor:pointer;
+      background:var(--blue-deep);
+      transition:transform 0.3s ease, box-shadow 0.3s ease;
+      display:block;
+    }
+    .gallery .ph:hover{
+      transform:translateY(-4px);
+      box-shadow:0 12px 32px rgba(0,0,0,0.4);
+    }
+    .gallery .ph img{
+      width:100%;
+      height:auto;
+      display:block;
+      transition:transform 0.5s ease;
+    }
+    .gallery .ph:hover img{transform:scale(1.04);}
+    @media (max-width:900px){.gallery{columns:3;}}
+    @media (max-width:640px){.gallery{columns:2; column-gap:8px;} .gallery .ph{margin-bottom:8px;}}
+
+    /* ARTICLES */
+    .articles{display:flex;flex-direction:column;gap:48px;}
+    .article{
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;
+      padding:24px;
+      transition:border-color 0.3s ease;
+    }
+    .article:hover{border-color:rgba(245,200,0,0.4);}
+    .article-meta{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+      flex-wrap:wrap;
+    }
+    .article-source{
+      font-family:'Oswald',sans-serif;
+      font-size:13px;
+      font-weight:700;
+      color:var(--yellow);
+      letter-spacing:0.15em;
+      text-transform:uppercase;
+    }
+    .article-date{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .article-divider{
+      width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.3);
+    }
+    .article-imgs{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .article-imgs.multi{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+      gap:10px;
+    }
+    .article-imgs img{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:6px;
+      cursor:zoom-in;
+      background:#fff;
+    }
+
+    /* OUTRO */
+    .outro{
+      text-align:center;
+      padding:120px 24px;
+    }
+    .outro h2{
+      font-family:'Oswald',sans-serif;
+      font-size:clamp(36px,7vw,72px);
+      font-weight:700;
+      color:var(--yellow);
+      letter-spacing:0.04em;
+      line-height:1;
+      margin-bottom:24px;
+    }
+    .outro p{
+      max-width:560px;
+      margin:0 auto 32px;
+      color:rgba(255,255,255,0.8);
+      font-size:18px;
+      line-height:1.7;
+    }
+    .heart{display:inline-block;font-size:32px;margin:0 6px;}
+
+    /* FOOTER */
+    footer{
+      padding:32px 24px;
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      border-top:1px solid rgba(255,255,255,0.08);
+    }
+
+    /* LIGHTBOX */
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.92);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:20px;
+      cursor:zoom-out;
+    }
+    .lightbox.open{display:flex;}
+    .lightbox img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      border-radius:6px;
+      box-shadow:0 16px 60px rgba(0,0,0,0.6);
+    }
+    .lightbox-close{
+      position:absolute;
+      top:20px;
+      right:24px;
+      background:transparent;
+      border:none;
+      color:var(--white);
+      font-size:36px;
+      cursor:pointer;
+      line-height:1;
+      padding:0;
+      width:44px;
+      height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .lightbox-nav{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      background:rgba(255,255,255,0.1);
+      border:1px solid rgba(255,255,255,0.2);
+      color:var(--white);
+      font-size:22px;
+      cursor:pointer;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:background 0.2s ease;
+    }
+    .lightbox-nav:hover{background:rgba(245,200,0,0.3);}
+    .lightbox-prev{left:20px;}
+    .lightbox-next{right:20px;}
+
+    @media (max-width:640px){
+      section{padding:60px 18px;}
+      .grid{grid-template-columns:repeat(2, 1fr);}
+      .lightbox-nav{width:40px;height:40px;font-size:18px;}
+    }
+  
+    /* Ergänzungen für den Editor: beliebig viele Zahlen, Rich-Text-Absätze */
+    .stats{display:flex !important;flex-wrap:wrap;justify-content:center;}
+    .stats .stat{flex:0 1 230px;min-width:0;}
+    .stats .stat-number{white-space:nowrap;font-size:clamp(34px,4vw,56px) !important;}
+    @media (max-width:640px){.stats .stat{flex:1 1 40%;}}
+    .rt{margin:0 0 .8em;}
+    .rt:last-child{margin-bottom:0;}
+    .rt strong{color:var(--yellow);}
+    .dank-text{max-width:760px;margin:22px auto 0;color:rgba(255,255,255,.85);}
+    .jahre{margin-top:10px;font-size:13px;color:rgba(255,255,255,.55);}
+    .jahre a{color:var(--yellow);margin:0 6px;}
+  </style>
+</head>
+<body>
+<header class="hero" id="top">
+  <div class="brand">ROCK<span class="four">4</span>AID</div>
+  {seite.datumszeile && <div class="hero-sub">{seite.datumszeile}</div>}
+  <div class="danke">{seite.titel || 'DANKE!'}</div>
+  {seite.einleitung && <div class="hero-lead" set:html={seite.einleitung}></div>}
+</header>
+
+{zahlen.length > 0 && (
+  <section style="padding:70px 24px;">
+    <div class="container" style="text-align:center;">
+      <div class="section-label" style="margin-bottom:32px;">{seite.zahlen_titel}</div>
+      <div class="stats">
+        {zahlen.map((z) => <div class="stat"><div class="stat-number">{z.wert}</div><div class="stat-label">{z.bezeichnung}</div></div>)}
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="section-blue" style="padding:60px 24px;">
+  <div class="container" style="text-align:center;">
+    {seite.dank_kicker && <div class="section-label">{seite.dank_kicker}</div>}
+    <h2 class="section-title" style="margin-bottom:0;">{dankTitel}</h2>
+    {seite.dank_text && <div class="dank-text" set:html={seite.dank_text}></div>}
+  </div>
+</section>
+
+{bilder.length > 0 && (
+  <section>
+    <div class="container">
+      <div class="section-label">Rückblick</div>
+      <h2 class="section-title">{seite.galerie_titel}</h2>
+      <p style="color:rgba(255,255,255,0.55);font-size:14px;margin:-12px 0 28px;">Tippe ein Foto an für die Großansicht – swipen oder Pfeiltasten zum Durchblättern.</p>
+      <div class="gallery">
+        {bilder.map((b) => <div class="ph" data-img={b.bild}><img src={b.bild} loading="lazy" alt={b.alt || `Rock4Aid ${seite.jahr}`}/></div>)}
+      </div>
+    </div>
+  </section>
+)}
+
+{presse.length > 0 && (
+  <section class="section-alt">
+    <div class="container">
+      <div class="section-label">Presse</div>
+      <h2 class="section-title">{seite.presse_titel}</h2>
+      <div class="gallery">
+        {presse.map((b) => <div class="ph" data-img={b.bild}><img src={b.bild} loading="lazy" alt={b.alt || 'Zeitungsartikel zu Rock4Aid'}/></div>)}
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="outro">
+  <h2>{seite.schluss_titel}</h2>
+  {seite.schluss_text && <div set:html={seite.schluss_text}></div>}
+  {seite.gruss && (
+    <p style="font-family:'Oswald',sans-serif;letter-spacing:0.15em;font-size:14px;color:var(--yellow);text-transform:uppercase;">
+      <span class="heart">🤘</span> {seite.gruss} <span class="heart">🤘</span>
+    </p>
+  )}
+</section>
+
+<footer>
+  <a href="/">Rock4Aid</a> · Heddesheim · <a href="#top">↑ Nach oben</a>
+  {andereJahre.length > 0 && <div class="jahre">Andere Jahre: {andereJahre.map((j) => <a href={`/helfer/danke/${j}/`}>{j}</a>)}</div>}
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Bild-Vorschau">
+  <button class="lightbox-nav lightbox-prev" id="lbPrev" aria-label="Vorheriges Bild">‹</button>
+  <img id="lbImg" alt=""/>
+  <button class="lightbox-nav lightbox-next" id="lbNext" aria-label="Nächstes Bild">›</button>
+  <button class="lightbox-close" id="lbClose" aria-label="Schließen">×</button>
+</div>
+
+
+<script is:inline>
+// ─── LIGHTBOX MIT KEYBOARD + TOUCH-SWIPE ───
+(function(){
+  const imgs = Array.from(document.querySelectorAll('[data-img]'));
+  const sources = imgs.map(el => el.dataset.img);
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbClose = document.getElementById('lbClose');
+  const lbPrev = document.getElementById('lbPrev');
+  const lbNext = document.getElementById('lbNext');
+  let current = 0;
+
+  function open(i){
+    current = i;
+    lbImg.src = sources[i];
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function next(){ open((current + 1) % sources.length); }
+  function prev(){ open((current - 1 + sources.length) % sources.length); }
+
+  imgs.forEach((el, i) => el.addEventListener('click', e => { e.stopPropagation(); open(i); }));
+  lb.addEventListener('click', e => { if(e.target === lb) close(); });
+  lbClose.addEventListener('click', close);
+  lbPrev.addEventListener('click', e => { e.stopPropagation(); prev(); });
+  lbNext.addEventListener('click', e => { e.stopPropagation(); next(); });
+  document.addEventListener('keydown', e => {
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape') close();
+    if(e.key === 'ArrowRight') next();
+    if(e.key === 'ArrowLeft') prev();
+  });
+
+  // Touch-Swipe für mobile Geräte
+  let touchStartX = 0, touchStartY = 0, touchMoved = false;
+  lb.addEventListener('touchstart', e => {
+    if(e.touches.length !== 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchMoved = false;
+  }, {passive: true});
+  lb.addEventListener('touchmove', () => { touchMoved = true; }, {passive: true});
+  lb.addEventListener('touchend', e => {
+    if(!touchMoved) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    // horizontal swipe stronger than vertical, mindestens 40px
+    if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) next(); else prev();
+    }
+  }, {passive: true});
+})();
+
+</script>
+</body>
+</html>

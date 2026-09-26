@@ -8,6 +8,8 @@ import { getTable, SUPABASE_URL, SUPABASE_KEY, SUPABASE_SCHEMA } from '../lib/co
 const einstellungen = await getTable('einstellungen', { single: true });
 const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
 const aktiv = SUPABASE_SCHEMA === 'web';
+// Mails verschickt die Festival-App über ihren Server (Netlify-Funktion mail-senden)
+const APP_URL = (import.meta.env.PUBLIC_APP_URL || 'https://rock4aid.netlify.app').replace(/\/+$/, '');
 const BILD = '/assets/rb26-1.jpg';
 const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Aufbau', 'Abbau', 'Kuchentheke', 'Da, wo ihr mich braucht'];
 ---
@@ -23,7 +25,7 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
       <p class="hf-meta" id="hf-meta" hidden></p>
     </div>
 
-    <div class="hf-glas" id="hf-app" data-url={SUPABASE_URL} data-key={SUPABASE_KEY} data-aktiv={aktiv ? '1' : ''}>
+    <div class="hf-glas" id="hf-app" data-url={SUPABASE_URL} data-key={SUPABASE_KEY} data-aktiv={aktiv ? '1' : ''} data-app={APP_URL}>
       <p class="hf-laden" id="hf-laden">Einen Moment, die Helferseite wird geladen …</p>
 
       <!-- Meldungen (Erfolg, Fehler) -->
@@ -31,16 +33,20 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
 
       <!-- Reiter, nur wenn Schichten freigeschaltet sind -->
       <div id="hf-reiter" class="hf-reiter" role="tablist" hidden>
-        <button type="button" data-reiter="schichten" class="aktiv">In eine Schicht eintragen</button>
+        <button type="button" data-reiter="schichten" class="aktiv">Schichten auswählen</button>
         <button type="button" data-reiter="pool">Allgemein registrieren</button>
         <button type="button" data-reiter="kuchen" hidden>Kuchen spenden</button>
       </div>
 
       <!-- Schichten -->
       <div id="hf-schichten" data-bereich="schichten" hidden>
-        <p class="hf-text">Wähle eine Schicht und einen Dienst. Wir zeigen nur, wie viele Plätze schon belegt sind, keine Namen.</p>
+        <p class="hf-text">Wähle einen oder mehrere Einsätze, gern auch in verschiedenen Schichten. Danach meldest du dich einmal für alles an und bekommst eine Bestätigung. Wir zeigen nur, wie viele Plätze belegt sind, keine Namen.</p>
         <div id="hf-schichtwahl" class="hf-schichtwahl"></div>
         <div id="hf-dienste" class="hf-dienste"></div>
+        <div id="hf-leiste" class="hf-leiste" hidden>
+          <span id="hf-leiste-text"></span>
+          <button type="button" class="hf-knopf" id="hf-weiter">Weiter zur Anmeldung</button>
+        </div>
       </div>
 
       <!-- Helferpool -->
@@ -71,44 +77,34 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
       </form>
 
       <!-- Kuchen -->
-      <form id="hf-kuchen" class="hf-form" data-bereich="kuchen" novalidate hidden>
+      <div id="hf-kuchen" data-bereich="kuchen" hidden>
         <p class="hf-text" id="hf-kuchen-text">Selbstgebackener Kuchen ist bei uns heiß begehrt. Der Erlös geht vollständig an unser Spendenprojekt.</p>
         <div id="hf-kuchenliste" class="hf-kuchenliste" hidden></div>
-        <fieldset>
-          <legend>Dein Kuchen</legend>
-          <div class="hf-grid">
-            <label class="hf-feld hf-breit">Welchen Kuchen bringst du mit?<input name="kuchen" placeholder="z. B. Käsekuchen" required /></label>
-            <label class="hf-feld">Vor- und Nachname<input name="name" autocomplete="name" required /></label>
-            <label class="hf-feld">E-Mail<input name="email" type="email" autocomplete="email" required /></label>
-          </div>
-        </fieldset>
-        <div class="hf-einwilligung">
-          <label><input type="checkbox" name="kontakt" /> <span><strong>Ihr dürft mich kontaktieren</strong>, um die Kuchenspende zu organisieren.</span></label>
-        </div>
-        <p class="hf-fehler" role="alert" hidden></p>
-        <button type="submit" class="hf-knopf">Kuchen eintragen</button>
-      </form>
+        <p class="hf-text">Du hilfst auch in einer Schicht? Dann wähl zuerst deine Schichten aus und trag den Kuchen bei der Anmeldung einfach mit ein. So bekommst du nur eine Bestätigung.</p>
+        <button type="button" class="hf-knopf" id="hf-kuchen-knopf">Kuchen eintragen</button>
+      </div>
 
       <!-- Austragen -->
       <div id="hf-storno" hidden></div>
     </div>
   </section>
 
-  <!-- Eintragen in eine Schicht (Dialog) -->
+  <!-- Anmeldung: alle gewählten Einsätze und optional ein Kuchen, eine Bestätigung -->
   <dialog id="hf-dialog" class="hf-dialog">
-    <form id="hf-schichtform" class="hf-form" method="dialog" novalidate>
-      <h2 id="hf-dialog-titel"></h2>
-      <p class="hf-klein" id="hf-dialog-zeit"></p>
+    <form id="hf-anmeldeform" class="hf-form" method="dialog" novalidate>
+      <h2 id="hf-dialog-titel">Deine Anmeldung</h2>
+      <ul id="hf-auswahl" class="hf-auswahl"></ul>
+      <label class="hf-feld" id="hf-kuchen-feld">Bringst du auch einen Kuchen mit? (freiwillig)<input name="kuchen" placeholder="z. B. Käsekuchen" /></label>
       <label class="hf-feld">Vor- und Nachname<input name="name" autocomplete="name" required /></label>
       <label class="hf-feld">E-Mail<input name="email" type="email" autocomplete="email" required /></label>
-      <label class="hf-feld">Handynummer<input name="telefon" type="tel" autocomplete="tel" required /></label>
+      <label class="hf-feld" id="hf-telefon-feld">Handynummer<input name="telefon" type="tel" autocomplete="tel" /></label>
       <div class="hf-einwilligung">
-        <label><input type="checkbox" name="kontakt" /> <span><strong>Ihr dürft mich kontaktieren</strong>, um meinen Einsatz zu organisieren.</span></label>
-        <label><input type="checkbox" name="kuenftig" /> <span>Auch für <strong>künftige Veranstaltungen</strong> (freiwillig)</span></label>
+        <label><input type="checkbox" name="kontakt" /> <span><strong>Ihr dürft mich kontaktieren</strong>, um meinen Einsatz zu organisieren (per E-Mail und Telefon).</span></label>
+        <label><input type="checkbox" name="kuenftig" /> <span>Ihr dürft mich auch für <strong>künftige Rock4Aid-Veranstaltungen</strong> ansprechen. (freiwillig)</span></label>
       </div>
       <p class="hf-fehler" role="alert" hidden></p>
       <div class="hf-dialog-knoepfe">
-        <button type="button" class="hf-link" id="hf-abbrechen">Abbrechen</button>
+        <button type="button" class="hf-link" id="hf-abbrechen">Zurück</button>
         <button type="submit" class="hf-knopf">Verbindlich eintragen</button>
       </div>
     </form>
@@ -171,6 +167,12 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
     .hf-belegt { font-size:14px; font-weight:600; }
     .hf-dienst .hf-knopf { padding:10px 18px; font-size:15px; align-self:flex-start; }
     .hf-dienst.voll { opacity:.6; }
+    .hf-leiste { position:sticky; bottom:12px; z-index:5; margin-top:18px; background:#2e1a52; color:#fff; border-radius:14px; padding:12px 16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; box-shadow:0 10px 26px rgba(10,5,25,.35); font-weight:700; }
+    .hf-leiste .hf-knopf { background:#ffdd00; color:#2e1a52; padding:11px 22px; font-size:16px; }
+    .hf-dienst.gewaehlt { border-color:#4b2e83; box-shadow:0 0 0 2px #4b2e83; }
+    .hf-dienst .hf-knopf.an { background:#1f7a35; }
+    .hf-auswahl { list-style:none; padding:0; margin:4px 0; display:flex; flex-direction:column; gap:6px; }
+    .hf-auswahl li { display:flex; justify-content:space-between; align-items:center; gap:8px; background:#f1ecf8; border-radius:10px; padding:8px 12px; font-size:15px; }
     .hf-kuchenliste { background:rgba(255,255,255,.7); border-radius:10px; padding:12px 16px; font-size:15px; line-height:1.6; }
     .hf-dialog { border:0; border-radius:16px; padding:22px; width:min(440px, calc(100% - 32px)); color:#4b2e83; font-family:'Archivo',sans-serif; }
     .hf-dialog::backdrop { background:rgba(18,10,32,.6); }
@@ -209,14 +211,13 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
         return json;
       }
 
-      // Bestätigungsmail über EmailJS. Ein Fehler hier verhindert die Anmeldung nicht.
-      async function mail(template, params) {
-        const e = (daten && daten.einstellungen) || {};
-        if (!e.emailjs_service || !e.emailjs_public_key || !template) return null; // Mails nicht eingerichtet
+      // Bestätigungsmail: Text und Empfänger baut der Server der Festival-App selbst aus
+      // der Datenbank. Die Seite übergibt nur den Schlüssel der Anmeldung.
+      // Ein Fehler beim Mailversand verhindert die Anmeldung nicht.
+      async function mail(payload) {
         try {
-          const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ service_id: e.emailjs_service, template_id: template, user_id: e.emailjs_public_key, template_params: params }),
+          const r = await fetch(`${app.dataset.app}/.netlify/functions/mail-senden`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
           });
           return r.ok;
         } catch { return false; }
@@ -259,83 +260,119 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
       }
       document.querySelectorAll('[data-reiter]').forEach((b) => b.addEventListener('click', () => zeige(b.dataset.reiter)));
 
-      // ---------- Schichten ----------
+      // ---------- Schichten: Einsätze auswählen ----------
+      let auswahl = []; // [{ schicht, dienst }]
       function platz(sId, dId) {
         return (daten.plaetze || []).find((p) => p.schicht_id === sId && p.dienst_id === dId);
+      }
+      const gewaehlt = (sId, dId) => auswahl.some((x) => x.schicht === sId && x.dienst === dId);
+      function umschalten(sId, dId) {
+        auswahl = gewaehlt(sId, dId) ? auswahl.filter((x) => !(x.schicht === sId && x.dienst === dId)) : [...auswahl, { schicht: sId, dienst: dId }];
+        zeichneSchichten();
+      }
+      function beschreibe(x) {
+        const s = daten.schichten.find((y) => y.id === x.schicht) || {};
+        const d = daten.dienste.find((y) => y.id === x.dienst) || {};
+        return { schicht: s.bezeichnung, zeit: s.zeit_text, dienst: d.bezeichnung, icon: d.icon };
       }
       function zeichneSchichten() {
         const wahl = $('hf-schichtwahl');
         wahl.innerHTML = '';
         (daten.schichten || []).forEach((s) => {
           const frei = (daten.plaetze || []).filter((p) => p.schicht_id === s.id).reduce((x, p) => x + Math.max(0, p.anzahl - p.belegt), 0);
+          const n = auswahl.filter((x) => x.schicht === s.id).length;
           const b = document.createElement('button');
           b.type = 'button';
           b.className = 'hf-schicht' + (s.id === schichtId ? ' aktiv' : '');
-          b.innerHTML = `<strong>${esc(s.bezeichnung)}</strong>${s.zeit_text ? `<span>${esc(s.zeit_text)}</span>` : ''}<em>${frei > 0 ? `${frei} ${frei === 1 ? 'Platz' : 'Plätze'} frei` : 'voll besetzt'}</em>`;
+          b.innerHTML = `<strong>${esc(s.bezeichnung)}${n ? ` ✓${n}` : ''}</strong>${s.zeit_text ? `<span>${esc(s.zeit_text)}</span>` : ''}<em>${frei > 0 ? `${frei} ${frei === 1 ? 'Platz' : 'Plätze'} frei` : 'voll besetzt'}</em>`;
           b.addEventListener('click', () => { schichtId = s.id; zeichneSchichten(); });
           wahl.appendChild(b);
         });
         const box = $('hf-dienste');
         box.innerHTML = '';
         const dienste = (daten.dienste || []).filter((d) => platz(schichtId, d.id));
-        if (!dienste.length) { box.innerHTML = '<p class="hf-text">In dieser Schicht sind keine Dienste geplant.</p>'; return; }
+        if (!dienste.length) box.innerHTML = '<p class="hf-text">In dieser Schicht sind keine Dienste geplant.</p>';
         dienste.forEach((d) => {
           const p = platz(schichtId, d.id);
           const voll = p.belegt >= p.anzahl;
+          const an = gewaehlt(schichtId, d.id);
           const karte = document.createElement('div');
-          karte.className = 'hf-dienst' + (voll ? ' voll' : '');
+          karte.className = 'hf-dienst' + (voll ? ' voll' : '') + (an ? ' gewaehlt' : '');
           karte.innerHTML = `<h3><span>${esc(d.icon || '⭐')}</span>${esc(d.bezeichnung)}</h3>
             ${d.beschreibung ? `<p>${esc(d.beschreibung)}</p>` : ''}
             <div class="hf-balken"><div style="width:${Math.min(100, Math.round((p.belegt / p.anzahl) * 100))}%"></div></div>
             <span class="hf-belegt">${p.belegt} von ${p.anzahl} Plätzen belegt</span>
-            ${voll ? '' : '<button type="button" class="hf-knopf">Hier eintragen</button>'}`;
+            ${voll ? '' : `<button type="button" class="hf-knopf${an ? ' an' : ''}">${an ? '✓ Ausgewählt' : 'Auswählen'}</button>`}`;
           const k = karte.querySelector('button');
-          if (k) k.addEventListener('click', () => oeffneDialog(d));
+          if (k) k.addEventListener('click', () => umschalten(schichtId, d.id));
           box.appendChild(karte);
         });
+        $('hf-leiste').hidden = !auswahl.length;
+        $('hf-leiste-text').textContent = `${auswahl.length} ${auswahl.length === 1 ? 'Einsatz' : 'Einsätze'} ausgewählt`;
       }
 
-      let dialogDienst = null;
+      // ---------- Anmeldung: ein Formular, eine Bestätigung ----------
       const dialog = $('hf-dialog');
-      const sform = $('hf-schichtform');
-      function oeffneDialog(d) {
-        dialogDienst = d;
-        const s = daten.schichten.find((x) => x.id === schichtId);
-        $('hf-dialog-titel').textContent = `${d.icon || '⭐'} ${d.bezeichnung}`;
-        $('hf-dialog-zeit').textContent = [s.bezeichnung, s.zeit_text].filter(Boolean).join(' · ');
-        fehler(sform, null);
-        vorbelegen(sform, gemerkt());
+      const aform = $('hf-anmeldeform');
+      let nurKuchen = false;
+      function zeichneAuswahl() {
+        const ul = $('hf-auswahl');
+        ul.innerHTML = '';
+        auswahl.forEach((x) => {
+          const b = beschreibe(x);
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${esc(b.icon || '⭐')} <strong>${esc(b.dienst)}</strong> · ${esc([b.schicht, b.zeit].filter(Boolean).join(', '))}</span><button type="button" class="hf-link" aria-label="Entfernen">✕</button>`;
+          li.querySelector('button').addEventListener('click', () => { umschalten(x.schicht, x.dienst); if (!auswahl.length && !nurKuchen) dialog.close(); else zeichneAuswahl(); });
+          ul.appendChild(li);
+        });
+        ul.hidden = !auswahl.length;
+        const mitSchicht = auswahl.length > 0;
+        $('hf-dialog-titel').textContent = mitSchicht ? 'Deine Anmeldung' : '🎂 Kuchen eintragen';
+        $('hf-telefon-feld').hidden = !mitSchicht;
+        const kuchenAn = !!(daten.einstellungen || {}).kuchen_aktiv;
+        $('hf-kuchen-feld').hidden = !kuchenAn;
+        $('hf-kuchen-feld').firstChild.textContent = mitSchicht ? 'Bringst du auch einen Kuchen mit? (freiwillig)' : 'Welchen Kuchen bringst du mit?';
+      }
+      function oeffneDialog(kuchen) {
+        nurKuchen = !!kuchen;
+        zeichneAuswahl();
+        fehler(aform, null);
+        vorbelegen(aform, gemerkt());
         if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', '');
       }
+      $('hf-weiter').addEventListener('click', () => oeffneDialog(false));
+      $('hf-kuchen-knopf').addEventListener('click', () => oeffneDialog(true));
       $('hf-abbrechen').addEventListener('click', () => dialog.close());
-      sform.addEventListener('submit', async (ev) => {
+      aform.addEventListener('submit', async (ev) => {
         ev.preventDefault();
-        const t = pruefe(sform);
-        if (t) return fehler(sform, t);
-        fehler(sform, null);
-        const f = sform.elements;
-        const knopf = sform.querySelector('button[type=submit]');
+        const f = aform.elements;
+        const mitSchicht = auswahl.length > 0;
+        const kuchen = f.kuchen.value.trim();
+        let t = pruefe(aform, { telefon: mitSchicht });
+        if (!t && !mitSchicht && !kuchen) t = 'Welchen Kuchen bringst du mit?';
+        if (t) return fehler(aform, t);
+        fehler(aform, null);
+        const knopf = aform.querySelector('button[type=submit]');
         knopf.disabled = true;
         try {
           const k = { name: f.name.value.trim(), email: f.email.value.trim(), telefon: f.telefon.value.trim() };
-          const r = (await rpc('helfer_eintragen', {
-            p_slug: SLUG, p_schicht: schichtId, p_dienst: dialogDienst.id, p_name: k.name, p_email: k.email, p_telefon: k.telefon,
-            p_kontakt: true, p_kuenftig: f.kuenftig.checked,
-          }))[0];
-          merke(k);
-          const s = daten.schichten.find((x) => x.id === schichtId);
-          const e = daten.einstellungen || {};
-          const ok = await mail(e.vorlage_bestaetigung_helfer, {
-            to_email: k.email, name: k.name, role: dialogDienst.bezeichnung,
-            shift: [s.bezeichnung, s.zeit_text].filter(Boolean).join(' · '),
-            event_date: e.datum_text || '', event_location: e.ort_text || '',
-            cancel_link: `${HIER}?storno=helfer&id=${r.id}&token=${r.cancel_token}`,
+          const r = await rpc('helfer_anmelden', {
+            p_slug: SLUG, p_name: k.name, p_email: k.email, p_telefon: mitSchicht ? k.telefon : '',
+            p_einsaetze: auswahl, p_kuchen: kuchen, p_kontakt: true, p_kuenftig: f.kuenftig.checked,
           });
+          merke({ ...gemerkt(), ...k });
+          const vorname = k.name.split(/\s+/)[0];
+          const ok = await mail({ art: 'helfer_bestaetigung', token: r.token });
+          const teile = [];
+          if (mitSchicht) teile.push(`${auswahl.length} ${auswahl.length === 1 ? 'Einsatz' : 'Einsätze'}`);
+          if (kuchen) teile.push('dein Kuchen');
+          auswahl = [];
+          aform.reset();
           dialog.close();
-          meldung(`<p><strong>Danke, ${esc(k.name.split(/\s+/)[0])}!</strong> Du bist eingetragen für ${esc(dialogDienst.bezeichnung)} (${esc([s.bezeichnung, s.zeit_text].filter(Boolean).join(', '))}).</p>
-            <p>${ok ? 'Eine Bestätigung mit Link zum Austragen kommt per E-Mail.' : ok === false ? 'Die Bestätigungsmail konnte leider nicht verschickt werden. Deine Anmeldung ist trotzdem gespeichert.' : ''}</p>`);
+          meldung(`<p><strong>Danke, ${esc(vorname)}!</strong> Eingetragen: ${esc(teile.join(' und '))}.</p>
+            <p>${ok ? 'Eine Bestätigung mit allen Zusagen und einem Link zum Austragen kommt per E-Mail.' : ok === false ? 'Die Bestätigungsmail konnte leider nicht verschickt werden. Deine Anmeldung ist trotzdem gespeichert.' : ''}</p>`);
           await laden();
-        } catch (x) { fehler(sform, x.message); }
+        } catch (x) { fehler(aform, x.message); }
         finally { knopf.disabled = false; }
       });
 
@@ -357,13 +394,9 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
             p_anmerkung: f.anmerkung.value.trim(), p_kontakt: true, p_kuenftig: f.kuenftig.checked,
           }))[0];
           merke(k);
-          const e = daten.einstellungen || {};
           const vorname = k.name.split(/\s+/)[0];
-          const ok = await mail(e.vorlage_frei, {
-            to_email: k.email, to_name: k.name,
-            subject: 'Danke, du bist als Helfer bei Rock4Aid registriert',
-            message: `Hallo ${vorname},\n\ndanke, dass du beim Rock4Aid-Festival mithelfen möchtest! Du bist jetzt in unserem Helferpool registriert.\n\nSobald die Schichten geplant sind, schreiben wir dir. Dann suchst du dir deine Schicht aus.\n\nFalls du dich wieder austragen möchtest, genügt ein Klick:\n${HIER}?storno=pool&id=${r.id}&token=${r.cancel_token}\n\nBis bald!\nDein Rock4Aid-Team`,
-          });
+          // Keine Zeile zurück = E-Mail ist schon im Pool. Aus Datenschutzgründen antworten wir neutral.
+          const ok = !r ? null : await mail({ art: 'pool_bestaetigung', id: r.id, token: r.cancel_token });
           pform.reset();
           pform.hidden = true;
           $('hf-reiter').hidden = true;
@@ -373,37 +406,11 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
         finally { knopf.disabled = false; }
       });
 
-      // ---------- Kuchen ----------
-      const kform = $('hf-kuchen');
-      kform.addEventListener('submit', async (ev) => {
-        ev.preventDefault();
-        const t = pruefe(kform, { telefon: false, kuchen: true });
-        if (t) return fehler(kform, t);
-        fehler(kform, null);
-        const f = kform.elements;
-        const knopf = kform.querySelector('button[type=submit]');
-        knopf.disabled = true;
-        try {
-          const k = { name: f.name.value.trim(), email: f.email.value.trim() };
-          const r = (await rpc('kuchen_eintragen', { p_slug: SLUG, p_name: k.name, p_email: k.email, p_kuchen: f.kuchen.value.trim(), p_kontakt: true }))[0];
-          merke({ ...gemerkt(), ...k });
-          const e = daten.einstellungen || {};
-          const ok = await mail(e.vorlage_bestaetigung_kuchen, {
-            to_email: k.email, name: k.name, cake: f.kuchen.value.trim(),
-            event_date: e.datum_text || '', event_location: e.ort_text || '',
-            cancel_link: `${HIER}?storno=kuchen&id=${r.id}&token=${r.cancel_token}`,
-          });
-          kform.reset();
-          meldung(`<p><strong>Danke, ${esc(k.name.split(/\s+/)[0])}!</strong> Dein Kuchen ist eingetragen.</p><p>${ok ? 'Eine Bestätigung kommt per E-Mail.' : ''}</p>`);
-          await laden();
-        } catch (x) { fehler(kform, x.message); }
-        finally { knopf.disabled = false; }
-      });
-
       // ---------- Austragen über den Link aus der Mail ----------
       async function storno(art, id, token) {
         const box = $('hf-storno');
         box.className = 'hf-storno'; box.hidden = false;
+        if (art === 'alle') return stornoAlle(token);
         let eintrag = null;
         try { eintrag = await rpc('helfer_eintrag_ansehen', { p_art: art, p_id: id, p_token: token }); } catch { /* ungültig */ }
         const zurueck = '<p><a class="hf-link" href="/helfer/">Zur Helferseite</a></p>';
@@ -422,6 +429,79 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
         });
       }
 
+      // Alle Zusagen einer Anmeldung, einzeln oder gesammelt zurückziehen
+      async function stornoAlle(token) {
+        const box = $('hf-storno');
+        const zurueck = '<p><a class="hf-link" href="/helfer/">Zur Helferseite</a></p>';
+        let g = null;
+        try { g = await rpc('helfer_gruppe_ansehen', { p_token: token }); } catch { /* ungültig */ }
+        if (!g) { box.innerHTML = `<h2>Eintrag nicht gefunden</h2><p>Der Link ist ungültig, oder du hast dich bereits überall ausgetragen.</p>${zurueck}`; return; }
+        const liste = [...g.einsaetze.map((x) => ['helfer', x.id, `${x.icon || '⭐'} ${x.dienst} · ${[x.schicht, x.zeit].filter(Boolean).join(', ')}`]),
+          ...g.kuchen.map((x) => ['kuchen', x.id, `🎂 Kuchen: ${x.kuchen}`])];
+        const weg = new Set();
+        const zeichne = () => {
+          const offen = liste.filter(([, i]) => !weg.has(i));
+          box.innerHTML = `<h2>Deine Zusagen, ${esc(String(g.name || '').split(/\s+/)[0])}</h2><p>Du kannst einzelne Zusagen oder alle zurückziehen.</p>
+            <ul class="hf-auswahl">${liste.map(([a, i, t]) => `<li><span${weg.has(i) ? ' style="text-decoration:line-through;opacity:.6"' : ''}>${esc(t)}</span>${weg.has(i) ? '<em>ausgetragen</em>' : `<button type="button" class="hf-link" data-art="${a}" data-id="${i}">Austragen</button>`}</li>`).join('')}</ul>
+            ${offen.length === 0 ? '<p><strong>Du bist überall ausgetragen.</strong> Schade, dass es nicht klappt. Danke, dass du Bescheid gegeben hast!</p>' : ''}
+            <div class="hf-dialog-knoepfe"><a class="hf-link" href="/helfer/">Zur Helferseite</a>${offen.length > 1 ? '<button type="button" class="hf-knopf rot" data-alle>Alle austragen</button>' : ''}</div>`;
+          box.querySelectorAll('button[data-id]').forEach((b) => b.addEventListener('click', () => austragen([[b.dataset.art, b.dataset.id]])));
+          const alle = box.querySelector('[data-alle]');
+          if (alle) alle.addEventListener('click', () => austragen(offen.map(([a, i]) => [a, i])));
+        };
+        const austragen = async (paare) => {
+          box.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+          for (const [a, i] of paare) {
+            try { if (await rpc('helfer_eintrag_stornieren', { p_art: a, p_id: i, p_token: token })) weg.add(i); } catch { /* weiter */ }
+          }
+          zeichne();
+        };
+        zeichne();
+      }
+
+      // ---------- Frühere Helfer bestätigen über den Link aus der Anfrage-Mail ----------
+      async function bestaetigen(id, token) {
+        const box = $('hf-storno');
+        box.className = 'hf-storno'; box.hidden = false;
+        let k = null;
+        try { k = await rpc('helfer_pool_ansehen', { p_id: id, p_token: token }); } catch { /* ungültig */ }
+        const zurueck = '<p><a class="hf-link" href="/helfer/">Zur Helferseite</a></p>';
+        if (!k) { box.innerHTML = `<h2>Link nicht mehr gültig</h2><p>Deine Daten wurden vielleicht schon gelöscht. Du kannst dich jederzeit neu registrieren.</p>${zurueck}`; return; }
+        const vorname = esc(String(k.name || '').split(/\s+/)[0]);
+        box.innerHTML = `<h2>Hallo ${vorname}, bist du wieder dabei?</h2>
+          <p>Du hast uns früher schon als Helfer unterstützt. Dafür noch einmal danke! Wenn du wieder mithelfen möchtest, bestätige bitte, dass wir dich dafür kontaktieren dürfen.</p>
+          <form class="hf-form" novalidate>
+            <div class="hf-einwilligung">
+              <label><input type="checkbox" name="kontakt" /> <span><strong>Ihr dürft mich kontaktieren</strong>, um meinen Einsatz beim Festival zu organisieren (per E-Mail und Telefon).</span></label>
+              <label><input type="checkbox" name="kuenftig" /> <span>Ihr dürft mich auch für <strong>künftige Rock4Aid-Veranstaltungen</strong> als Helfer ansprechen. (freiwillig)</span></label>
+            </div>
+            <p class="hf-fehler" role="alert" hidden></p>
+            <div class="hf-dialog-knoepfe">
+              <button type="button" class="hf-link" data-nein>Nein danke, löscht meine Daten</button>
+              <button type="submit" class="hf-knopf">Ja, ich bin dabei</button>
+            </div>
+          </form>`;
+        const form = box.querySelector('form');
+        form.addEventListener('submit', async (ev) => {
+          ev.preventDefault();
+          const f = form.elements;
+          f.kontakt.closest('label').classList.toggle('hf-pflicht-fehlt', !f.kontakt.checked);
+          if (!f.kontakt.checked) return fehler(form, KONTAKT_FEHLT);
+          try {
+            const ok = await rpc('helfer_pool_bestaetigen', { p_id: id, p_token: token, p_kontakt: true, p_kuenftig: f.kuenftig.checked });
+            if (!ok) throw new Error('Der Link ist nicht mehr gültig.');
+            merke({ name: k.name, email: k.email, telefon: k.telefon });
+            box.innerHTML = `<h2>Schön, dass du wieder dabei bist, ${vorname}!</h2><p>Wir melden uns bei dir, sobald die Schichten stehen.</p>${zurueck}`;
+          } catch (x) { fehler(form, x.message); }
+        });
+        box.querySelector('[data-nein]').addEventListener('click', async () => {
+          let ok = false;
+          try { ok = await rpc('helfer_eintrag_stornieren', { p_art: 'pool', p_id: id, p_token: token }); } catch { ok = false; }
+          box.innerHTML = ok ? '<h2>Deine Daten sind gelöscht</h2><p>Danke für deine Unterstützung in der Vergangenheit!</p>'
+            : `<h2>Das hat nicht geklappt</h2><p>Bitte versuche es noch einmal oder schreib uns über das <a class="hf-link" href="/kontakt/">Kontaktformular</a>.</p>`;
+        });
+      }
+
       // ---------- Laden ----------
       async function laden() {
         daten = await rpc('helfer_portal_laden', { p_slug: SLUG });
@@ -430,6 +510,11 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
         if (e.pool_einleitung && !daten.schichten_offen) $('hf-intro').textContent = e.pool_einleitung;
         if (daten.schichten_offen) $('hf-intro').textContent = e.einleitung || 'Die Schichten stehen! Such dir aus, wann und wo du mit anpacken möchtest.';
         const meta = [e.datum_text && `📅 ${e.datum_text}`, e.ort_text && `📍 ${e.ort_text}`].filter(Boolean);
+        if (daten.schichten_offen) {
+          const gesamt = (daten.plaetze || []).reduce((x, p) => x + p.anzahl, 0);
+          const frei = (daten.plaetze || []).reduce((x, p) => x + Math.max(0, p.anzahl - p.belegt), 0);
+          if (gesamt) meta.push(frei ? `🙌 Noch ${frei} von ${gesamt} Plätzen frei` : '🙌 Alle Plätze sind besetzt. Danke!');
+        }
         $('hf-meta').innerHTML = meta.map((m) => `<span>${esc(m)}</span>`).join('');
         $('hf-meta').hidden = !meta.length;
         if (daten.schichten_offen) {
@@ -452,6 +537,7 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
           return;
         }
         if (p.get('storno')) { $('hf-laden').hidden = true; return storno(p.get('storno'), p.get('id'), p.get('token')); }
+        if (p.get('bestaetigen')) { $('hf-laden').hidden = true; return bestaetigen(p.get('bestaetigen'), p.get('token')); }
         try { await laden(); }
         catch {
           $('hf-laden').innerHTML = 'Die Helferseite ist gerade nicht erreichbar. Schreib uns gern über das <a class="hf-link" href="/kontakt/">Kontaktformular</a>.';
@@ -466,7 +552,7 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
           } catch { /* egal */ }
         }
         const k = gemerkt();
-        [pform, kform].forEach((f) => vorbelegen(f, k));
+        vorbelegen(pform, k);
         if (daten.schichten_offen) { $('hf-reiter').hidden = false; zeige(p.get('bereich') === 'pool' ? 'pool' : 'schichten'); }
         else zeige('pool');
       }

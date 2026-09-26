@@ -1,0 +1,10 @@
+---
+// rock4aid.de/helfer/danke/<jahr>/ – eine Seite pro Jahr aus dem Website-Editor
+import DankeSeite from '../../../components/DankeSeite.astro';
+import { ladeDankesseiten } from '../../../lib/danke.js';
+export async function getStaticPaths() {
+  const alle = await ladeDankesseiten();
+  return alle.map((d) => ({ params: { jahr: String(d.seite.jahr) }, props: d }));
+}
+---
+<DankeSeite {...Astro.props} />

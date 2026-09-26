@@ -14,6 +14,9 @@ const claim2 = einstellungen.claim_zeile_2 || 'Eintritt auf Spendenbasis';
 const terminSichtbar = einstellungen.termin_sichtbar !== false;
 const festivalDatum = einstellungen.festival_datum || '';
 const heroVideo = einstellungen.hero_video || '';
+// Störer „Helfer gesucht“: in der App unter Website → Start & Einstellungen schaltbar
+const stoererAktiv = einstellungen.helfer_stoerer_aktiv === true;
+const stoererText = (einstellungen.helfer_stoerer_text || '').trim() || 'Helfer/innen gesucht!';
 // " I " (Trennzeichen) gelb hervorheben – wie im Design
 const claim1Html = claim1.split(' I ').join(' <span style="color:#fff">I</span> ');
 // Sponsoren-Logogröße: Stufen klein/mittel/groß → Höhe in px
@@ -36,6 +39,12 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
           <img src="/assets/wordmark.png" alt="Rock4Aid" class="hero-wordmark" style="width:62%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
         </div>
       </div>
+      {stoererAktiv && (
+        <a href="/helfer/" class="hf-stoerer" aria-label={`${stoererText} Jetzt als Helfer registrieren`}>
+          <span class="hf-st-text">{stoererText}</span>
+          <span class="hf-st-mehr">{"Jetzt mitmachen\u00a0→"}</span>
+        </a>
+      )}
       {terminSichtbar && festivalDatum && <r4a-countdown class="hero-countdown" target={festivalDatum} aria-hidden="true"></r4a-countdown>}
     </section>
 
@@ -68,6 +77,19 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
   <script is:inline src="/js/rock4aid-countdown.js" defer></script>
 
   <style>
+    /* Störer „Helfer gesucht“: gelber Button-Aufkleber, leicht gedreht, links unten im Hero */
+    .hf-stoerer { position:absolute; left:5.1%; bottom:9%; z-index:6; width:clamp(118px,13vw,190px); aspect-ratio:1; border-radius:50%;
+      background:#ffdd00; color:#4b2e83; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+      text-align:center; padding:14px; box-sizing:border-box; transform:rotate(-12deg); text-decoration:none;
+      box-shadow:0 10px 28px rgba(0,0,0,.45), inset 0 0 0 4px rgba(75,46,131,.18); font-family:'Archivo',sans-serif;
+      animation:hfWippen 5s ease-in-out infinite; transition:transform .2s; }
+    .hf-stoerer:hover { transform:rotate(-6deg) scale(1.06); animation-play-state:paused; }
+    .hf-st-text { font-weight:700; font-size:clamp(15px,1.75vw,25px); line-height:1.08; text-wrap:balance; }
+    .hf-st-mehr { font-weight:600; font-size:clamp(10px,.95vw,14px); line-height:1.2; text-decoration:underline; text-underline-offset:3px; }
+    @keyframes hfWippen { 0%,100% { transform:rotate(-12deg); } 50% { transform:rotate(-8deg) scale(1.03); } }
+    @media (prefers-reduced-motion:reduce) { .hf-stoerer { animation:none; } }
+    @media (max-width:640px) { .hf-stoerer { left:12px; bottom:10px; width:104px; padding:10px; gap:3px; } .hf-st-text { font-size:14px; } .hf-st-mehr { font-size:10px; } }
+
     /* Countdown-Ticket: klebt unten rechts am Hero und ragt leicht in den violetten Block */
     .hero-countdown { position:absolute; right:34px; top:0; z-index:5; pointer-events:none; }
     @media (max-width:640px) {

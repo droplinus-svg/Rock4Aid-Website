@@ -1,0 +1,11 @@
+---
+// rock4aid.de/helfer/danke/ zeigt immer die neueste sichtbare Dankesseite.
+// Diese Adresse steht in der Dankesmail ({danke_url}) und bleibt jedes Jahr gleich.
+import DankeSeite from '../../../components/DankeSeite.astro';
+import { ladeDankesseiten } from '../../../lib/danke.js';
+const alle = await ladeDankesseiten();
+const neueste = alle[0];
+---
+{neueste ? <DankeSeite {...neueste} /> : (
+  <html lang="de"><head><meta charset="utf-8" /><meta http-equiv="refresh" content="0; url=/" /><title>Rock4Aid</title></head><body><a href="/">Zur Startseite</a></body></html>
+)}
