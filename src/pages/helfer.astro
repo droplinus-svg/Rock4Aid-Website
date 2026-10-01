@@ -31,6 +31,12 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
       <!-- Meldungen (Erfolg, Fehler) -->
       <div id="hf-meldung" class="hf-meldung" role="status" hidden></div>
 
+      <!-- Auswahl der Veranstaltung, nur wenn mehrere freigeschaltet sind -->
+      <div id="hf-veranstaltungen" class="hf-veranstaltungen" hidden>
+        <p class="hf-veranstaltungen-frage">Für welche Veranstaltung möchtest du helfen?</p>
+        <div id="hf-veranstaltungen-liste" class="hf-veranstaltungen-liste"></div>
+      </div>
+
       <!-- Reiter, nur wenn Schichten freigeschaltet sind -->
       <div id="hf-reiter" class="hf-reiter" role="tablist" hidden>
         <button type="button" data-reiter="schichten" class="aktiv">Schichten auswählen</button>
@@ -152,6 +158,13 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
     .hf-link { background:none; border:0; color:#4b2e83; font:inherit; font-weight:600; text-decoration:underline; cursor:pointer; padding:8px; }
     .hf-meldung { background:#ffdd00; color:#4b2e83; border-radius:12px; padding:18px 20px; margin-bottom:20px; font-size:17px; line-height:1.5; }
     .hf-meldung p { margin:.2em 0; }
+    .hf-veranstaltungen { margin-bottom:16px; }
+    .hf-veranstaltungen-frage { font-weight:800; color:#4b2e83; margin:0 0 8px; }
+    .hf-veranstaltungen-liste { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; }
+    .hf-veranstaltung { display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:10px 16px; border-radius:12px; border:2px solid #b9acd3; background:rgba(255,255,255,.8); color:#4b2e83; font:inherit; cursor:pointer; text-align:left; }
+    .hf-veranstaltung span { font-size:13px; color:#5b4a7d; }
+    .hf-veranstaltung.aktiv { border-color:#4b2e83; background:#4b2e83; color:#fff; }
+    .hf-veranstaltung.aktiv span { color:#ffdd00; }
     .hf-schichtwahl { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:16px; }
     .hf-schicht { flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:10px 16px; border-radius:12px; border:2px solid #b9acd3; background:rgba(255,255,255,.8); color:#4b2e83; font:inherit; cursor:pointer; text-align:left; }
     .hf-schicht span { font-size:13px; color:#5b4a7d; }
@@ -197,6 +210,8 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
       const KONTAKT_FEHLT = 'Du kannst dich hier nur als Helfer registrieren, wenn wir dich kontaktieren dürfen.';
       let daten = null;
       let schichtId = null;
+      // Gewählte Veranstaltung, wenn mehrere freigeschaltet sind (Link: ?veranstaltung=<id>)
+      let eventId = new URLSearchParams(location.search).get('veranstaltung');
 
       // Aufruf einer Datenbankfunktion der Festival-App
       async function rpc(name, args) {
@@ -359,6 +374,7 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
           const r = await rpc('helfer_anmelden', {
             p_slug: SLUG, p_name: k.name, p_email: k.email, p_telefon: mitSchicht ? k.telefon : '',
             p_einsaetze: auswahl, p_kuchen: kuchen, p_kontakt: true, p_kuenftig: f.kuenftig.checked,
+            ...(daten.event_id ? { p_event_id: daten.event_id } : {}),
           });
           merke({ ...gemerkt(), ...k });
           const vorname = k.name.split(/\s+/)[0];
@@ -504,12 +520,16 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
 
       // ---------- Laden ----------
       async function laden() {
-        daten = await rpc('helfer_portal_laden', { p_slug: SLUG });
+        daten = await rpc('helfer_portal_laden', eventId ? { p_slug: SLUG, p_event_id: eventId } : { p_slug: SLUG });
         if (!daten) throw new Error('aus');
+        if (daten.event_id) eventId = daten.event_id;
+        zeichneVeranstaltungen();
         const e = daten.einstellungen || {};
         if (e.pool_einleitung && !daten.schichten_offen) $('hf-intro').textContent = e.pool_einleitung;
         if (daten.schichten_offen) $('hf-intro').textContent = e.einleitung || 'Die Schichten stehen! Such dir aus, wann und wo du mit anpacken möchtest.';
-        const meta = [e.datum_text && `📅 ${e.datum_text}`, e.ort_text && `📍 ${e.ort_text}`].filter(Boolean);
+        const liste = daten.veranstaltungen || [];
+        const aktuell = liste.length > 1 ? liste.find((v) => v.id === daten.event_id) : null;
+        const meta = [aktuell && `🎸 ${aktuell.name}`, e.datum_text && `📅 ${e.datum_text}`, e.ort_text && `📍 ${e.ort_text}`].filter(Boolean);
         if (daten.schichten_offen) {
           const gesamt = (daten.plaetze || []).reduce((x, p) => x + p.anzahl, 0);
           const frei = (daten.plaetze || []).reduce((x, p) => x + Math.max(0, p.anzahl - p.belegt), 0);
@@ -528,6 +548,30 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
           $('hf-kuchenliste').innerHTML = liste.length ? `<strong>Schon angekündigt:</strong> ${liste.map(esc).join(', ')}` : '';
           $('hf-pool-text').textContent = 'Du weißt noch nicht, wann du Zeit hast? Registriere dich allgemein. Wir melden uns bei dir, wenn wir noch Unterstützung brauchen.';
         }
+      }
+
+      // Mehrere freigeschaltete Veranstaltungen: zuerst die Veranstaltung wählen
+      function zeichneVeranstaltungen() {
+        const liste = daten.veranstaltungen || [];
+        const box = $('hf-veranstaltungen');
+        box.hidden = liste.length < 2;
+        const ziel = $('hf-veranstaltungen-liste');
+        ziel.innerHTML = '';
+        if (liste.length < 2) return;
+        liste.forEach((v) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'hf-veranstaltung' + (v.id === daten.event_id ? ' aktiv' : '');
+          b.setAttribute('aria-pressed', v.id === daten.event_id ? 'true' : 'false');
+          b.innerHTML = `<strong>${esc(v.name)}</strong>${v.datum_text ? `<span>📅 ${esc(v.datum_text)}</span>` : ''}${v.ort_text ? `<span>📍 ${esc(v.ort_text)}</span>` : ''}`;
+          b.addEventListener('click', async () => {
+            if (v.id === daten.event_id) return;
+            eventId = v.id; auswahl = []; schichtId = null;
+            try { const u = new URL(location.href); u.searchParams.set('veranstaltung', v.id); history.replaceState(null, '', u); } catch { /* egal */ }
+            try { await laden(); zeige('schichten'); } catch { /* bleibt bei der alten Anzeige */ }
+          });
+          ziel.appendChild(b);
+        });
       }
 
       async function start() {
