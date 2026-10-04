@@ -23,7 +23,7 @@ const isVideo = (s) => /\.(mp4|webm|mov|m4v)$/i.test(s || '');
 // 2025-Stil: Text links, gerahmte Urkunde rechts (genau EIN gerahmtes Intro-Bild)
 const urkundeMode = intro.length === 1 && intro[0].rahmen;
 // 2026-Stil: versetzte Presse-Collage (Original). 2027+ nutzt das Raster.
-const collageMode = Number(jahr.jahr) === 2026;
+const collageMode = Number(jahr.jahr) === 2026 && (jahr.veranstaltung || 'Festival') === 'Festival';
 const COLLAGE = [
   ['presse26-4', 0.72, 0, 16.36], ['presse26-1', 43.35, 0, 53.68],
   ['presse26-3', 8.9, 11.61, 33.54], ['presse26-2', 43.35, 24.04, 54.09],

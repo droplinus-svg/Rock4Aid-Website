@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // Datenschicht – lädt Inhalte BEIM BUILD per REST-fetch aus Supabase.
 // Bewusst KEIN supabase-js hier (das erzeugt in Node einen WebSocket-Build-
-// Fehler). supabase-js wird nur im Browser (/admin) benutzt.
+// Fehler). Gepflegt werden die Inhalte in der Rock4Aid-App (Admin → Website).
 // Ohne gültige Umgebungsvariablen fällt alles auf src/data/fallback.json
 // zurück, damit die Seite immer baut.
 // -----------------------------------------------------------------------------

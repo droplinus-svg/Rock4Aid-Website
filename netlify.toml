@@ -15,3 +15,17 @@
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+
+# Das alte Redaktionssystem unter /admin gibt es nicht mehr. Die Website wird
+# in der Rock4Aid-App unter Admin → Verein → Website gepflegt.
+[[redirects]]
+  from = "/admin"
+  to = "https://rock4aid.netlify.app/admin/website"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/admin/*"
+  to = "https://rock4aid.netlify.app/admin/website"
+  status = 302
+  force = true

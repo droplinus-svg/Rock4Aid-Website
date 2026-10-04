@@ -3,8 +3,16 @@ const { active = '', activeSlug = '', einstellungen = {}, jahre = [] } = Astro.p
 const s = einstellungen || {};
 const col = (key) => (active === key ? '#ffdd00' : '#fff');
 const terminHref = active === 'termin' ? '#start' : '/#start';
-const visYears = (jahre || []).filter((j) => j.sichtbar !== false)
-  .sort((a, b) => (b.reihenfolge ?? b.jahr ?? 0) - (a.reihenfolge ?? a.jahr ?? 0));
+const visYears = (jahre || []).filter((j) => j.sichtbar !== false);
+// Rückblicke nach Jahr gruppieren, neuestes Jahr oben. Innerhalb eines Jahres
+// steht die höhere "reihenfolge" oben (z. B. Festival vor Seewandel).
+const rbGruppen = [...new Set(visYears.map((j) => Number(j.jahr)))]
+  .sort((a, b) => b - a)
+  .map((jahr) => ({
+    jahr,
+    eintraege: visYears.filter((j) => Number(j.jahr) === jahr)
+      .sort((a, b) => (b.reihenfolge ?? 0) - (a.reihenfolge ?? 0)),
+  }));
 const showLineup = s.lineup_sichtbar !== false;
 const showCharity = s.charity_sichtbar !== false;
 const showAnfahrt = s.anfahrt_sichtbar !== false;
@@ -32,9 +40,14 @@ const showMitglied = s.mitglied_sichtbar !== false;
       {visYears.length > 0 && (
         <details class="r4a-rueck" style="position:relative">
           <summary style={`cursor:pointer;color:${col('rueckblick')};padding:4px 0;white-space:nowrap;display:flex;align-items:center;gap:5px`}>Rückblick<span style="font-size:9px;line-height:1">▼</span></summary>
-          <div class="r4a-drop" style="position:absolute;top:calc(100% + 10px);right:0;min-width:172px;background:#3d2569;border:1px solid rgba(255,255,255,.22);display:flex;flex-direction:column;box-shadow:0 10px 24px rgba(20,10,45,.5)">
-            {visYears.map((j, i) => (
-              <a href={`/${j.slug}/`} style={`color:${activeSlug === j.slug ? '#ffdd00' : '#fff'};padding:12px 16px;${i < visYears.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,.14)' : ''}`}>{j.titel}</a>
+          <div class="r4a-drop" style="position:absolute;top:calc(100% + 10px);right:0;min-width:190px;background:#3d2569;border:1px solid rgba(255,255,255,.22);display:flex;flex-direction:column;box-shadow:0 10px 24px rgba(20,10,45,.5);padding:4px 0 8px">
+            {rbGruppen.map((g, gi) => (
+              <div class="r4a-gruppe" style={gi > 0 ? 'border-top:1px solid rgba(255,255,255,.14);margin-top:4px' : ''}>
+                <div class="r4a-jahr" style="padding:12px 16px 4px;color:rgba(255,255,255,.6);font-size:12px;font-weight:600;letter-spacing:.06em">{g.jahr}</div>
+                {g.eintraege.map((j) => (
+                  <a href={`/${j.slug}/`} style={`display:block;color:${activeSlug === j.slug ? '#ffdd00' : '#fff'};padding:8px 16px 8px 26px`}>{j.veranstaltung || j.titel}</a>
+                ))}
+              </div>
             ))}
           </div>
         </details>
@@ -66,6 +79,8 @@ const showMitglied = s.mitglied_sichtbar !== false;
       position:static !important; border:none !important; box-shadow:none !important;
       min-width:0 !important; background:transparent !important; padding:0 0 0 14px !important;
     }
-    .r4a-nav .r4a-drop a { padding:12px 2px !important; border-bottom:none !important; }
+    .r4a-nav .r4a-drop a { padding:10px 2px 10px 12px !important; border-bottom:none !important; }
+    .r4a-nav .r4a-jahr { padding:12px 2px 2px !important; }
+    .r4a-nav .r4a-gruppe { border-top:none !important; margin-top:0 !important; }
   }
 </style>
