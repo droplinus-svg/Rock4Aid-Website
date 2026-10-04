@@ -12,8 +12,9 @@ const bands = (bandsRaw || []).filter((b) => b.sichtbar !== false)
 // In Zweierreihen gruppieren (wie im Design), Hintergrund alterniert
 const rows = [];
 for (let i = 0; i < bands.length; i += 2) rows.push(bands.slice(i, i + 2));
-const nameHtml = (n) => (n || '').split('\n').map((s) => s).join('<br />');
-const namePlain = (n) => (n || '').split('\n').join(' ');
+const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const nameHtml = (n) => (n || '').trim().split(/\r?\n/).map((s) => esc(s.trim())).join('<br />');
+const namePlain = (n) => (n || '').split(/\r?\n/).map((s) => s.trim()).join(' ');
 ---
 <Base active="lineup" einstellungen={einstellungen} jahre={jahre} title="Line-Up – Rock4Aid">
   <section id="programm" style="background:#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat;padding:clamp(30px,4.8vw,72px) 0 clamp(20px,3vw,38px)">
