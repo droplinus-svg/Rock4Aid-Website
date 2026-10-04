@@ -25,6 +25,13 @@ const intro = [...(jahr.rueckblick_intro || [])].sort(byR);
 const acts = [...(jahr.rueckblick_acts || [])].sort(byR);
 const presse = [...(jahr.rueckblick_presse || [])].sort(byR);
 const isVideo = (s) => /\.(mp4|webm|mov|m4v)$/i.test(s || '');
+// Leere Absätze entfernen. Zweimal Enter im Editor erzeugt einen leeren Absatz,
+// der zusammen mit dem Absatzabstand eine viel zu große Lücke ergibt.
+const ohneLeer = (html) => String(html || '')
+  .replace(/<(p|div)\b[^>]*>(?:\s|&nbsp;|<br\s*\/?>)*<\/\1>/gi, '')
+  .replace(/(?:<br\s*\/?>\s*){2,}/gi, '<br>');
+const fliesstext = ohneLeer(jahr.fliesstext);
+const kennzahlen = ohneLeer(jahr.kennzahlen);
 // Intro-Bilder ohne Lücken anordnen: Vielfache von drei in Dreierreihen, sonst
 // zu zweit. Bleibt bei zwei Spalten ein Bild übrig, nutzt es die ganze Breite.
 const introSpalten = intro.length % 3 === 0 ? 3 : 2;
@@ -58,7 +65,7 @@ const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w }))
 
       {urkundeMode ? (
         <div style="margin:clamp(20px,3.2vw,34px) 0 0;display:flex;flex-wrap:wrap;gap:clamp(24px,4vw,44px);align-items:center">
-          <div style="flex:1 1 380px;min-width:280px;max-width:600px;display:flex;flex-direction:column;justify-content:center;gap:1.4em;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff;text-wrap:pretty" set:html={jahr.fliesstext}></div>
+          <div style="flex:1 1 380px;min-width:280px;max-width:600px;display:flex;flex-direction:column;justify-content:center;gap:1.4em;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff;text-wrap:pretty" set:html={fliesstext}></div>
           <div style="flex:0 1 430px;min-width:240px;position:relative">
             <img src="/assets/rahmen.png" alt="" style="width:100%;height:auto;position:relative;z-index:2;pointer-events:none" />
             <img src={intro[0].bild} alt={intro[0].alt} data-lightbox data-lightbox-src={intro[0].bild} style="position:absolute;left:12.5%;top:7.5%;width:75%;height:85%;object-fit:cover;z-index:1;cursor:zoom-in" />
@@ -66,7 +73,7 @@ const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w }))
         </div>
       ) : (
         <>
-          {jahr.kennzahlen && <p style="margin:0 0 clamp(20px,3vw,30px);font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff" set:html={jahr.kennzahlen}></p>}
+          {kennzahlen && <p style="margin:0 0 clamp(20px,3vw,30px);font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff" set:html={kennzahlen}></p>}
           {intro.length > 0 && (
             <div class="rb-intro" style={`display:grid;grid-template-columns:repeat(${introSpalten},1fr);gap:clamp(12px,1.8vw,19px)`}>
               {intro.map((im, i) => (
@@ -76,7 +83,7 @@ const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w }))
               ))}
             </div>
           )}
-          {jahr.fliesstext && <div style="margin:clamp(24px,3.6vw,38px) auto 0;max-width:min(100%,760px);display:flex;flex-direction:column;gap:1.4em;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff;text-wrap:pretty" set:html={jahr.fliesstext}></div>}
+          {fliesstext && <div style="margin:clamp(24px,3.6vw,38px) auto 0;max-width:min(100%,760px);display:flex;flex-direction:column;gap:1.4em;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff;text-wrap:pretty" set:html={fliesstext}></div>}
         </>
       )}
     </div>
