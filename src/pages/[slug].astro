@@ -10,10 +10,16 @@ export async function getStaticPaths() {
     order: 'reihenfolge.desc',
   });
   const jahre = (alle || []).filter((j) => j.sichtbar !== false);
-  return jahre.map((j) => ({ params: { slug: j.slug }, props: { jahr: j, einstellungen, jahre } }));
+  const oeffentlich = jahre.map((j) => ({ params: { slug: j.slug }, props: { jahr: j, einstellungen, jahre, vorschau: false } }));
+  // Vorschau: Jeder Rückblick ist zusätzlich unter einer geheimen Adresse erreichbar,
+  // auch wenn er ausgeblendet ist. Diese Seiten stehen in keinem Menü und werden
+  // von Suchmaschinen nicht aufgenommen (sql/62, Spalte vorschau_token).
+  const vorschauSeiten = (alle || []).filter((j) => j.vorschau_token)
+    .map((j) => ({ params: { slug: `vorschau-${j.vorschau_token}` }, props: { jahr: j, einstellungen, jahre, vorschau: true } }));
+  return [...oeffentlich, ...vorschauSeiten];
 }
 
-const { jahr, einstellungen, jahre } = Astro.props;
+const { jahr, einstellungen, jahre, vorschau } = Astro.props;
 const byR = (a, b) => (a.reihenfolge ?? 0) - (b.reihenfolge ?? 0);
 const intro = [...(jahr.rueckblick_intro || [])].sort(byR);
 const acts = [...(jahr.rueckblick_acts || [])].sort(byR);
@@ -33,7 +39,14 @@ const COLLAGE = [
 const findImg = (m) => presse.find((p) => (p.bild || '').includes(m));
 const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w })).filter((x) => x.p);
 ---
-<Base active="rueckblick" activeSlug={jahr.slug} einstellungen={einstellungen} jahre={jahre} title={`${jahr.titel} – Rock4Aid`}>
+<Base active="rueckblick" activeSlug={jahr.slug} einstellungen={einstellungen} jahre={jahre} title={`${vorschau ? 'Vorschau: ' : ''}${jahr.titel} – Rock4Aid`} noindex={vorschau}>
+  {vorschau && (
+    <div style="background:#e5007d;color:#fff;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;line-height:1.4;padding:10px clamp(18px,5.66vw,85px);text-align:center">
+      {jahr.sichtbar === false
+        ? 'Vorschau. Diese Seite ist noch nicht öffentlich und steht in keinem Menü.'
+        : `Vorschau. Diese Seite ist öffentlich unter rock4aid.de/${jahr.slug}.`}
+    </div>
+  )}
   <section id="rueckblick" style="background:#4b2e83;padding:clamp(34px,5.2vw,53px) 0 clamp(40px,5vw,52px)">
     <div style="max-width:1500px;margin:0 auto;padding:0 clamp(18px,5.66vw,85px)">
       <h2 style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#fff">{jahr.titel}</h2>
