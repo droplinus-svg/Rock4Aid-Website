@@ -25,6 +25,10 @@ const intro = [...(jahr.rueckblick_intro || [])].sort(byR);
 const acts = [...(jahr.rueckblick_acts || [])].sort(byR);
 const presse = [...(jahr.rueckblick_presse || [])].sort(byR);
 const isVideo = (s) => /\.(mp4|webm|mov|m4v)$/i.test(s || '');
+// Intro-Bilder ohne Lücken anordnen: Vielfache von drei in Dreierreihen, sonst
+// zu zweit. Bleibt bei zwei Spalten ein Bild übrig, nutzt es die ganze Breite.
+const introSpalten = intro.length % 3 === 0 ? 3 : 2;
+const introBreit = (i) => introSpalten === 2 && intro.length % 2 === 1 && i === intro.length - 1;
 
 // 2025-Stil: Text links, gerahmte Urkunde rechts (genau EIN gerahmtes Intro-Bild)
 const urkundeMode = intro.length === 1 && intro[0].rahmen;
@@ -64,11 +68,11 @@ const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w }))
         <>
           {jahr.kennzahlen && <p style="margin:0 0 clamp(20px,3vw,30px);font-family:'Archivo',sans-serif;font-size:clamp(16px,2.05vw,21px);line-height:1.5;letter-spacing:.024em;color:#fff" set:html={jahr.kennzahlen}></p>}
           {intro.length > 0 && (
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(12px,1.8vw,19px)">
-              {intro.map((im) => (
+            <div class="rb-intro" style={`display:grid;grid-template-columns:repeat(${introSpalten},1fr);gap:clamp(12px,1.8vw,19px)`}>
+              {intro.map((im, i) => (
                 isVideo(im.bild)
-                  ? <video src={im.bild} controls playsinline preload="metadata" style="width:100%;aspect-ratio:363/226;object-fit:cover;background:#000"></video>
-                  : <img src={im.bild} alt={im.alt} data-lightbox data-lightbox-src={im.bild} style="width:100%;aspect-ratio:363/226;object-fit:cover" />
+                  ? <video class:list={['rb-intro-bild', { 'rb-intro-breit': introBreit(i) }]} src={im.bild} controls playsinline preload="metadata" style="width:100%;aspect-ratio:363/226;object-fit:cover;background:#000"></video>
+                  : <img class:list={['rb-intro-bild', { 'rb-intro-breit': introBreit(i) }]} src={im.bild} alt={im.alt} data-lightbox data-lightbox-src={im.bild} style="width:100%;aspect-ratio:363/226;object-fit:cover" />
               ))}
             </div>
           )}
@@ -134,6 +138,13 @@ const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w }))
   )}
 
   <style>
+    /* Übriges Intro-Bild bei zwei Spalten: ganze Breite, flacheres Format */
+    .rb-intro-breit { grid-column: 1 / -1; aspect-ratio: 12 / 5 !important; object-position: center 40%; }
+    /* Auf dem Handy stehen die Intro-Bilder untereinander */
+    @media (max-width: 640px) {
+      .rb-intro { grid-template-columns: 1fr !important; }
+      .rb-intro-breit { aspect-ratio: 363 / 226 !important; }
+    }
     /* Band mit nur einem Foto: Das Foto nutzt die ganze Breite in flacherem Format,
        damit es nicht riesig wird. Der Bildausschnitt liegt etwas über der Mitte,
        weil dort meist die Gesichter sind. Auf schmalen Schirmen bleibt 4:3. */
