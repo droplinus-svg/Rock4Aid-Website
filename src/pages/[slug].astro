@@ -75,11 +75,11 @@ const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w }))
             <h3 style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(20px,2.73vw,28px);line-height:1.1;letter-spacing:-.013em;color:#4b2e83">{act.name}</h3>
             {act.beschreibung && <p style="margin:.25em 0 clamp(12px,1.6vw,17px);font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(15px,1.95vw,20px);line-height:1.4;letter-spacing:.02em;color:#4b2e83">{act.beschreibung}</p>}
             <BandLinks links={act.links} />
-            <div style="display:flex;flex-wrap:wrap;gap:clamp(12px,1.4vw,15px);margin-top:clamp(8px,1vw,12px)">
-              {[act.foto_a, act.foto_b].filter(Boolean).map((f) => (
+            <div class:list={['rb-fotos', { 'rb-einzeln': [act.foto_a, act.foto_b, act.foto_c].filter(Boolean).length === 1, 'rb-drei': [act.foto_a, act.foto_b, act.foto_c].filter(Boolean).length === 3 }]} style="display:flex;flex-wrap:wrap;gap:clamp(12px,1.4vw,15px);margin-top:clamp(8px,1vw,12px)">
+              {[act.foto_a, act.foto_b, act.foto_c].filter(Boolean).map((f) => (
                 isVideo(f)
-                  ? <video src={f} controls playsinline preload="metadata" style="flex:1 1 42%;min-width:280px;width:100%;aspect-ratio:435/326;object-fit:cover;background:#000"></video>
-                  : <img src={f} alt={`${act.name} bei ${jahr.titel}`} data-lightbox data-lightbox-src={f} style="flex:1 1 42%;min-width:280px;width:100%;aspect-ratio:435/326;object-fit:cover" />
+                  ? <video class="rb-foto" src={f} controls playsinline preload="metadata" style="flex:1 1 42%;min-width:280px;width:100%;aspect-ratio:435/326;object-fit:cover;background:#000"></video>
+                  : <img class="rb-foto" src={f} alt={`${act.name} bei ${jahr.titel}`} data-lightbox data-lightbox-src={f} style="flex:1 1 42%;min-width:280px;width:100%;aspect-ratio:435/326;object-fit:cover" />
               ))}
             </div>
           </div>
@@ -121,6 +121,14 @@ const collageItems = COLLAGE.map(([m, l, t, w]) => ({ p: findImg(m), l, t, w }))
   )}
 
   <style>
+    /* Band mit nur einem Foto: Das Foto nutzt die ganze Breite in flacherem Format,
+       damit es nicht riesig wird. Der Bildausschnitt liegt etwas über der Mitte,
+       weil dort meist die Gesichter sind. Auf schmalen Schirmen bleibt 4:3. */
+    @media (min-width: 700px) {
+      .rb-fotos.rb-einzeln .rb-foto { flex-basis: 100% !important; aspect-ratio: 2 / 1 !important; object-position: center 35%; }
+      /* Drei Fotos stehen in einer Reihe */
+      .rb-fotos.rb-drei .rb-foto { flex-basis: 30% !important; min-width: 0 !important; }
+    }
     /* Presse-Collage nur auf breiten Schirmen; darunter Raster (wie im Original) */
     @media (max-width: 860px) {
       .rb-collage { display: none !important; }
