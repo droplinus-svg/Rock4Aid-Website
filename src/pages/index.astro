@@ -51,7 +51,7 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       {terminSichtbar && festivalDatum && <r4a-countdown class="hero-countdown" target={festivalDatum} aria-hidden="true"></r4a-countdown>}
     </section>
 
-    <section class="info-band" style="background:#4b2e83;padding:1.9% 0 2.2%;flex:0 0 auto">
+    <section class="info-band" style="background:#4b2e83;padding:1.9% 0 clamp(36px,5vw,80px);flex:0 0 auto">
       <div class="ib-inner" style="margin:0 auto;padding:0 5.1%">
         <div class="ib-top">
           <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(30px,4.6vw,66px);line-height:1.06;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoTitel}</p>
@@ -103,7 +103,7 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       /* Mobil: Seite füllt den Bildschirm; Footer ganz unten, Info-Bereich wächst */
       .hero-wrap { min-height:calc(100svh - 100px) !important; }
       /* Info-Kasten etwas nach oben, sodass das Ticket sanft über die Kante ragt (Text bleibt frei) */
-      .info-band { padding:9% 0 5% !important; margin-top:-22px !important; position:relative; z-index:1; }
+      .info-band { padding:9% 0 36px !important; margin-top:-22px !important; position:relative; z-index:1; }
       .ib-claims { margin-top:10% !important; }
       .hero-inner { padding-top:8.5% !important; padding-left:3% !important; padding-right:3% !important; }
       /* Logo etwas höher setzen, damit es nicht auf dem Countdown-Störer klebt */
