@@ -1,11 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
+import SpendenBereich from '../components/SpendenBereich.astro';
 import { getTable } from '../lib/content.js';
 
 const einstellungen = await getTable('einstellungen', { single: true });
 const sponsorenRaw = await getTable('sponsoren', { order: 'reihenfolge.asc', filters: { sichtbar: 'eq.true' } });
 const sponsoren = (sponsorenRaw || []).filter((x) => x.sichtbar !== false);
 const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
+// Spendenaufruf unten auf der Startseite (sql/81, in der App unter „Spendenaufruf (Startseite)“ gepflegt)
+const spenden = await getTable('spenden', { single: true });
 
 const infoTitel = einstellungen.info_titel || `LineUp & Termin ${einstellungen.festival_jahr || ''}`.trim();
 const infoUntertitel = einstellungen.info_untertitel || '';
@@ -73,6 +76,8 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       </div>
     </section>
   </div>
+
+  {spenden.sichtbar !== false && <SpendenBereich s={spenden} />}
 
   <script is:inline src="/js/rock4aid-countdown.js" defer></script>
 

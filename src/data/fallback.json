@@ -103,6 +103,20 @@
     "spenden_link_text": "www.garangoverein.de",
     "spenden_text": "<p class=\"rt\">Direkte Spenden sind möglich auf das Konto des Garangovereins<br />IBAN: DE36 6709 2300 0033 3998 55 (Volksbank Kurpfalz)<br />Verwendungszweck: „Rock4Aid / Brunnenbau“.</p>"
   },
+  "spenden": {
+    "id": 1,
+    "sichtbar": true,
+    "titel": "Deine Spende macht den Unterschied",
+    "text": "<p class=\"rt\">Direkte Spenden sind möglich auf das Konto des Garangovereins<br />IBAN: DE36 6709 2300 0033 3998 55 (Volksbank Kurpfalz)<br />Verwendungszweck: „Rock4Aid / Brunnenbau“.</p>",
+    "link_url": "https://www.garangoverein.de",
+    "link_text": "www.garangoverein.de",
+    "inhaber": "Rock4Aid e.V.",
+    "iban": "DE04670923000034203300",
+    "bic": null,
+    "bank": "Volksbank Kurpfalz eG",
+    "zweck": "Spende Rock4Aid",
+    "girocode": true
+  },
   "anfahrt": {
     "id": 1,
     "sichtbar": true,

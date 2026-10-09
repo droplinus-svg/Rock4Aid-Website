@@ -1,15 +1,20 @@
 ---
+import { getTable } from '../lib/content.js';
 const { einstellungen = {} } = Astro.props;
 const jahr = (einstellungen && einstellungen.festival_jahr) || '2027';
+// Link „Spenden“ führt zum Spendenaufruf unten auf der Startseite (sql/81). Ist er ausgeblendet, fehlt auch der Link.
+const spendenBereich = await getTable('spenden', { single: true });
+const spenden = spendenBereich.sichtbar !== false;
 // Sichtbarer "Stand"-Marker: bestätigt, dass der aktuelle Datei-Stand live ist.
 // SITE_VERSION wird bei jeder Lieferung hochgezählt; BUILD_TS setzt Netlify beim Build automatisch.
-const SITE_VERSION = 'v17';
+const SITE_VERSION = 'v18';
 const BUILD_TS = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 ---
 <footer class="r4a-footer" style="background:#3d2569;padding:26px 5.1%">
   <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between">
     <span class="r4a-copy" style="font-family:'Archivo',sans-serif;font-size:15px;color:rgba(255,255,255,.7)">© {jahr} Rock4Aid<span class="r4a-copy-loc"> · Benefiz-Festival Heddesheim</span></span>
     <span class="r4a-legal" style="display:flex;gap:20px;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase">
+      {spenden && <a href="/#spenden" style="color:#fff">Spenden</a>}
       <a href="/kontakt/" style="color:#fff">Kontakt</a>
       <a href="/impressum/" style="color:#fff">Impressum</a>
       <a href="/datenschutz/" style="color:#fff">Datenschutz</a>
@@ -25,10 +30,16 @@ const BUILD_TS = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin',
     .r4a-footer > div { flex-direction:row !important; align-items:center !important; gap:12px !important; flex-wrap:nowrap !important; }
     .r4a-footer span { font-size:11.5px !important; gap:16px !important; line-height:1.3 !important; }
     .r4a-copy-loc { display:none !important; }
+    .r4a-copy { white-space:nowrap !important; }
+    .r4a-footer .r4a-legal { gap:11px !important; }
     /* Impressum/Datenschutz mobil zurückhaltender: nicht gesperrt, nicht fett, etwas grauer */
     .r4a-legal { font-weight:400 !important; letter-spacing:0 !important; text-transform:none !important; }
     .r4a-legal a { color:rgba(255,255,255,.5) !important; }
     .r4a-copy { color:rgba(255,255,255,.45) !important; }
     .r4a-stand { display:none !important; }
+  }
+  @media (max-width:380px) {
+    .r4a-footer span { font-size:10.5px !important; }
+    .r4a-footer .r4a-legal { gap:9px !important; }
   }
 </style>

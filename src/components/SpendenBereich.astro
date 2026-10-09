@@ -1,0 +1,129 @@
+---
+// Spendenbereich „Deine Spende macht den Unterschied“ mit Spendenkonto, Verwendungszweck und GiroCode.
+// Steht unten auf der Startseite. Inhalte aus web.spenden (sql/81), gepflegt in der App unter
+// Website-Redaktion → „Spendenaufruf (Startseite)“.
+// Links aus der Vereinssoftware hängen ?verein=…&veranstaltung=…&datum=… an. Daraus entsteht ein
+// fertiger Verwendungszweck, damit der Rock4Aid e.V. die Spende dem Verein zuordnen kann.
+const { s = {} } = Astro.props;
+// Ohne IBAN erscheint kein Kontokasten.
+const iban = String(s.iban || '').replace(/\s+/g, '').toUpperCase();
+const ibanLesbar = iban.replace(/(.{4})/g, '$1 ').trim();
+const bic = String(s.bic || '').replace(/\s+/g, '').toUpperCase();
+const inhaber = s.inhaber || 'Rock4Aid e.V.';
+const zweckStandard = s.zweck || 'Spende Rock4Aid';
+const girocode = s.girocode !== false;
+---
+<section id="spenden" style={`background:#4b2e83;border-top:4px solid #ffdd00;padding:clamp(30px,4.6vw,69px) 0 clamp(34px,5vw,75px)`}>
+  <div style="max-width:1500px;margin:0 auto;padding:0 5.66%;text-align:center">
+    <h2 style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(28px,4.88vw,50px);line-height:1;letter-spacing:-.013em;color:#fff;text-wrap:balance">{s.titel}</h2>
+    <div style="width:100%;height:2px;background:rgba(255,255,255,.9);margin:clamp(12px,1.8vw,22px) 0 0"></div>
+    <div style="margin:clamp(14px,2.2vw,28px) 0 0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(15px,1.6vw,20px);line-height:1.6;letter-spacing:.02em;color:#fff;text-wrap:pretty" set:html={s.text}></div>
+    {iban && (
+      <div class="spd-konto" data-inhaber={inhaber} data-iban={iban} data-bic={bic} data-zweck={zweckStandard} data-girocode={girocode ? '1' : '0'}>
+        <div class="spd-daten">
+          <h3 class="spd-titel">Spendenkonto</h3>
+          <dl>
+            <dt>Kontoinhaber</dt><dd>{inhaber}</dd>
+            <dt>IBAN</dt><dd><span class="spd-iban">{ibanLesbar}</span> <button type="button" class="spd-kopieren" data-kopie={iban}>IBAN kopieren</button></dd>
+            {bic && (<><dt>BIC</dt><dd>{bic}</dd></>)}
+            {s.bank && (<><dt>Bank</dt><dd>{s.bank}</dd></>)}
+            <dt>Verwendungszweck</dt><dd><span class="spd-zweck">{zweckStandard}</span> <button type="button" class="spd-kopieren spd-zweck-kopieren" data-kopie={zweckStandard}>Kopieren</button></dd>
+          </dl>
+          <p class="spd-zweck-hinweis" hidden>Diesen Verwendungszweck haben wir für euren Verein vorbereitet. So können wir eure Spende eindeutig zuordnen.</p>
+        </div>
+        {girocode && (
+          <div class="spd-qr">
+            <div class="spd-qr-bild" aria-label="GiroCode für die Überweisung"></div>
+            <p>Mit der Banking-App scannen. Kontodaten und Verwendungszweck sind schon ausgefüllt, den Betrag bestimmt ihr selbst.</p>
+          </div>
+        )}
+      </div>
+    )}
+    {s.link_url && (
+      <div style="margin:clamp(18px,2.4vw,30px) 0 0">
+        <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:400;font-size:clamp(13px,1.2vw,15px);letter-spacing:.02em;color:rgba(255,255,255,.85)">Mehr Infos: <a href={s.link_url} target="_blank" rel="noopener" style="color:#ffdd00;border-bottom:1px solid #ffdd00">{s.link_text || s.link_url}</a></p>
+      </div>
+    )}
+  </div>
+</section>
+{iban && (
+  <>
+    <script is:inline src="/js/qrcode.min.js"></script>
+    <script is:inline>
+      (function () {
+        var box = document.querySelector('.spd-konto');
+        if (!box) return;
+        // Für Überweisungen nur den SEPA-Grundzeichensatz verwenden. Umlaute werden umgeschrieben,
+        // damit jede Bank den Text unverändert übernimmt.
+        function sepa(t, max) {
+          t = String(t || '').replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/Ä/g, 'Ae').replace(/Ö/g, 'Oe').replace(/Ü/g, 'Ue').replace(/ß/g, 'ss');
+          t = t.normalize ? t.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : t;
+          t = t.replace(/[^A-Za-z0-9\/\-?:().,'+ ]/g, ' ').replace(/\s+/g, ' ').trim();
+          return t.slice(0, max);
+        }
+        // Link aus der Vereinssoftware: ?verein=…&veranstaltung=…&datum=…
+        var q = new URLSearchParams(location.search);
+        var verein = sepa(q.get('verein'), 50), veranst = sepa(q.get('veranstaltung'), 50), datum = sepa(q.get('datum'), 12);
+        var zweck = sepa(box.dataset.zweck, 140);
+        if (verein) {
+          zweck = sepa('Spende Vereinssoftware / ' + verein + (veranst ? ' / ' + veranst + (datum ? ' am ' + datum : '') : ''), 140);
+          box.querySelector('.spd-zweck-hinweis').hidden = false;
+        }
+        box.querySelector('.spd-zweck').textContent = zweck;
+        box.querySelector('.spd-zweck-kopieren').dataset.kopie = zweck;
+
+        box.querySelectorAll('.spd-kopieren').forEach(function (b) {
+          var text = b.textContent;
+          b.addEventListener('click', function () {
+            var wert = b.dataset.kopie;
+            var fertig = function () { b.textContent = 'Kopiert ✓'; setTimeout(function () { b.textContent = text; }, 2000); };
+            if (navigator.clipboard && window.isSecureContext) {
+              navigator.clipboard.writeText(wert).then(fertig, function () { alt(wert); fertig(); });
+            } else { alt(wert); fertig(); }
+          });
+        });
+        function alt(wert) {
+          var ta = document.createElement('textarea');
+          ta.value = wert; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch (e) { /* Browser ohne Kopierfunktion */ }
+          document.body.removeChild(ta);
+        }
+
+        // GiroCode (EPC-QR-Code, Version 002). Der Betrag bleibt leer, die Spender tragen ihn selbst ein.
+        var feld = box.querySelector('.spd-qr-bild');
+        if (box.dataset.girocode === '1' && feld && typeof qrcode === 'function') {
+          var daten = ['BCD', '002', '1', 'SCT', box.dataset.bic || '', sepa(box.dataset.inhaber, 70), box.dataset.iban, '', '', '', zweck].join('\n');
+          var qr = qrcode(0, 'M');
+          qr.addData(daten);
+          qr.make();
+          feld.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 3, scalable: true });
+        } else if (feld) {
+          feld.parentNode.hidden = true;
+        }
+      })();
+    </script>
+  </>
+)}
+<style>
+  #spenden { scroll-margin-top:56px; }
+  .spd-konto { margin:clamp(22px,3vw,40px) auto 0; max-width:820px; background:#fff; color:#4b2e83; border-radius:6px; padding:clamp(18px,2.4vw,32px); display:flex; flex-wrap:wrap; gap:clamp(18px,3vw,40px); align-items:center; text-align:left; font-family:'Archivo',sans-serif; }
+  .spd-daten { flex:1 1 380px; min-width:0; }
+  .spd-titel { margin:0 0 12px; font-weight:700; font-size:clamp(20px,2vw,26px); letter-spacing:-.01em; }
+  .spd-konto dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:8px 18px; font-size:clamp(15px,1.4vw,17px); line-height:1.4; }
+  .spd-konto dt { font-weight:600; opacity:.75; }
+  .spd-konto dd { margin:0; display:flex; flex-wrap:wrap; gap:6px 12px; align-items:center; overflow-wrap:anywhere; }
+  .spd-iban { font-weight:700; letter-spacing:.04em; white-space:nowrap; }
+  .spd-zweck { font-weight:600; }
+  .spd-kopieren { font:inherit; font-size:13px; font-weight:700; color:#4b2e83; background:#ffdd00; border:0; border-radius:4px; padding:5px 10px; cursor:pointer; white-space:nowrap; }
+  .spd-kopieren:hover { background:#ffe94d; }
+  .spd-zweck-hinweis { margin:12px 0 0; font-size:14px; line-height:1.5; opacity:.85; }
+  .spd-qr { flex:0 0 190px; text-align:center; }
+  .spd-qr-bild :global(svg) { width:100%; height:auto; display:block; }
+  .spd-qr p { margin:6px 0 0; font-size:12.5px; line-height:1.45; opacity:.8; }
+  @media (max-width:640px) {
+    .spd-konto dl { grid-template-columns:1fr; gap:2px; }
+    .spd-konto dt { margin-top:8px; }
+    .spd-qr { flex:1 1 100%; max-width:220px; margin:0 auto; }
+  }
+</style>

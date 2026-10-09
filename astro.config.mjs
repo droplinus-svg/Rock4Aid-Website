@@ -8,5 +8,6 @@ export default defineConfig({
   // Zusammen mit absoluten internen Links (mit führendem /) funktioniert die
   // Navigation von jeder Unterseite aus.
   build: { format: 'directory' },
-  // site: 'https://DEINE-DOMAIN.de',  // später eintragen (für Sitemap/SEO)
+  // Hauptadresse der Website. Wird für Sitemap und Suchmaschinen gebraucht.
+  site: 'https://rock4aid.de',
 });
