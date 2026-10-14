@@ -215,44 +215,77 @@
         {
           "bild": "/assets/presse26-1.jpg",
           "alt": "Zeitungsartikel über Rock4Aid 2026",
-          "reihenfolge": 1
+          "reihenfolge": 1,
+          "pos_x": 43.35,
+          "pos_y": 0.0,
+          "breite": 53.68,
+          "ebene": 2
         },
         {
           "bild": "/assets/presse26-2.jpg",
           "alt": "Zeitungsartikel: Musikfans helfen mit Herzblut",
-          "reihenfolge": 2
+          "reihenfolge": 2,
+          "pos_x": 43.35,
+          "pos_y": 30.06,
+          "breite": 54.09,
+          "ebene": 4
         },
         {
           "bild": "/assets/presse26-3.jpg",
           "alt": "Zeitungsartikel über das Benefiz-Festival",
-          "reihenfolge": 3
+          "reihenfolge": 3,
+          "pos_x": 8.9,
+          "pos_y": 14.52,
+          "breite": 33.54,
+          "ebene": 3
         },
         {
           "bild": "/assets/presse26-4.jpg",
           "alt": "Pressebericht über Rock4Aid 2026",
-          "reihenfolge": 4
+          "reihenfolge": 4,
+          "pos_x": 0.72,
+          "pos_y": 0.0,
+          "breite": 16.36,
+          "ebene": 1
         },
         {
           "bild": "/assets/presse26-5.jpg",
           "alt": "Benefizkonzert für Garango – Bericht",
-          "reihenfolge": 5
+          "reihenfolge": 5,
+          "pos_x": 67.99,
+          "pos_y": 69.02,
+          "breite": 32,
+          "ebene": 7
         },
         {
           "bild": "/assets/presse26-6.jpg",
           "alt": "Dankschreiben des Garangovereins Ladenburg",
-          "reihenfolge": 6
+          "reihenfolge": 6,
+          "pos_x": 0,
+          "pos_y": 69.02,
+          "breite": 32,
+          "ebene": 5
         },
         {
           "bild": "/assets/presse26-7.jpg",
           "alt": "Bericht zum Spendenprojekt Garango",
-          "reihenfolge": 7
+          "reihenfolge": 7,
+          "pos_x": 34.05,
+          "pos_y": 69.02,
+          "breite": 32,
+          "ebene": 6
         },
         {
           "bild": "/assets/presse26-8.jpg",
           "alt": "Für solarbetriebenen Wasserturm gerockt",
-          "reihenfolge": 8
+          "reihenfolge": 8,
+          "pos_x": 4.5,
+          "pos_y": 96.11,
+          "breite": 22.9,
+          "ebene": 8
         }
-      ]
+      ],
+      "collage_hoehe": 125.05
     },
     {
       "id": 2,
