@@ -378,7 +378,11 @@ const WUENSCHE = ['Bar und Getränke', 'Essen', 'Einlass und Spendenkasse', 'Auf
           });
           merke({ ...gemerkt(), ...k });
           const vorname = k.name.split(/\s+/)[0];
-          const ok = await mail({ art: 'helfer_bestaetigung', token: r.token });
+          // Neue Einsätze bekommen die Bestätigung. Schon eingetragene meldet die Seite nicht (App, sql/100).
+          // Dann geht eine Info-Mail an die Adresse, damit nur ihr Inhaber davon erfährt.
+          let ok = true;
+          if (r && r.token) ok = await mail({ art: 'helfer_bestaetigung', token: r.token });
+          if (r && r.doppelt) await mail({ art: 'helfer_doppelt', eventId: r.event_id || daten.event_id, email: k.email });
           const teile = [];
           if (mitSchicht) teile.push(`${auswahl.length} ${auswahl.length === 1 ? 'Einsatz' : 'Einsätze'}`);
           if (kuchen) teile.push('dein Kuchen');
