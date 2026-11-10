@@ -21,7 +21,9 @@ const heroVideo = einstellungen.hero_video || '';
 const stoererAktiv = einstellungen.helfer_stoerer_aktiv === true;
 const stoererText = (einstellungen.helfer_stoerer_text || '').trim() || 'Helfer/innen gesucht!';
 // Position: 'links' im Bühnenbild (Standard) oder 'rechts' unten im lila Infoband, solange dort keine Sponsoren stehen
-const stoererRechts = einstellungen.helfer_stoerer_position === 'rechts';
+// Rechts nur, solange keine Sponsoren sichtbar sind, sonst würde der Störer die Sponsorenbox verdecken.
+// Am Handy steht er immer links im Bühnenbild, weil das Infoband dort zu schmal ist.
+const stoererRechts = einstellungen.helfer_stoerer_position === 'rechts' && sponsoren.length === 0;
 // " I " (Trennzeichen) gelb hervorheben – wie im Design
 const claim1Html = claim1.split(' I ').join(' <span style="color:#fff">I</span> ');
 // Sponsoren-Logogröße: Stufen klein/mittel/groß → Höhe in px
@@ -44,8 +46,8 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
           <img src="/assets/wordmark.png" alt="Rock4Aid" class="hero-wordmark" style="width:62%;height:auto;flex:1 1 auto;min-height:0;object-fit:contain;margin:auto auto;padding-bottom:1.5%" />
         </div>
       </div>
-      {stoererAktiv && !stoererRechts && (
-        <a href="/helfer/" class="hf-stoerer" aria-label={`${stoererText} Jetzt als Helfer registrieren`}>
+      {stoererAktiv && (
+        <a href="/helfer/" class={stoererRechts ? 'hf-stoerer hf-nur-handy' : 'hf-stoerer'} aria-label={`${stoererText} Jetzt als Helfer registrieren`}>
           <span class="hf-st-text">{stoererText}</span>
           <span class="hf-st-mehr">{"Jetzt mitmachen\u00a0→"}</span>
         </a>
@@ -53,7 +55,7 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       {terminSichtbar && festivalDatum && <r4a-countdown class="hero-countdown" target={festivalDatum} aria-hidden="true"></r4a-countdown>}
     </section>
 
-    <section class="info-band" style="background:#4b2e83;padding:1.9% 0 clamp(36px,5vw,80px);flex:0 0 auto">
+    <section class="info-band" style="position:relative;background:#4b2e83;padding:1.9% 0 clamp(36px,5vw,80px);flex:0 0 auto">
       <div class="ib-inner" style="margin:0 auto;padding:0 5.1%">
         <div class="ib-top">
           <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(30px,4.6vw,66px);line-height:1.06;letter-spacing:0;color:#fff;white-space:pre-line;text-wrap:balance">{infoTitel}</p>
@@ -64,12 +66,6 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
             <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(18px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff" set:html={claim1Html}></p>
             <p style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(18px,2.344vw,35px);line-height:1.17;letter-spacing:.063em;color:#fff">{claim2}</p>
           </div>
-          {stoererAktiv && stoererRechts && (
-            <a href="/helfer/" class="hf-stoerer hf-rechts" aria-label={`${stoererText} Jetzt als Helfer registrieren`}>
-              <span class="hf-st-text">{stoererText}</span>
-              <span class="hf-st-mehr">{"Jetzt mitmachen\u00a0→"}</span>
-            </a>
-          )}
           {sponsoren.length > 0 && (
             <div class="sp-box" style="flex:0 0 auto;background:#fbfefd;border-radius:4px;padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px">
               <p class="sp-title" style="margin:0;font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;line-height:1;color:#4b2e83">Sponsored by:</p>
@@ -82,6 +78,12 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
           )}
         </div>
       </div>
+      {stoererAktiv && stoererRechts && (
+        <a href="/helfer/" class="hf-stoerer hf-rechts" aria-label={`${stoererText} Jetzt als Helfer registrieren`}>
+          <span class="hf-st-text">{stoererText}</span>
+          <span class="hf-st-mehr">{"Jetzt mitmachen\u00a0→"}</span>
+        </a>
+      )}
     </section>
   </div>
 
@@ -102,8 +104,10 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
     @keyframes hfWippen { 0%,100% { transform:rotate(-12deg); } 50% { transform:rotate(-8deg) scale(1.03); } }
     @media (prefers-reduced-motion:reduce) { .hf-stoerer { animation:none; } }
     /* Variante rechts: steht im Infoband rechts neben den Claims statt im Bühnenbild */
-    .hf-stoerer.hf-rechts { position:relative; left:auto; bottom:auto; flex:0 0 auto; align-self:center; margin-right:2%; }
-    @media (max-width:640px) { .hf-stoerer.hf-rechts { left:auto; bottom:auto; margin:0 auto; } .hf-stoerer { left:12px; bottom:10px; width:104px; padding:10px; gap:3px; } .hf-st-text { font-size:14px; } .hf-st-mehr { font-size:10px; } }
+    /* Variante rechts: liegt frei über dem Infoband und nimmt keinen Platz weg. So bleiben Bühnenbild und Infoband so groß wie bisher. */
+    .hf-stoerer.hf-rechts { left:auto; right:7%; top:50%; bottom:auto; margin-top:calc(clamp(118px,13vw,190px) / -2); }
+    .hf-nur-handy { display:none; }
+    @media (max-width:640px) { .hf-stoerer.hf-rechts { display:none; } .hf-nur-handy { display:flex; } .hf-stoerer { left:12px; bottom:10px; width:104px; padding:10px; gap:3px; } .hf-st-text { font-size:14px; } .hf-st-mehr { font-size:10px; } }
 
     /* Countdown-Ticket: klebt unten rechts am Hero und ragt leicht in den violetten Block */
     .hero-countdown { position:absolute; right:34px; top:0; z-index:5; pointer-events:none; }
