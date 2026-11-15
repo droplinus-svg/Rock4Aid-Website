@@ -107,7 +107,7 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
     /* Variante rechts: liegt frei über dem Infoband und nimmt keinen Platz weg. So bleiben Bühnenbild und Infoband so groß wie bisher. */
     .hf-stoerer.hf-rechts { left:auto; right:7%; top:50%; bottom:auto; margin-top:calc(clamp(118px,13vw,190px) / -2); }
     .hf-nur-handy { display:none; }
-    @media (max-width:640px) { .hf-stoerer.hf-rechts { display:none; } .hf-nur-handy { display:flex; } .hf-stoerer { left:12px; bottom:10px; width:104px; padding:10px; gap:3px; } .hf-st-text { font-size:14px; } .hf-st-mehr { font-size:10px; } }
+    @media (max-width:640px) { .hf-stoerer.hf-rechts { display:none; } .hf-nur-handy { display:flex; } .hf-stoerer { left:auto; right:14px; bottom:12px; width:70px; padding:6px; gap:1px; } .hf-st-text { font-size:10.5px; } .hf-st-mehr { font-size:7.5px; } }
 
     /* Countdown-Ticket: klebt unten rechts am Hero und ragt leicht in den violetten Block */
     .hero-countdown { position:absolute; right:34px; top:0; z-index:5; pointer-events:none; }
@@ -119,9 +119,11 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       /* Info-Kasten etwas nach oben, sodass das Ticket sanft über die Kante ragt (Text bleibt frei) */
       .info-band { padding:9% 0 36px !important; margin-top:-22px !important; position:relative; z-index:1; }
       .ib-claims { margin-top:10% !important; }
-      .hero-inner { padding-top:8.5% !important; padding-left:3% !important; padding-right:3% !important; }
-      /* Logo etwas höher setzen, damit es nicht auf dem Countdown-Störer klebt */
-      .hero-wordmark { width:100% !important; padding-bottom:6% !important; }
+      /* Hero mobil (Design-Richtung 3): Kicker + Logo als eine zentrierte Gruppe, großes Logo */
+      .hero-inner { padding:5% 4% 0 !important; justify-content:center !important; }
+      .hero-inner > p { font-size:12.5px !important; letter-spacing:.17em !important; text-shadow:0 2px 16px rgba(0,0,0,.88), 0 0 3px rgba(0,0,0,.7) !important; }
+      .hero-inner > div { width:44% !important; margin:1.8% auto 0 !important; }
+      .hero-wordmark { flex:0 0 auto !important; width:94% !important; margin:2.4% auto 0 !important; padding-bottom:0 !important; transform:translateY(-4%) !important; }
       /* Mobil: Sponsorenkasten kompakt – EINE schlanke Reihe.
          Stufen klein/mittel/groß über kleine Höhen-/Breiten-Deckel, sodass
          a) der Kasten niedrig bleibt, b) groß>klein gilt und
