@@ -113,7 +113,7 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
     .hero-countdown { position:absolute; right:34px; top:0; z-index:5; pointer-events:none; }
     @media (max-width:640px) {
       /* Mobil: Ticket vollständig im Hero – keine Überlappung mit dem Info-Kasten */
-      .hero-countdown { right:12px; top:auto; bottom:6px; transform:scale(.8); transform-origin:bottom right; }
+      .hero-countdown { display:none !important; }
       /* Mobil: Seite füllt den Bildschirm; Footer ganz unten, Info-Bereich wächst */
       .hero-wrap { min-height:calc(100svh - 100px) !important; }
       /* Info-Kasten etwas nach oben, sodass das Ticket sanft über die Kante ragt (Text bleibt frei) */
@@ -121,7 +121,7 @@ const logoBox = (sp) => LOGO_BOX[(sp.groesse || 'mittel').toLowerCase()] || LOGO
       .ib-claims { margin-top:10% !important; }
       .hero-inner { padding-top:8.5% !important; padding-left:3% !important; padding-right:3% !important; }
       /* Logo etwas höher setzen, damit es nicht auf dem Countdown-Störer klebt */
-      .hero-wordmark { width:100% !important; padding-bottom:24% !important; }
+      .hero-wordmark { width:100% !important; padding-bottom:6% !important; }
       /* Mobil: Sponsorenkasten kompakt – EINE schlanke Reihe.
          Stufen klein/mittel/groß über kleine Höhen-/Breiten-Deckel, sodass
          a) der Kasten niedrig bleibt, b) groß>klein gilt und
