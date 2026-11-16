@@ -6,6 +6,7 @@
  *   aktion "laden"    → Bandname, Abgabedatum und die bisherige Abgabe
  *   aktion "upload"   → signierte Upload-Adresse für Foto oder Logo
  *   aktion "absenden" → prüft alles auf dem Server und speichert die Abgabe
+ *   aktion "entfernen" → löscht das gesendete Foto oder Logo wieder
  *
  * Die Band hat nie direkten Zugriff auf Tabellen oder Speicher. Jede Aktion
  * prüft zuerst das Token und das Abgabedatum. Der Link gilt bis 23:59 Uhr
@@ -36,6 +37,29 @@ export const RECHTE_TEXT =
   + 'und dass die Fotografin oder der Fotograf mit der Nutzung einverstanden ist.';
 
 const VEKTOR_ENDUNGEN = ['svg', 'pdf', 'eps', 'ai'];
+// Kanäle der Band, gleiche Schlüssel wie web.band_links.plattform
+export const PLATTFORMEN = ['website', 'instagram', 'facebook', 'youtube', 'spotify', 'tiktok', 'bandcamp'];
+
+/** Links prüfen und vereinheitlichen. Gibt { links } oder { fehler } zurück. */
+export function pruefeLinks(roh) {
+  if (roh == null) return { links: [] };
+  if (!Array.isArray(roh) || roh.length > 20) return { fehler: 'Die Links konnten nicht gelesen werden.' };
+  const links = [];
+  for (const l of roh) {
+    const plattform = String(l?.plattform || '');
+    let url = String(l?.url || '').trim();
+    if (!url) continue;
+    if (!PLATTFORMEN.includes(plattform)) return { fehler: 'Unbekannter Kanal.' };
+    if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+    let u;
+    try { u = new URL(url); } catch { return { fehler: `Die Adresse „${url}“ ist keine gültige Internetadresse.` }; }
+    if (!['http:', 'https:'].includes(u.protocol) || !u.hostname.includes('.') || url.length > 300) {
+      return { fehler: `Die Adresse „${url}“ ist keine gültige Internetadresse.` };
+    }
+    links.push({ plattform, url: u.toString() });
+  }
+  return { links };
+}
 
 function json(status, body) {
   return new Response(JSON.stringify(body), {
@@ -226,7 +250,7 @@ async function aktionLaden(env, a) {
     band: a.band?.name || '', abgabeBis: a.abgabe_bis, offen, status: a.status,
     text: a.vorstellungstext || '', credit: a.foto_credit || '',
     rechteBestaetigtAm: a.rechte_bestaetigt_am, eingereichtAm: a.eingereicht_am,
-    foto, logo, rechteText: RECHTE_TEXT,
+    foto, logo, rechteText: RECHTE_TEXT, links: Array.isArray(a.links) ? a.links : [],
   });
 }
 
@@ -258,6 +282,8 @@ async function aktionAbsenden(env, a, body, jetzt) {
   if (!credit) return fehler(400, 'Bitte den Namen der Fotografin oder des Fotografen eintragen.');
   if (credit.length > CREDIT_MAX) return fehler(400, `Der Fotografen-Credit darf höchstens ${CREDIT_MAX} Zeichen lang sein.`);
   if (body.rechte !== true) return fehler(400, 'Bitte bestätigt die Nutzungsrechte.');
+  const lk = pruefeLinks(body.links);
+  if (lk.fehler) return fehler(400, lk.fehler);
 
   const ordnerPraefix = `${a.id}/`;
   const fotoPfad = body.fotoPfad || a.foto_pfad;
@@ -269,6 +295,7 @@ async function aktionAbsenden(env, a, body, jetzt) {
   const felder = {
     vorstellungstext: text, foto_credit: credit, status: 'eingereicht', eingereicht_am: jetzt.toISOString(),
     rechte_bestaetigt_am: jetzt.toISOString(), rechte_version: RECHTE_VERSION, rechte_text: RECHTE_TEXT,
+    links: lk.links,
   };
 
   if (fotoPfad !== a.foto_pfad) {
@@ -306,6 +333,19 @@ async function aktionAbsenden(env, a, body, jetzt) {
   return json(200, { ok: true });
 }
 
+async function aktionEntfernen(env, a, body) {
+  const art = body.art === 'logo' ? 'logo' : body.art === 'foto' ? 'foto' : null;
+  if (!art) return fehler(400, 'Unbekannte Dateiart.');
+  const pfad = a[`${art}_pfad`];
+  if (pfad) await loescheDateien(env, [pfad]);
+  const leer = art === 'foto'
+    ? { foto_pfad: null, foto_dateiname: null, foto_typ: null, foto_groesse: null, foto_breite: null, foto_hoehe: null }
+    : { logo_pfad: null, logo_dateiname: null, logo_typ: null, logo_groesse: null, logo_art: null, logo_breite: null, logo_hoehe: null };
+  // Ohne Foto oder Logo ist die Einreichung unvollständig. Die Website zeigt bis zur nächsten Freigabe die alte Fassung.
+  await speichereAbgabe(env, a.id, { ...leer, status: 'offen' });
+  return json(200, { ok: true });
+}
+
 export default async (request) => {
   if (request.method !== 'POST') return fehler(405, 'Nur POST erlaubt.');
   const env = umgebung();
@@ -321,6 +361,7 @@ export default async (request) => {
     if (!istOffen(a, jetzt)) return fehler(403, 'Der Stichtag ist vorbei. Änderungen sind nicht mehr möglich.');
     if (body.aktion === 'upload') return await aktionUpload(env, a, body);
     if (body.aktion === 'absenden') return await aktionAbsenden(env, a, body, jetzt);
+    if (body.aktion === 'entfernen') return await aktionEntfernen(env, a, body);
     return fehler(400, 'Unbekannte Aktion.');
   } catch (e) {
     console.error('[band-abgabe]', e);

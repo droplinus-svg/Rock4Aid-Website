@@ -65,13 +65,27 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
           <p id="ba-zaehler" class="ba-zaehler" aria-live="polite"></p>
         </fieldset>
 
+        <fieldset class="ba-block">
+          <legend>6. Website und Social Media</legend>
+          <p>Wo findet man euch im Netz? Wir verlinken eure Kanäle auf rock4aid.de bei eurem Auftritt im Line-Up. Tragt nur ein, was ihr habt. Alle Felder sind freiwillig.</p>
+          <div class="ba-links">
+            <label>Website<input type="url" inputmode="url" data-plattform="website" placeholder="z. B. www.eure-band.de"></label>
+            <label>Instagram<input type="url" inputmode="url" data-plattform="instagram" placeholder="z. B. instagram.com/euerband"></label>
+            <label>Facebook<input type="url" inputmode="url" data-plattform="facebook" placeholder="z. B. facebook.com/euerband"></label>
+            <label>YouTube<input type="url" inputmode="url" data-plattform="youtube" placeholder="z. B. youtube.com/@euerband"></label>
+            <label>Spotify<input type="url" inputmode="url" data-plattform="spotify" placeholder="Link zu eurem Künstlerprofil"></label>
+            <label>TikTok<input type="url" inputmode="url" data-plattform="tiktok" placeholder="z. B. tiktok.com/@euerband"></label>
+            <label>Bandcamp<input type="url" inputmode="url" data-plattform="bandcamp" placeholder="z. B. euerband.bandcamp.com"></label>
+          </div>
+        </fieldset>
+
         <button type="submit" id="ba-senden" class="ba-knopf" disabled>Unterlagen senden</button>
         <p id="ba-fehlt" class="ba-klein"></p>
       </form>
 
       <div class="ba-datenschutz">
         <h2>Datenschutz</h2>
-        <p>Wir speichern eure Dateien, euren Text, den Fotografen-Credit und den Zeitpunkt eurer Rechtebestätigung. Wir nutzen sie nur, um euren Auftritt beim Rock4Aid-Festival anzukündigen. Die Daten liegen bei unserem Dienstleister Supabase und sind bis zur Freigabe nur für unser Orga-Team sichtbar. Wenn ihr nicht mehr beim Festival dabei seid, löschen wir eure Unterlagen auf Wunsch. Mehr steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <p>Wir speichern eure Dateien, euren Text, eure Links, den Fotografen-Credit und den Zeitpunkt eurer Rechtebestätigung. Wir nutzen sie nur, um euren Auftritt beim Rock4Aid-Festival anzukündigen. Die Daten liegen bei unserem Dienstleister Supabase und sind bis zur Freigabe nur für unser Orga-Team sichtbar. Wenn ihr nicht mehr beim Festival dabei seid, löschen wir eure Unterlagen auf Wunsch. Mehr steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
       </div>
     </div>
   </section>
@@ -100,6 +114,12 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   .ba-info { font-size:15px; line-height:1.45; }
   .ba-info img { display:block; width:auto; height:auto; max-width:220px; max-height:160px; object-fit:contain; border-radius:6px; margin-top:6px; background:repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0/16px 16px; }
   .ba-ok { color:#1f6b2a; font-weight:600; }
+  .ba-links { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  .ba-links label { display:flex; flex-direction:column; gap:4px; font-weight:600; font-size:15px; color:#4b2e83; min-width:0; }
+  .ba-links input { width:100%; font:inherit; font-size:15px; font-weight:400; padding:9px 11px; border:2px solid #4b2e83; border-radius:8px; background:#fff; color:#1d0f3a; }
+  .ba-weg { display:block; margin-top:8px; background:#fff; color:#a12020; border:2px solid #a12020; border-radius:8px; padding:6px 12px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; }
+  .ba-weg:hover { background:#fbebeb; }
+  .ba-weg[disabled] { opacity:.5; cursor:default; }
   .ba-warn { color:#a12020; font-weight:600; }
   .ba-zaehler { font-weight:600; }
   .ba-check { display:flex; gap:10px; align-items:flex-start; line-height:1.5; cursor:pointer; }
@@ -200,16 +220,42 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
     $('ba-fehlt').textContent = fehlt.length ? `Zum Senden brauchen wir noch ${fehlt.join(', ').replace(/, ([^,]*)$/, ' und $1')}.` : '';
   }
 
-  $('ba-foto').addEventListener('change', async (e) => {
-    const f = e.target.files[0]; zustand.foto = null; if (!f) { $('ba-foto-info').innerHTML = ''; pruefeAlles(); return; }
-    $('ba-foto-info').textContent = 'Wir prüfen das Foto …';
-    const erg = await pruefeFoto(f); zeigeInfo('ba-foto-info', erg, f); if (!erg.fehler) zustand.foto = f; pruefeAlles();
-  });
-  $('ba-logo').addEventListener('change', async (e) => {
-    const f = e.target.files[0]; zustand.logo = null; if (!f) { $('ba-logo-info').innerHTML = ''; pruefeAlles(); return; }
-    $('ba-logo-info').textContent = 'Wir prüfen das Logo …';
-    const erg = await pruefeLogo(f); zeigeInfo('ba-logo-info', erg, f); if (!erg.fehler) zustand.logo = f; pruefeAlles();
-  });
+  // Bereits gesendete Datei anzeigen, mit Knopf zum Löschen
+  function zeigeVorhanden(art) {
+    const d = zustand.daten || {}; const info = $(`ba-${art}-info`); const v = d[art];
+    info.innerHTML = '';
+    if (!v) return;
+    const zusatz = art === 'logo' ? `${v.art === 'vektor' ? 'Vektordatei' : 'PNG'}. ` : '';
+    info.innerHTML = `<span class="ba-ok">Bereits gesendet: ${esc(v.name)}</span><br>${zusatz}Wenn ihr eine neue Datei wählt, ersetzt sie diese.${v.vorschau ? `<br><img src="${esc(v.vorschau)}" alt="${art === 'foto' ? 'Euer Pressefoto' : 'Euer Logo'}">` : ''}`;
+    if (!zustand.offen) return;
+    const weg = document.createElement('button'); weg.type = 'button'; weg.className = 'ba-weg';
+    weg.textContent = art === 'foto' ? 'Dieses Foto löschen' : 'Dieses Logo löschen';
+    weg.addEventListener('click', async () => {
+      if (!window.confirm(art === 'foto' ? 'Wollt ihr das gesendete Pressefoto wirklich löschen? Danach braucht ihr ein neues Foto.' : 'Wollt ihr das gesendete Logo wirklich löschen? Danach braucht ihr ein neues Logo.')) return;
+      weg.disabled = true;
+      try { await api({ aktion: 'entfernen', art }); await laden(); meldung(art === 'foto' ? 'Das Pressefoto ist gelöscht. Bitte wählt ein neues Foto aus und sendet eure Unterlagen erneut.' : 'Das Logo ist gelöscht. Bitte wählt ein neues Logo aus und sendet eure Unterlagen erneut.', 'ok'); }
+      catch (err) { meldung(err.message, 'fehler'); weg.disabled = false; }
+    });
+    info.appendChild(weg);
+  }
+  // Gewählte, noch nicht gesendete Datei wieder entfernen
+  function auswahlKnopf(art) {
+    const k = document.createElement('button'); k.type = 'button'; k.className = 'ba-weg';
+    k.textContent = 'Auswahl entfernen';
+    k.addEventListener('click', () => { $(`ba-${art}`).value = ''; zustand[art] = null; zeigeVorhanden(art); pruefeAlles(); });
+    $(`ba-${art}-info`).appendChild(k);
+  }
+  async function dateiGewaehlt(art, e) {
+    const f = e.target.files[0]; zustand[art] = null;
+    if (!f) { zeigeVorhanden(art); pruefeAlles(); return; }
+    $(`ba-${art}-info`).textContent = art === 'foto' ? 'Wir prüfen das Foto …' : 'Wir prüfen das Logo …';
+    const erg = art === 'foto' ? await pruefeFoto(f) : await pruefeLogo(f);
+    zeigeInfo(`ba-${art}-info`, erg, f); auswahlKnopf(art);
+    if (!erg.fehler) zustand[art] = f;
+    pruefeAlles();
+  }
+  $('ba-foto').addEventListener('change', (e) => dateiGewaehlt('foto', e));
+  $('ba-logo').addEventListener('change', (e) => dateiGewaehlt('logo', e));
   ['ba-text', 'ba-credit', 'ba-rechte'].forEach((id) => $(id).addEventListener('input', pruefeAlles));
   $('ba-rechte').addEventListener('change', pruefeAlles);
 
@@ -240,6 +286,7 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
       await api({
         aktion: 'absenden', text: $('ba-text').value, credit: $('ba-credit').value, rechte: $('ba-rechte').checked,
         fotoPfad, logoPfad, fotoName: zustand.foto?.name, logoName: zustand.logo?.name,
+        links: [...document.querySelectorAll('.ba-links input')].map((i) => ({ plattform: i.dataset.plattform, url: i.value.trim() })).filter((l) => l.url),
       });
       await laden();
       meldung('Vielen Dank! Eure Unterlagen sind bei uns angekommen. Bis zum Stichtag könnt ihr sie über diesen Link noch ändern.', 'ok');
@@ -253,7 +300,7 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   // --- Laden ---
   async function laden() {
     const d = await api({ aktion: 'laden' });
-    zustand.offen = d.offen; zustand.foto = null; zustand.logo = null;
+    zustand.offen = d.offen; zustand.foto = null; zustand.logo = null; zustand.daten = d;
     zustand.vorhandenFoto = !!d.foto; zustand.vorhandenLogo = !!d.logo;
     $('ba-foto').value = ''; $('ba-logo').value = '';
     $('ba-kopf').textContent = d.offen
@@ -265,8 +312,8 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
     $('ba-text').value = d.text; $('ba-credit').value = d.credit;
     $('ba-rechte').checked = false;
     $('ba-rechte-stand').textContent = d.rechteBestaetigtAm ? `Zuletzt bestätigt am ${zeit(d.rechteBestaetigtAm)}. Bei jeder Änderung bestätigt ihr die Rechte erneut.` : '';
-    $('ba-foto-info').innerHTML = d.foto ? `<span class="ba-ok">Bereits abgegeben: ${esc(d.foto.name)}</span><br>Wenn ihr eine neue Datei wählt, ersetzt sie diese.${d.foto.vorschau ? `<br><img src="${esc(d.foto.vorschau)}" alt="Euer Pressefoto">` : ''}` : '';
-    $('ba-logo-info').innerHTML = d.logo ? `<span class="ba-ok">Bereits abgegeben: ${esc(d.logo.name)}</span><br>${d.logo.art === 'vektor' ? 'Vektordatei' : 'PNG'}. Wenn ihr eine neue Datei wählt, ersetzt sie diese.${d.logo.vorschau ? `<br><img src="${esc(d.logo.vorschau)}" alt="Euer Logo">` : ''}` : '';
+    zeigeVorhanden('foto'); zeigeVorhanden('logo');
+    document.querySelectorAll('.ba-links input').forEach((i) => { i.value = ((d.links || []).find((l) => l.plattform === i.dataset.plattform) || {}).url || ''; });
     if (d.eingereichtAm && d.offen) meldung(`Eure Unterlagen vom ${zeit(d.eingereichtAm)} sind bei uns. Ihr könnt sie bis zum Stichtag noch ändern.`, 'ok');
     $('ba-form').querySelectorAll('input, textarea').forEach((el) => { el.disabled = !d.offen; });
     $('ba-form').hidden = false;
