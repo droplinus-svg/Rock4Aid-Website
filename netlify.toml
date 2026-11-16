@@ -29,3 +29,18 @@
   to = "https://rock4aid.netlify.app/admin/website"
   status = 302
   force = true
+
+# Upload-Seite der Bands: Jede Token-Adresse zeigt dieselbe Seite. Das Token
+# liest das Skript aus der Adresse. Die Seiten werden nicht indexiert und geben
+# das Token nicht als Referrer an andere Seiten weiter.
+[[redirects]]
+  from = "/bands/upload/*"
+  to = "/bands/upload/index.html"
+  status = 200
+
+[[headers]]
+  for = "/bands/upload/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "no-referrer"
+    Cache-Control = "no-store"

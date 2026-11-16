@@ -15,6 +15,9 @@ for (let i = 0; i < bands.length; i += 2) rows.push(bands.slice(i, i + 2));
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const nameHtml = (n) => (n || '').trim().split(/\r?\n/).map((s) => esc(s.trim())).join('<br />');
 const namePlain = (n) => (n || '').split(/\r?\n/).map((s) => s.trim()).join(' ');
+// Vorstellungstext: Absätze aus Leerzeilen, einfache Umbrüche als <br>
+const textHtml = (t) => String(t || '').trim().split(/\n\s*\n/).map((p) => `<p>${esc(p.trim()).replace(/\n/g, '<br />')}</p>`).join('');
+const hatText = (b) => Boolean((b.vorstellungstext || '').trim());
 ---
 <Base active="lineup" einstellungen={einstellungen} jahre={jahre} title="Line-Up – Rock4Aid">
   <section id="programm" style="background:#ffdd00 url(/assets/grain.png) center/100% 100% no-repeat;padding:clamp(30px,4.8vw,72px) 0 clamp(20px,3vw,38px)">
@@ -36,14 +39,29 @@ const namePlain = (n) => (n || '').split(/\r?\n/).map((s) => s.trim()).join(' ')
         <div style={`display:flex;flex-wrap:wrap;gap:clamp(18px,7vw,105px);align-items:flex-start;${row.length === 1 ? 'justify-content:center' : ''}`}>
           {row.map((b) => (
             <div style={`${row.length === 1 ? 'flex:0 1 41%' : 'flex:1 1 42%'};min-width:280px`}>
-              <img src={b.foto} alt={`${namePlain(b.name)} bei Rock4Aid`} data-lightbox data-lightbox-src={b.foto} style="width:100%;aspect-ratio:418/430;object-fit:cover" />
+              <div style="position:relative">
+                <img src={b.foto} alt={`${namePlain(b.name)} bei Rock4Aid`} data-lightbox data-lightbox-src={b.foto} style="width:100%;aspect-ratio:418/430;object-fit:cover" />
+                {b.foto_credit && <span class="lu-credit">{b.foto_credit}</span>}
+              </div>
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:clamp(10px,1.6vw,22px);margin:.5em 0 0">
-                <p style="margin:0;min-height:2em;flex:1 1 auto;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(24px,4.717vw,48.3px);line-height:1;letter-spacing:0;color:#4b2e83" set:html={nameHtml(b.name)}></p>
+                {hatText(b)
+                  ? <button type="button" class="lu-name lu-oeffnen" data-band={`band-${b.id}`} aria-haspopup="dialog"><span set:html={nameHtml(b.name)}></span></button>
+                  : <p class="lu-name" set:html={nameHtml(b.name)}></p>}
                 <div style="flex:0 1 auto;min-width:0"><BandLinks links={b.links} mt="0" justify="flex-end" /></div>
               </div>
               <p style="margin:.14em 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2.646vw,27.1px);line-height:1.1;letter-spacing:.12em;color:#4b2e83">{b.spielzeit}</p>
               <div style="width:100%;height:2px;background:#4b2e83;margin:.5em 0 0"></div>
               {b.buehne && <p style="margin:.5em 0 0;font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(13px,2.4vw,24px);line-height:1.2;letter-spacing:.12em;color:#4b2e83">{b.buehne}</p>}
+              {hatText(b) && <button type="button" class="lu-mehr lu-oeffnen" data-band={`band-${b.id}`} aria-haspopup="dialog">Mehr über die Band <span aria-hidden="true">+</span></button>}
+              {hatText(b) && (
+                <dialog class="lu-dialog" id={`band-${b.id}`} aria-labelledby={`band-${b.id}-titel`}>
+                  <button type="button" class="lu-zu" aria-label="Schließen">✕</button>
+                  <h2 id={`band-${b.id}-titel`}>{namePlain(b.name)}</h2>
+                  {(b.spielzeit || b.buehne) && <p class="lu-zeit">{[b.spielzeit, b.buehne].filter(Boolean).join(' · ')}</p>}
+                  <div class="lu-text" set:html={textHtml(b.vorstellungstext)}></div>
+                  {b.foto_credit && <p class="lu-fc">{b.foto_credit}</p>}
+                </dialog>
+              )}
             </div>
           ))}
         </div>
@@ -51,3 +69,35 @@ const namePlain = (n) => (n || '').split(/\r?\n/).map((s) => s.trim()).join(' ')
     </div>
   ))}
 </Base>
+
+<style is:global>
+  .lu-name { margin:0; min-height:2em; flex:1 1 auto; font-family:'Archivo',sans-serif; font-weight:700; font-size:clamp(24px,4.717vw,48.3px); line-height:1; letter-spacing:0; color:#4b2e83; text-align:left; }
+  button.lu-name { background:none; border:0; padding:0; cursor:pointer; display:flex; align-items:flex-start; }
+  button.lu-name > span { display:block; }
+  button.lu-name:hover, button.lu-name:focus-visible { text-decoration:underline; text-underline-offset:.12em; text-decoration-thickness:3px; }
+  .lu-credit { position:absolute; right:6px; bottom:5px; font-family:'Archivo',sans-serif; font-size:11px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.8); pointer-events:none; }
+  .lu-mehr { margin:.7em 0 0; background:none; border:0; border-bottom:2px solid #4b2e83; padding:0 0 2px; font-family:'Archivo',sans-serif; font-weight:700; font-size:clamp(15px,1.8vw,18px); color:#4b2e83; cursor:pointer; }
+  .lu-mehr:hover { color:#1d0f3a; border-color:#1d0f3a; }
+  .lu-dialog { width:min(680px, calc(100vw - 32px)); max-height:calc(100vh - 48px); border:0; border-radius:4px; padding:clamp(22px,4vw,34px); background:#ffdd00; color:#1d0f3a; font-family:'Archivo',sans-serif; }
+  .lu-dialog::backdrop { background:rgba(29,15,58,.72); }
+  .lu-dialog h2 { margin:0 2em 0 0; font-size:clamp(26px,4vw,36px); line-height:1.05; color:#4b2e83; }
+  .lu-zeit { margin:.5em 0 0; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:#4b2e83; font-size:15px; }
+  .lu-text p { margin:1em 0 0; line-height:1.55; font-size:16px; }
+  .lu-fc { margin:1.2em 0 0; font-size:13px; color:#3b2a5e; }
+  .lu-zu { position:absolute; right:12px; top:10px; background:none; border:0; font-size:28px; line-height:1; color:#4b2e83; cursor:pointer; padding:6px; }
+</style>
+<script is:inline>
+  // Bandtexte: Klick auf Name oder „Mehr über die Band“ öffnet das Fenster.
+  // Schließen mit ✕, Esc oder Klick neben das Fenster.
+  document.querySelectorAll('.lu-oeffnen').forEach((k) => k.addEventListener('click', () => {
+    const d = document.getElementById(k.dataset.band); if (d && d.showModal) d.showModal();
+  }));
+  document.querySelectorAll('.lu-dialog').forEach((d) => {
+    d.querySelector('.lu-zu').addEventListener('click', () => d.close());
+    d.addEventListener('click', (e) => {
+      if (e.target !== d) return;
+      const r = d.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+    });
+  });
+</script>
