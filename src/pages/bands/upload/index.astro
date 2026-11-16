@@ -9,17 +9,22 @@ import { getTable } from '../../../lib/content.js';
 const einstellungen = await getTable('einstellungen', { single: true });
 const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
 ---
-<Base einstellungen={einstellungen} jahre={jahre} title="Band-Abgabe – Rock4Aid" noindex={true}>
+<Base einstellungen={einstellungen} jahre={jahre} title="Euer Auftritt bei Rock4Aid" noindex={true}>
   <section class="ba">
     <div class="ba-rahmen">
-      <h1>Eure Abgabe für Rock4Aid</h1>
-      <p id="ba-kopf" class="ba-kopf">Wir laden eure Abgabe …</p>
+      <h1>Euer Auftritt bei Rock4Aid</h1>
+      <p id="ba-kopf" class="ba-kopf">Einen Moment, wir laden eure Seite …</p>
+      <div id="ba-intro" class="ba-intro" hidden>
+        <p>Damit wir euch gut ankündigen können, brauchen wir ein paar Dinge von euch. Euer Pressefoto, euer Logo und ein kurzer Text über eure Band kommen auf unsere <strong>Plakate</strong>, auf die Website <strong>rock4aid.de</strong> und in unsere <strong>Social-Media-Beiträge</strong>. Hier könnt ihr alles hochladen.</p>
+        <p id="ba-frist" class="ba-frist"></p>
+      </div>
       <div id="ba-meldung" class="ba-meldung" hidden></div>
 
       <form id="ba-form" hidden novalidate>
         <fieldset class="ba-block">
           <legend>1. Pressefoto</legend>
-          <p>Bitte ladet ein Foto als JPG oder PNG hoch. Es braucht an der langen Seite mindestens <strong>3000 Pixel</strong> und darf höchstens 25 MB groß sein. Nur so ist es auch auf einem großen Plakat noch scharf.</p>
+          <p>Bitte ladet euer Pressefoto in der <strong>besten Qualität</strong> hoch, die ihr habt. Am besten ist die Originaldatei von eurer Fotografin oder eurem Fotografen. Fotos aus WhatsApp, Instagram oder von eurer Website sind meist verkleinert und reichen für ein großes Plakat nicht.</p>
+          <p>Ihr müsst nichts nachmessen. Die Seite prüft beim Hochladen, ob das Foto groß genug ist. Möglich sind JPG- und PNG-Dateien bis 25 MB.</p>
           <div class="ba-datei">
             <input type="file" id="ba-foto" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />
             <div id="ba-foto-info" class="ba-info"></div>
@@ -27,30 +32,13 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
         </fieldset>
 
         <fieldset class="ba-block">
-          <legend>2. Logo</legend>
-          <p>Am liebsten bekommen wir euer Logo als <strong>Vektordatei</strong> (SVG, PDF, EPS oder AI). Wir drucken die Plakate im Format A0, also 84 mal 119 Zentimeter. Eine Vektordatei bleibt in jeder Größe scharf. Ein Pixelbild wird in dieser Größe schnell unscharf und treppig.</p>
-          <p>Wenn ihr keine Vektordatei habt, geht ein <strong>PNG mit transparentem Hintergrund</strong> und mindestens 5000 Pixeln Breite.</p>
-          <div class="ba-datei">
-            <input type="file" id="ba-logo" accept=".svg,.pdf,.eps,.ai,.png,image/svg+xml,application/pdf,application/postscript,image/png" />
-            <div id="ba-logo-info" class="ba-info"></div>
-          </div>
-        </fieldset>
-
-        <fieldset class="ba-block">
-          <legend>3. Vorstellungstext</legend>
-          <p>Stellt euch in <strong>1000 bis 1500 Zeichen</strong> vor. Leerzeichen und Zeilenumbrüche zählen mit. Wir nutzen den Text auf der Website und in Ankündigungen.</p>
-          <textarea id="ba-text" rows="12" maxlength="2000"></textarea>
-          <p id="ba-zaehler" class="ba-zaehler" aria-live="polite"></p>
-        </fieldset>
-
-        <fieldset class="ba-block">
-          <legend>4. Fotografen-Credit</legend>
+          <legend>2. Fotografen-Credit</legend>
           <p>Wer hat das Pressefoto gemacht? Diesen Namen nennen wir überall, wo wir das Foto zeigen.</p>
           <input type="text" id="ba-credit" maxlength="120" placeholder="z. B. Foto: Anna Beispiel" />
         </fieldset>
 
         <fieldset class="ba-block">
-          <legend>5. Nutzungsrechte</legend>
+          <legend>3. Nutzungsrechte</legend>
           <label class="ba-check">
             <input type="checkbox" id="ba-rechte" />
             <span id="ba-rechte-text"></span>
@@ -58,13 +46,32 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
           <p id="ba-rechte-stand" class="ba-klein"></p>
         </fieldset>
 
-        <button type="submit" id="ba-senden" class="ba-knopf" disabled>Abgabe absenden</button>
+        <fieldset class="ba-block">
+          <legend>4. Logo</legend>
+          <p>Unsere Plakate sind sehr groß. Damit euer Logo darauf gestochen scharf aussieht, brauchen wir es in sehr hoher Auflösung.</p>
+          <p>Am besten ist eine <strong>Vektordatei</strong> mit der Endung SVG, PDF, EPS oder AI. Sie hat keine feste Auflösung und bleibt deshalb in jeder Größe scharf. Wer euer Logo gestaltet hat, hat meist auch eine solche Datei.</p>
+          <p>Wenn ihr keine Vektordatei habt, geht auch ein großes <strong>PNG mit transparentem Hintergrund</strong>. Ob es groß genug ist, prüft die Seite beim Hochladen für euch.</p>
+          <div class="ba-datei">
+            <input type="file" id="ba-logo" accept=".svg,.pdf,.eps,.ai,.png,image/svg+xml,application/pdf,application/postscript,image/png" />
+            <div id="ba-logo-info" class="ba-info"></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="ba-block">
+          <legend>5. Vorstellungstext</legend>
+          <p>Stellt euch in <strong>1000 bis 1500 Zeichen</strong> vor. Leerzeichen und Zeilenumbrüche zählen mit, der Zähler unter dem Feld zeigt euch den Stand.</p>
+          <p>Wir <strong>veröffentlichen euren Text auf unserer Website rock4aid.de</strong>. Dort erscheint er im Line-Up, wenn man auf euren Bandnamen klickt. Außerdem nutzen wir ihn für Ankündigungen in Social Media.</p>
+          <textarea id="ba-text" rows="12" maxlength="2000"></textarea>
+          <p id="ba-zaehler" class="ba-zaehler" aria-live="polite"></p>
+        </fieldset>
+
+        <button type="submit" id="ba-senden" class="ba-knopf" disabled>Unterlagen senden</button>
         <p id="ba-fehlt" class="ba-klein"></p>
       </form>
 
       <div class="ba-datenschutz">
         <h2>Datenschutz</h2>
-        <p>Wir speichern eure Dateien, euren Text, den Fotografen-Credit und den Zeitpunkt eurer Rechtebestätigung. Wir nutzen sie nur, um euren Auftritt beim Rock4Aid-Festival anzukündigen. Die Daten liegen bei unserem Dienstleister Supabase und sind bis zur Freigabe nur für unser Orga-Team sichtbar. Wenn ihr nicht mehr beim Festival dabei seid, löschen wir eure Abgabe auf Wunsch. Mehr steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <p>Wir speichern eure Dateien, euren Text, den Fotografen-Credit und den Zeitpunkt eurer Rechtebestätigung. Wir nutzen sie nur, um euren Auftritt beim Rock4Aid-Festival anzukündigen. Die Daten liegen bei unserem Dienstleister Supabase und sind bis zur Freigabe nur für unser Orga-Team sichtbar. Wenn ihr nicht mehr beim Festival dabei seid, löschen wir eure Unterlagen auf Wunsch. Mehr steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
       </div>
     </div>
   </section>
@@ -79,8 +86,13 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   .ba p { margin:0; line-height:1.5; }
   .ba a { color:#4b2e83; text-decoration:underline; }
   .ba-kopf { font-size:18px; font-weight:600; }
-  .ba-block { border:2px solid #4b2e83; border-radius:12px; background:#fff6c2; padding:16px 18px 18px; margin:0; display:flex; flex-direction:column; gap:10px; min-width:0; }
-  .ba-block legend { font-weight:700; font-size:20px; color:#4b2e83; padding:0 6px; }
+  .ba-intro { display:flex; flex-direction:column; gap:10px; font-size:17px; }
+  .ba-intro[hidden] { display:none; }
+  .ba-frist { font-weight:600; }
+  #ba-form { display:flex; flex-direction:column; gap:20px; }
+  .ba-block { border:2px solid #4b2e83; border-radius:12px; background:#fff6c2; padding:18px 20px 20px; margin:0; display:flex; flex-direction:column; gap:10px; min-width:0; }
+  /* Überschrift innerhalb des Kastens statt auf dem Rahmen */
+  .ba-block legend { float:left; width:100%; padding:0; margin:0 0 2px; font-weight:700; font-size:20px; color:#4b2e83; }
   .ba-datei { display:flex; flex-direction:column; gap:8px; }
   .ba input[type=file] { font:inherit; max-width:100%; }
   .ba textarea, .ba input[type=text] { width:100%; font:inherit; font-size:16px; padding:10px 12px; border:2px solid #4b2e83; border-radius:8px; background:#fff; color:#1d0f3a; }
@@ -93,14 +105,15 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   .ba-check { display:flex; gap:10px; align-items:flex-start; line-height:1.5; cursor:pointer; }
   .ba-check input { width:22px; height:22px; flex:0 0 auto; margin-top:2px; accent-color:#4b2e83; }
   .ba-klein { font-size:14px; color:#3b2a5e; }
-  .ba-knopf { align-self:flex-start; background:#4b2e83; color:#fff; border:0; border-radius:10px; padding:14px 24px; font:inherit; font-weight:700; font-size:18px; cursor:pointer; }
-  .ba-knopf[disabled] { opacity:.45; cursor:not-allowed; }
+  .ba-knopf { align-self:flex-start; margin-top:8px; background:#4b2e83; color:#fff; border:0; border-radius:10px; padding:14px 24px; font:inherit; font-weight:700; font-size:18px; cursor:pointer; }
+  .ba-knopf[disabled] { background:#9b8cb8; color:#f3eefb; cursor:not-allowed; }
   .ba-meldung { border-radius:10px; padding:14px 16px; font-weight:600; line-height:1.45; }
   .ba-meldung.ok { background:#e5f4e4; color:#1f6b2a; border:2px solid #1f6b2a; }
   .ba-meldung.fehler { background:#fbebeb; color:#a12020; border:2px solid #a12020; }
   .ba-balken { height:8px; background:#e6dcc0; border-radius:4px; overflow:hidden; }
   .ba-balken > div { height:100%; width:0; background:#4b2e83; transition:width .2s; }
-  .ba-datenschutz { font-size:14px; color:#3b2a5e; margin-top:8px; }
+  #ba-fehlt { margin-top:-8px; }
+  .ba-datenschutz { font-size:14px; color:#3b2a5e; margin-top:16px; }
 </style>
 
 <script is:inline>
@@ -151,19 +164,19 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
     const m = await bildMasse(file);
     if (!m) return { fehler: 'Das Foto konnte nicht gelesen werden. Bitte prüft die Datei.' };
     const lang = Math.max(m.w, m.h);
-    if (lang < 3000) return { fehler: `Das Foto ist zu klein. Es hat ${m.w} × ${m.h} Pixel. An der langen Seite brauchen wir mindestens 3000 Pixel, damit es auf dem Plakat scharf bleibt. Bitte fragt eure Fotografin oder euren Fotografen nach der Originaldatei.` };
-    return { ok: `Passt: ${m.w} × ${m.h} Pixel, ${mb(file.size)}.`, vorschau: m.url };
+    if (lang < 3000) return { fehler: `Dieses Foto ist für ein großes Plakat leider zu klein und würde unscharf. Bitte fragt eure Fotografin oder euren Fotografen nach der Originaldatei in voller Größe. (Technisch: ${m.w} × ${m.h} Pixel, wir brauchen mindestens 3000 an der langen Seite.)` };
+    return { ok: `Passt. Das Foto ist groß genug für unsere Plakate.`, vorschau: m.url };
   }
   async function pruefeLogo(file) {
     const ext = file.name.split('.').pop().toLowerCase();
     if (file.size > 50 * 1048576) return { fehler: `Das Logo ist ${mb(file.size)} groß. Erlaubt sind höchstens 50 MB.` };
-    if (['svg', 'pdf', 'eps', 'ai'].includes(ext)) return { ok: `Passt: Vektordatei (${ext.toUpperCase()}), ${mb(file.size)}.`, vorschau: ext === 'svg' ? URL.createObjectURL(file) : null };
+    if (['svg', 'pdf', 'eps', 'ai'].includes(ext)) return { ok: `Passt. Das ist eine Vektordatei, sie bleibt in jeder Größe scharf.`, vorschau: ext === 'svg' ? URL.createObjectURL(file) : null };
     if (ext !== 'png') return { fehler: 'Das Logo muss eine SVG-, PDF-, EPS- oder AI-Datei sein, notfalls ein PNG mit transparentem Hintergrund.' };
     const m = await bildMasse(file);
     if (!m) return { fehler: 'Das Logo konnte nicht gelesen werden. Bitte prüft die Datei.' };
-    if (m.w < 5000) return { fehler: `Das PNG-Logo ist nur ${m.w} Pixel breit. Wir brauchen mindestens 5000 Pixel. Besser ist eine Vektordatei, falls ihr eine habt.` };
+    if (m.w < 5000) return { fehler: `Dieses Logo ist für ein großes Plakat leider zu klein und würde unscharf. Bitte fragt nach einer Vektordatei oder einer größeren Fassung. (Technisch: ${m.w} Pixel breit, wir brauchen mindestens 5000.)` };
     if (!hatTransparenz(m.img)) return { fehler: 'Das PNG-Logo hat keinen transparenten Hintergrund. Bitte ladet eine Fassung ohne Hintergrundfarbe hoch oder eine Vektordatei.' };
-    return { ok: `Passt: PNG mit transparentem Hintergrund, ${m.w} × ${m.h} Pixel. Eine Vektordatei wäre für das Plakat noch besser.`, vorschau: m.url };
+    return { ok: `Passt. Das Logo ist groß genug und hat einen transparenten Hintergrund. Eine Vektordatei wäre für das Plakat noch besser.`, vorschau: m.url };
   }
   function zeigeInfo(id, erg, file) {
     const el = $(id);
@@ -179,12 +192,12 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
     z.className = 'ba-zaehler ' + (n >= MIN && n <= MAX ? 'ba-ok' : 'ba-warn');
     const fehlt = [];
     if (!zustand.foto && !zustand.vorhandenFoto) fehlt.push('ein passendes Pressefoto');
-    if (!zustand.logo && !zustand.vorhandenLogo) fehlt.push('ein passendes Logo');
-    if (n < MIN || n > MAX) fehlt.push('einen Text mit 1000 bis 1500 Zeichen');
     if (!$('ba-credit').value.trim()) fehlt.push('den Fotografen-Credit');
     if (!$('ba-rechte').checked) fehlt.push('die Bestätigung der Nutzungsrechte');
+    if (!zustand.logo && !zustand.vorhandenLogo) fehlt.push('ein passendes Logo');
+    if (n < MIN || n > MAX) fehlt.push('einen Text mit 1000 bis 1500 Zeichen');
     $('ba-senden').disabled = fehlt.length > 0 || !zustand.offen || zustand.laeuft;
-    $('ba-fehlt').textContent = fehlt.length ? `Zum Absenden brauchen wir noch ${fehlt.join(', ').replace(/, ([^,]*)$/, ' und $1')}.` : '';
+    $('ba-fehlt').textContent = fehlt.length ? `Zum Senden brauchen wir noch ${fehlt.join(', ').replace(/, ([^,]*)$/, ' und $1')}.` : '';
   }
 
   $('ba-foto').addEventListener('change', async (e) => {
@@ -229,11 +242,11 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
         fotoPfad, logoPfad, fotoName: zustand.foto?.name, logoName: zustand.logo?.name,
       });
       await laden();
-      meldung('Vielen Dank! Eure Abgabe ist bei uns angekommen. Bis zum Abgabedatum könnt ihr sie über diesen Link noch ändern.', 'ok');
+      meldung('Vielen Dank! Eure Unterlagen sind bei uns angekommen. Bis zum Stichtag könnt ihr sie über diesen Link noch ändern.', 'ok');
     } catch (err) {
       meldung(err.message, 'fehler');
     } finally {
-      zustand.laeuft = false; $('ba-senden').textContent = 'Abgabe absenden'; pruefeAlles();
+      zustand.laeuft = false; $('ba-senden').textContent = 'Unterlagen senden'; pruefeAlles();
     }
   });
 
@@ -244,15 +257,17 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
     zustand.vorhandenFoto = !!d.foto; zustand.vorhandenLogo = !!d.logo;
     $('ba-foto').value = ''; $('ba-logo').value = '';
     $('ba-kopf').textContent = d.offen
-      ? `Hallo ${d.band}! Bitte gebt eure Unterlagen bis zum ${datum(d.abgabeBis)} ab.`
-      : `Hallo ${d.band}! Das Abgabedatum war der ${datum(d.abgabeBis)}. Änderungen sind nicht mehr möglich.`;
+      ? `Hallo ${d.band}! Schön, dass ihr beim Rock4Aid-Festival dabei seid.`
+      : `Hallo ${d.band}! Der Stichtag war der ${datum(d.abgabeBis)}. Änderungen sind nicht mehr möglich. Wenn noch etwas fehlt, meldet euch bitte bei uns.`;
+    $('ba-intro').hidden = !d.offen;
+    $('ba-frist').textContent = `Bitte schickt uns alles bis zum ${datum(d.abgabeBis)}. Bis dahin könnt ihr eure Angaben über diesen Link jederzeit ändern.`;
     $('ba-rechte-text').textContent = d.rechteText;
     $('ba-text').value = d.text; $('ba-credit').value = d.credit;
     $('ba-rechte').checked = false;
     $('ba-rechte-stand').textContent = d.rechteBestaetigtAm ? `Zuletzt bestätigt am ${zeit(d.rechteBestaetigtAm)}. Bei jeder Änderung bestätigt ihr die Rechte erneut.` : '';
-    $('ba-foto-info').innerHTML = d.foto ? `<span class="ba-ok">Bereits abgegeben: ${esc(d.foto.name)}</span><br>${d.foto.breite} × ${d.foto.hoehe} Pixel. Wenn ihr eine neue Datei wählt, ersetzt sie diese.${d.foto.vorschau ? `<br><img src="${esc(d.foto.vorschau)}" alt="Euer Pressefoto">` : ''}` : '';
+    $('ba-foto-info').innerHTML = d.foto ? `<span class="ba-ok">Bereits abgegeben: ${esc(d.foto.name)}</span><br>Wenn ihr eine neue Datei wählt, ersetzt sie diese.${d.foto.vorschau ? `<br><img src="${esc(d.foto.vorschau)}" alt="Euer Pressefoto">` : ''}` : '';
     $('ba-logo-info').innerHTML = d.logo ? `<span class="ba-ok">Bereits abgegeben: ${esc(d.logo.name)}</span><br>${d.logo.art === 'vektor' ? 'Vektordatei' : 'PNG'}. Wenn ihr eine neue Datei wählt, ersetzt sie diese.${d.logo.vorschau ? `<br><img src="${esc(d.logo.vorschau)}" alt="Euer Logo">` : ''}` : '';
-    if (d.eingereichtAm && d.offen) meldung(`Eure Abgabe vom ${zeit(d.eingereichtAm)} liegt uns vor. Ihr könnt sie bis zum Abgabedatum noch ändern.`, 'ok');
+    if (d.eingereichtAm && d.offen) meldung(`Eure Unterlagen vom ${zeit(d.eingereichtAm)} sind bei uns. Ihr könnt sie bis zum Stichtag noch ändern.`, 'ok');
     $('ba-form').querySelectorAll('input, textarea').forEach((el) => { el.disabled = !d.offen; });
     $('ba-form').hidden = false;
     pruefeAlles();

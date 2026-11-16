@@ -192,7 +192,7 @@ export function pruefeFoto(info, groesse) {
   if (!info || !['jpg', 'png'].includes(info.typ)) return 'Das Pressefoto muss eine JPG- oder PNG-Datei sein.';
   if (groesse > FOTO_MAX) return 'Das Pressefoto darf höchstens 25 MB groß sein.';
   const lang = Math.max(info.breite || 0, info.hoehe || 0);
-  if (lang < FOTO_MIN_LANGE_SEITE) return `Das Pressefoto hat an der langen Seite ${lang} Pixel. Wir brauchen mindestens ${FOTO_MIN_LANGE_SEITE} Pixel.`;
+  if (lang < FOTO_MIN_LANGE_SEITE) return `Das Pressefoto ist für ein großes Plakat leider zu klein. Bitte ladet die Originaldatei in voller Größe hoch. (Technisch: ${lang} Pixel an der langen Seite, wir brauchen mindestens ${FOTO_MIN_LANGE_SEITE}.)`;
   return null;
 }
 export function pruefeLogo(info, groesse) {
@@ -200,7 +200,7 @@ export function pruefeLogo(info, groesse) {
   if (groesse > LOGO_MAX) return 'Das Logo darf höchstens 50 MB groß sein.';
   if (info.typ === 'jpg') return 'Ein JPG-Logo können wir nicht verwenden, weil es keinen transparenten Hintergrund hat. Bitte eine Vektordatei oder ein PNG mit transparentem Hintergrund hochladen.';
   if (info.typ === 'png') {
-    if ((info.breite || 0) < LOGO_PNG_MIN_BREITE) return `Das PNG-Logo ist ${info.breite} Pixel breit. Wir brauchen mindestens ${LOGO_PNG_MIN_BREITE} Pixel, besser eine Vektordatei.`;
+    if ((info.breite || 0) < LOGO_PNG_MIN_BREITE) return `Das Logo ist für ein großes Plakat leider zu klein. Bitte ladet eine Vektordatei oder eine größere Fassung hoch. (Technisch: ${info.breite} Pixel breit, wir brauchen mindestens ${LOGO_PNG_MIN_BREITE}.)`;
     if (!info.transparenz) return 'Das PNG-Logo hat keinen transparenten Hintergrund.';
   }
   return null;
@@ -318,7 +318,7 @@ export default async (request) => {
     if (!a) return fehler(404, 'Dieser Link ist ungültig.');
     const jetzt = new Date();
     if (body.aktion === 'laden') return await aktionLaden(env, a);
-    if (!istOffen(a, jetzt)) return fehler(403, 'Das Abgabedatum ist vorbei. Änderungen sind nicht mehr möglich.');
+    if (!istOffen(a, jetzt)) return fehler(403, 'Der Stichtag ist vorbei. Änderungen sind nicht mehr möglich.');
     if (body.aktion === 'upload') return await aktionUpload(env, a, body);
     if (body.aktion === 'absenden') return await aktionAbsenden(env, a, body, jetzt);
     return fehler(400, 'Unbekannte Aktion.');
