@@ -4,9 +4,9 @@
  * Aufruf: POST /.netlify/functions/band-abgabe  mit JSON { aktion, token, ... }
  *
  *   aktion "laden"    → Bandname, Abgabedatum und die bisherige Abgabe
- *   aktion "upload"   → signierte Upload-Adresse für Foto oder Logo
+ *   aktion "upload"   → signierte Upload-Adresse für Foto, Logo oder Technical Rider
  *   aktion "absenden" → prüft alles auf dem Server und speichert die Abgabe
- *   aktion "entfernen" → löscht das gesendete Foto oder Logo wieder
+ *   aktion "entfernen" → löscht das gesendete Foto, Logo oder eine Rider-Datei wieder
  *
  * Die Band hat nie direkten Zugriff auf Tabellen oder Speicher. Jede Aktion
  * prüft zuerst das Token und das Abgabedatum. Der Link gilt bis 23:59 Uhr
@@ -27,6 +27,10 @@ const LOGO_PNG_MIN_BREITE = 5000;
 const TEXT_MIN = 1000;
 const TEXT_MAX = 1500;
 const CREDIT_MAX = 120;
+// Technical Rider und Bühnenplan: freiwillig, bis zu fünf Dateien
+const RIDER_MAX = 25 * MB;
+const RIDER_ANZAHL = 5;
+const RIDER_ENDUNGEN = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
 
 export const RECHTE_VERSION = 'v1-2026-11';
 export const RECHTE_TEXT =
@@ -163,6 +167,9 @@ export function erkenneDatei(b) {
   if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return { typ: 'jpg', ...jpegMasse(b) };
   if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return { typ: 'png', ...pngInfo(b) };
   if (b[0] === 0xc5 && b[1] === 0xd0 && b[2] === 0xd3 && b[3] === 0xc6) return { typ: 'eps' };
+  // Word: DOCX ist ein ZIP-Archiv, DOC ein altes Office-Format
+  if (b[0] === 0x50 && b[1] === 0x4b && b[2] === 0x03 && b[3] === 0x04) return { typ: 'zip' };
+  if (b[0] === 0xd0 && b[1] === 0xcf && b[2] === 0x11 && b[3] === 0xe0) return { typ: 'doc' };
   const kopf = new TextDecoder('latin1').decode(b.subarray(0, Math.min(b.length, 4096)));
   if (kopf.startsWith('%PDF-')) return { typ: 'pdf' };
   if (kopf.startsWith('%!PS-Adobe')) return { typ: 'eps' };
@@ -230,6 +237,17 @@ export function pruefeLogo(info, groesse) {
   return null;
 }
 
+/** Rider-Datei prüfen. Gibt { typ } oder { fehler } zurück. */
+export function pruefeRider(info, groesse, ext) {
+  const nicht = 'Der Technical Rider muss eine PDF-, Word-, JPG- oder PNG-Datei sein.';
+  if (!info) return { fehler: nicht };
+  if (groesse > RIDER_MAX) return { fehler: 'Eine Rider-Datei darf höchstens 25 MB groß sein.' };
+  if (info.typ === 'zip') return ext === 'docx' ? { typ: 'docx' } : { fehler: nicht };
+  if (['pdf', 'doc', 'jpg', 'png'].includes(info.typ)) return { typ: info.typ };
+  return { fehler: nicht };
+}
+const riderListe = (a) => (Array.isArray(a.rider) ? a.rider : []);
+
 function endung(name) { return (String(name || '').split('.').pop() || '').toLowerCase(); }
 function sichererName(name) { return String(name || 'datei').replace(/[^\w.\-]+/g, '_').slice(-80); }
 
@@ -246,8 +264,11 @@ async function aktionLaden(env, a) {
     name: a.logo_dateiname, art: a.logo_art, typ: a.logo_typ,
     vorschau: ['svg', 'png'].includes(a.logo_typ) ? await signiereDownload(env, a.logo_pfad) : null,
   } : null;
+  const rider = await Promise.all(riderListe(a).map(async (r) => ({
+    pfad: r.pfad, name: r.name, typ: r.typ, groesse: r.groesse, url: await signiereDownload(env, r.pfad),
+  })));
   return json(200, {
-    band: a.band?.name || '', abgabeBis: a.abgabe_bis, offen, status: a.status,
+    band: a.band?.name || '', abgabeBis: a.abgabe_bis, offen, status: a.status, rider,
     text: a.vorstellungstext || '', credit: a.foto_credit || '',
     rechteBestaetigtAm: a.rechte_bestaetigt_am, eingereichtAm: a.eingereicht_am,
     foto, logo, rechteText: RECHTE_TEXT, links: Array.isArray(a.links) ? a.links : [],
@@ -255,7 +276,7 @@ async function aktionLaden(env, a) {
 }
 
 async function aktionUpload(env, a, body) {
-  const art = body.art === 'logo' ? 'logo' : body.art === 'foto' ? 'foto' : null;
+  const art = ['foto', 'logo', 'rider'].includes(body.art) ? body.art : null;
   if (!art) return fehler(400, 'Unbekannte Dateiart.');
   const name = String(body.dateiname || '');
   const ext = endung(name);
@@ -263,11 +284,18 @@ async function aktionUpload(env, a, body) {
   if (art === 'foto') {
     if (!['jpg', 'jpeg', 'png'].includes(ext)) return fehler(400, 'Das Pressefoto muss eine JPG- oder PNG-Datei sein.');
     if (groesse > FOTO_MAX) return fehler(400, 'Das Pressefoto darf höchstens 25 MB groß sein.');
-  } else {
+  } else if (art === 'logo') {
     if (![...VEKTOR_ENDUNGEN, 'png'].includes(ext)) return fehler(400, 'Das Logo muss eine SVG-, PDF-, EPS- oder AI-Datei sein, notfalls ein PNG.');
     if (groesse > LOGO_MAX) return fehler(400, 'Das Logo darf höchstens 50 MB groß sein.');
+  } else {
+    if (!RIDER_ENDUNGEN.includes(ext)) return fehler(400, 'Der Technical Rider muss eine PDF-, Word-, JPG- oder PNG-Datei sein.');
+    if (groesse > RIDER_MAX) return fehler(400, 'Eine Rider-Datei darf höchstens 25 MB groß sein.');
+    if (riderListe(a).length >= RIDER_ANZAHL) return fehler(400, `Ihr habt schon ${RIDER_ANZAHL} Rider-Dateien gesendet. Löscht zuerst eine, bevor ihr eine neue hochladet.`);
   }
-  const typen = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', svg: 'image/svg+xml', pdf: 'application/pdf', eps: 'application/postscript', ai: 'application/octet-stream' };
+  const typen = {
+    jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', svg: 'image/svg+xml', pdf: 'application/pdf', eps: 'application/postscript', ai: 'application/octet-stream',
+    doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  };
   const zufall = Math.random().toString(36).slice(2, 8);
   const pfad = `${a.id}/${art}-${Date.now()}-${zufall}.${ext === 'jpeg' ? 'jpg' : ext}`;
   const signedUrl = await signiereUpload(env, pfad);
@@ -325,15 +353,43 @@ async function aktionAbsenden(env, a, body, jetzt) {
     });
   }
 
+  // Technical Rider: neue Dateien an die vorhandenen anhängen
+  const riderNeu = Array.isArray(body.riderNeu) ? body.riderNeu : [];
+  if (riderNeu.length) {
+    const vorhanden = riderListe(a);
+    if (vorhanden.length + riderNeu.length > RIDER_ANZAHL) return fehler(400, `Für den Technical Rider sind höchstens ${RIDER_ANZAHL} Dateien möglich.`);
+    const neu = [];
+    for (const r of riderNeu) {
+      const pfad = String(r?.pfad || '');
+      if (!pfad.startsWith(`${ordnerPraefix}rider-`)) return fehler(400, 'Ungültige Datei.');
+      const d = await leseAnfang(env, pfad, 8192);
+      if (!d) return fehler(400, 'Eine Rider-Datei ist nicht angekommen. Bitte noch einmal hochladen.');
+      const erg = pruefeRider(erkenneDatei(d.anfang), d.groesse, endung(pfad));
+      if (erg.fehler) { await loescheDateien(env, riderNeu.map((x) => String(x?.pfad || '')).filter((x) => x.startsWith(ordnerPraefix))); return fehler(400, erg.fehler); }
+      neu.push({ pfad, name: sichererName(r?.name || pfad.split('/').pop()), typ: erg.typ, groesse: d.groesse });
+    }
+    felder.rider = [...vorhanden, ...neu];
+  }
+
   await speichereAbgabe(env, a.id, felder);
   // Alte und nicht verwendete Uploads dieser Band aufräumen
-  const behalten = new Set([felder.foto_pfad || a.foto_pfad, felder.logo_pfad || a.logo_pfad]);
+  const behalten = new Set([felder.foto_pfad || a.foto_pfad, felder.logo_pfad || a.logo_pfad,
+    ...(felder.rider || riderListe(a)).map((r) => r.pfad)]);
   const alle = await listeOrdner(env, String(a.id));
   await loescheDateien(env, alle.filter((p) => !behalten.has(p)));
   return json(200, { ok: true });
 }
 
 async function aktionEntfernen(env, a, body) {
+  // Eine Rider-Datei löschen. Der Rider ist freiwillig, die Einreichung bleibt gültig.
+  if (body.art === 'rider') {
+    const liste = riderListe(a);
+    const ziel = liste.find((r) => r.pfad === body.pfad);
+    if (!ziel) return fehler(400, 'Diese Datei gibt es nicht mehr.');
+    await loescheDateien(env, [ziel.pfad]);
+    await speichereAbgabe(env, a.id, { rider: liste.filter((r) => r.pfad !== ziel.pfad) });
+    return json(200, { ok: true });
+  }
   const art = body.art === 'logo' ? 'logo' : body.art === 'foto' ? 'foto' : null;
   if (!art) return fehler(400, 'Unbekannte Dateiart.');
   const pfad = a[`${art}_pfad`];

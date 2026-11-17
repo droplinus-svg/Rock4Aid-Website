@@ -21,8 +21,8 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
       <div id="ba-meldung" class="ba-meldung" hidden></div>
 
       <form id="ba-form" hidden novalidate>
-        <fieldset class="ba-block">
-          <legend>1. Pressefoto</legend>
+        <fieldset class="ba-block" aria-labelledby="ba-titel-1">
+          <h2 class="ba-titel" id="ba-titel-1">1. Pressefoto</h2>
           <p>Bitte ladet euer Pressefoto in der <strong>besten Qualität</strong> hoch, die ihr habt. Am besten ist die Originaldatei von eurer Fotografin oder eurem Fotografen. Fotos aus WhatsApp, Instagram oder von eurer Website sind meist verkleinert und reichen für ein großes Plakat nicht.</p>
           <p>Ihr müsst nichts nachmessen. Die Seite prüft beim Hochladen, ob das Foto groß genug ist. Möglich sind JPG- und PNG-Dateien bis 25 MB.</p>
           <div class="ba-datei">
@@ -31,14 +31,14 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
           </div>
         </fieldset>
 
-        <fieldset class="ba-block">
-          <legend>2. Fotografen-Credit</legend>
+        <fieldset class="ba-block" aria-labelledby="ba-titel-2">
+          <h2 class="ba-titel" id="ba-titel-2">2. Fotografen-Credit</h2>
           <p>Wer hat das Pressefoto gemacht? Diesen Namen nennen wir überall, wo wir das Foto zeigen.</p>
           <input type="text" id="ba-credit" maxlength="120" placeholder="z. B. Foto: Anna Beispiel" />
         </fieldset>
 
-        <fieldset class="ba-block">
-          <legend>3. Nutzungsrechte</legend>
+        <fieldset class="ba-block" aria-labelledby="ba-titel-3">
+          <h2 class="ba-titel" id="ba-titel-3">3. Nutzungsrechte</h2>
           <label class="ba-check">
             <input type="checkbox" id="ba-rechte" />
             <span id="ba-rechte-text"></span>
@@ -46,8 +46,8 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
           <p id="ba-rechte-stand" class="ba-klein"></p>
         </fieldset>
 
-        <fieldset class="ba-block">
-          <legend>4. Logo</legend>
+        <fieldset class="ba-block" aria-labelledby="ba-titel-4">
+          <h2 class="ba-titel" id="ba-titel-4">4. Logo</h2>
           <p>Unsere Plakate sind sehr groß. Damit euer Logo darauf gestochen scharf aussieht, brauchen wir es in sehr hoher Auflösung.</p>
           <p>Am besten ist eine <strong>Vektordatei</strong> mit der Endung SVG, PDF, EPS oder AI. Sie hat keine feste Auflösung und bleibt deshalb in jeder Größe scharf. Wer euer Logo gestaltet hat, hat meist auch eine solche Datei.</p>
           <p>Wenn ihr keine Vektordatei habt, geht auch ein großes <strong>PNG mit transparentem Hintergrund</strong>. Ob es groß genug ist, prüft die Seite beim Hochladen für euch.</p>
@@ -57,16 +57,16 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
           </div>
         </fieldset>
 
-        <fieldset class="ba-block">
-          <legend>5. Vorstellungstext</legend>
+        <fieldset class="ba-block" aria-labelledby="ba-titel-5">
+          <h2 class="ba-titel" id="ba-titel-5">5. Vorstellungstext</h2>
           <p>Stellt euch in <strong>1000 bis 1500 Zeichen</strong> vor. Leerzeichen und Zeilenumbrüche zählen mit, der Zähler unter dem Feld zeigt euch den Stand.</p>
           <p>Wir <strong>veröffentlichen euren Text auf unserer Website rock4aid.de</strong>. Dort erscheint er im Line-Up, wenn man auf euren Bandnamen klickt. Außerdem nutzen wir ihn für Ankündigungen in Social Media.</p>
           <textarea id="ba-text" rows="12" maxlength="2000"></textarea>
           <p id="ba-zaehler" class="ba-zaehler" aria-live="polite"></p>
         </fieldset>
 
-        <fieldset class="ba-block">
-          <legend>6. Website und Social Media</legend>
+        <fieldset class="ba-block" aria-labelledby="ba-titel-6">
+          <h2 class="ba-titel" id="ba-titel-6">6. Website und Social Media</h2>
           <p>Wo findet man euch im Netz? Wir verlinken eure Kanäle auf rock4aid.de bei eurem Auftritt im Line-Up. Tragt nur ein, was ihr habt. Alle Felder sind freiwillig.</p>
           <div class="ba-links">
             <label>Website<input type="url" inputmode="url" data-plattform="website" placeholder="z. B. www.eure-band.de"></label>
@@ -79,13 +79,23 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
           </div>
         </fieldset>
 
+        <fieldset class="ba-block" aria-labelledby="ba-titel-7">
+          <h2 class="ba-titel" id="ba-titel-7">7. Technical Rider und Bühnenplan</h2>
+          <p>Für die Vorbereitung von FOH und Monitoring brauchen wir euren aktuellen <strong>Technical Rider</strong> mit <strong>Kanalbelegung</strong> und <strong>Bühnenplan</strong>. Gebt bitte auch an, welches Equipment ihr selbst mitbringt, zum Beispiel Backline, In-Ear-Strecken oder ein eigenes Pult.</p>
+          <p>Ihr könnt bis zu fünf Dateien hochladen, bevorzugt als PDF. Word, JPG und PNG gehen auch, jeweils bis 25 MB. Ist der Rider noch nicht final, sendet die übrigen Unterlagen schon jetzt und reicht ihn bis zum Stichtag über diesen Link nach.</p>
+          <div class="ba-datei">
+            <input type="file" id="ba-rider" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png" />
+            <div id="ba-rider-info" class="ba-info"></div>
+          </div>
+        </fieldset>
+
         <button type="submit" id="ba-senden" class="ba-knopf" disabled>Unterlagen senden</button>
         <p id="ba-fehlt" class="ba-klein"></p>
       </form>
 
       <div class="ba-datenschutz">
         <h2>Datenschutz</h2>
-        <p>Wir speichern eure Dateien, euren Text, eure Links, den Fotografen-Credit und den Zeitpunkt eurer Rechtebestätigung. Wir nutzen sie nur, um euren Auftritt beim Rock4Aid-Festival anzukündigen. Die Daten liegen bei unserem Dienstleister Supabase und sind bis zur Freigabe nur für unser Orga-Team sichtbar. Wenn ihr nicht mehr beim Festival dabei seid, löschen wir eure Unterlagen auf Wunsch. Mehr steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+        <p>Wir speichern eure Dateien, euren Text, eure Links, den Fotografen-Credit und den Zeitpunkt eurer Rechtebestätigung. Wir nutzen sie nur, um euren Auftritt beim Rock4Aid-Festival anzukündigen. Den Technical Rider erhält ausschließlich unsere Veranstaltungstechnik. Die Daten liegen bei unserem Dienstleister Supabase und sind bis zur Freigabe nur für unser Orga-Team sichtbar. Wenn ihr nicht mehr beim Festival dabei seid, löschen wir eure Unterlagen auf Wunsch. Mehr steht in unserer <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
       </div>
     </div>
   </section>
@@ -105,18 +115,22 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   .ba-frist { font-weight:600; }
   #ba-form { display:flex; flex-direction:column; gap:20px; }
   .ba-block { border:2px solid #4b2e83; border-radius:12px; background:#fff6c2; padding:18px 20px 20px; margin:0; display:flex; flex-direction:column; gap:10px; min-width:0; }
-  /* Überschrift innerhalb des Kastens statt auf dem Rahmen */
-  .ba-block legend { float:left; width:100%; padding:0; margin:0 0 2px; font-weight:700; font-size:20px; color:#4b2e83; }
+  /* Überschrift als normale Überschrift im Kasten. Eine <legend> setzt Safari auf dem iPhone sonst auf den Rahmen. */
+  .ba .ba-titel { margin:0 0 2px; font-weight:700; font-size:20px; line-height:1.25; color:#4b2e83; }
   .ba-datei { display:flex; flex-direction:column; gap:8px; }
   .ba input[type=file] { font:inherit; max-width:100%; }
-  .ba textarea, .ba input[type=text] { width:100%; font:inherit; font-size:16px; padding:10px 12px; border:2px solid #4b2e83; border-radius:8px; background:#fff; color:#1d0f3a; }
+  .ba textarea, .ba input[type=text] { box-sizing:border-box; width:100%; font:inherit; font-size:16px; padding:10px 12px; border:2px solid #4b2e83; border-radius:8px; background:#fff; color:#1d0f3a; }
   .ba textarea { resize:vertical; line-height:1.5; }
   .ba-info { font-size:15px; line-height:1.45; }
   .ba-info img { display:block; width:auto; height:auto; max-width:220px; max-height:160px; object-fit:contain; border-radius:6px; margin-top:6px; background:repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0/16px 16px; }
   .ba-ok { color:#1f6b2a; font-weight:600; }
+  .ba-rider-liste { list-style:none; margin:4px 0 0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .ba-rider-liste li { display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; padding:8px 12px; background:#fff; border:1px solid #d9cfa0; border-radius:8px; }
+  .ba-rider-liste .ba-weg { margin-top:0; }
+  .ba-rider-name { font-weight:600; overflow-wrap:anywhere; }
   .ba-links { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
   .ba-links label { display:flex; flex-direction:column; gap:4px; font-weight:600; font-size:15px; color:#4b2e83; min-width:0; }
-  .ba-links input { width:100%; font:inherit; font-size:15px; font-weight:400; padding:9px 11px; border:2px solid #4b2e83; border-radius:8px; background:#fff; color:#1d0f3a; }
+  .ba-links input { box-sizing:border-box; width:100%; font:inherit; font-size:15px; font-weight:400; padding:9px 11px; border:2px solid #4b2e83; border-radius:8px; background:#fff; color:#1d0f3a; }
   .ba-weg { display:block; margin-top:8px; background:#fff; color:#a12020; border:2px solid #a12020; border-radius:8px; padding:6px 12px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; }
   .ba-weg:hover { background:#fbebeb; }
   .ba-weg[disabled] { opacity:.5; cursor:default; }
@@ -147,7 +161,9 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   const datum = (d) => new Date(d + 'T12:00:00').toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
   const zeit = (t) => new Date(t).toLocaleString('de-DE', { dateStyle: 'long', timeStyle: 'short' });
   const mb = (n) => (n / 1048576).toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' MB';
-  const zustand = { foto: null, logo: null, vorhandenFoto: false, vorhandenLogo: false, offen: false, laeuft: false };
+  const zustand = { foto: null, logo: null, rider: [], vorhandenFoto: false, vorhandenLogo: false, offen: false, laeuft: false };
+  const RIDER_ANZAHL = 5;
+  const RIDER_ENDUNGEN = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'];
 
   function meldung(text, art) {
     const m = $('ba-meldung'); m.hidden = !text; m.className = 'ba-meldung ' + (art || ''); m.textContent = text || '';
@@ -259,6 +275,54 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   ['ba-text', 'ba-credit', 'ba-rechte'].forEach((id) => $(id).addEventListener('input', pruefeAlles));
   $('ba-rechte').addEventListener('change', pruefeAlles);
 
+  // --- Technical Rider: vorhandene und neu gewählte Dateien ---
+  function zeigeRider() {
+    const info = $('ba-rider-info'); info.innerHTML = '';
+    const vorhanden = (zustand.daten && zustand.daten.rider) || [];
+    const liste = document.createElement('ul'); liste.className = 'ba-rider-liste';
+    vorhanden.forEach((r) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="ba-ok">Bereits gesendet:</span> <span class="ba-rider-name">${esc(r.name)}</span> <span class="ba-klein">${mb(r.groesse || 0)}</span>${r.url ? ` <a href="${esc(r.url)}" target="_blank" rel="noopener">ansehen</a>` : ''}`;
+      if (zustand.offen) {
+        const weg = document.createElement('button'); weg.type = 'button'; weg.className = 'ba-weg'; weg.textContent = 'Löschen';
+        weg.addEventListener('click', async () => {
+          if (!window.confirm(`Wollt ihr „${r.name}“ wirklich löschen?`)) return;
+          weg.disabled = true;
+          try { await api({ aktion: 'entfernen', art: 'rider', pfad: r.pfad }); await laden(); meldung('Die Rider-Datei ist gelöscht.', 'ok'); }
+          catch (err) { meldung(err.message, 'fehler'); weg.disabled = false; }
+        });
+        li.appendChild(weg);
+      }
+      liste.appendChild(li);
+    });
+    zustand.rider.forEach((f, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="ba-rider-name">${esc(f.name)}</span> <span class="ba-klein">${mb(f.size)} · wird mit euren Unterlagen gesendet</span>`;
+      const weg = document.createElement('button'); weg.type = 'button'; weg.className = 'ba-weg'; weg.textContent = 'Auswahl entfernen';
+      weg.addEventListener('click', () => { zustand.rider.splice(i, 1); zeigeRider(); pruefeAlles(); });
+      li.appendChild(weg); liste.appendChild(li);
+    });
+    if (liste.children.length) info.appendChild(liste);
+    const frei = RIDER_ANZAHL - vorhanden.length - zustand.rider.length;
+    $('ba-rider').disabled = !zustand.offen || frei <= 0;
+    if (frei <= 0 && zustand.offen) { const p = document.createElement('p'); p.className = 'ba-klein'; p.textContent = `Ihr habt die höchstmögliche Zahl von ${RIDER_ANZAHL} Dateien erreicht. Löscht eine, um eine neue hochzuladen.`; info.appendChild(p); }
+  }
+  $('ba-rider').addEventListener('change', (e) => {
+    const vorhanden = ((zustand.daten && zustand.daten.rider) || []).length;
+    const fehler = [];
+    for (const f of [...e.target.files]) {
+      const ext = f.name.split('.').pop().toLowerCase();
+      if (!RIDER_ENDUNGEN.includes(ext)) { fehler.push(`„${f.name}“ ist keine PDF-, Word-, JPG- oder PNG-Datei.`); continue; }
+      if (f.size > 25 * 1048576) { fehler.push(`„${f.name}“ ist ${mb(f.size)} groß. Erlaubt sind höchstens 25 MB.`); continue; }
+      if (vorhanden + zustand.rider.length >= RIDER_ANZAHL) { fehler.push(`Mehr als ${RIDER_ANZAHL} Dateien sind nicht möglich.`); break; }
+      zustand.rider.push(f);
+    }
+    e.target.value = '';
+    zeigeRider();
+    if (fehler.length) { const p = document.createElement('p'); p.className = 'ba-warn'; p.textContent = fehler.join(' '); $('ba-rider-info').appendChild(p); }
+    pruefeAlles();
+  });
+
   // --- Hochladen mit Fortschritt ---
   function hochladen(art, file, infoId) {
     return api({ aktion: 'upload', art, dateiname: file.name, groesse: file.size }).then((d) => new Promise((resolve, reject) => {
@@ -283,7 +347,10 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
     try {
       const fotoPfad = zustand.foto ? await hochladen('foto', zustand.foto, 'ba-foto-info') : null;
       const logoPfad = zustand.logo ? await hochladen('logo', zustand.logo, 'ba-logo-info') : null;
+      const riderNeu = [];
+      for (const f of zustand.rider) riderNeu.push({ pfad: await hochladen('rider', f, 'ba-rider-info'), name: f.name });
       await api({
+        riderNeu,
         aktion: 'absenden', text: $('ba-text').value, credit: $('ba-credit').value, rechte: $('ba-rechte').checked,
         fotoPfad, logoPfad, fotoName: zustand.foto?.name, logoName: zustand.logo?.name,
         links: [...document.querySelectorAll('.ba-links input')].map((i) => ({ plattform: i.dataset.plattform, url: i.value.trim() })).filter((l) => l.url),
@@ -300,7 +367,7 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
   // --- Laden ---
   async function laden() {
     const d = await api({ aktion: 'laden' });
-    zustand.offen = d.offen; zustand.foto = null; zustand.logo = null; zustand.daten = d;
+    zustand.offen = d.offen; zustand.foto = null; zustand.logo = null; zustand.rider = []; zustand.daten = d;
     zustand.vorhandenFoto = !!d.foto; zustand.vorhandenLogo = !!d.logo;
     $('ba-foto').value = ''; $('ba-logo').value = '';
     $('ba-kopf').textContent = d.offen
@@ -316,6 +383,7 @@ const jahre = await getTable('rueckblick_jahre', { order: 'reihenfolge.desc' });
     document.querySelectorAll('.ba-links input').forEach((i) => { i.value = ((d.links || []).find((l) => l.plattform === i.dataset.plattform) || {}).url || ''; });
     if (d.eingereichtAm && d.offen) meldung(`Eure Unterlagen vom ${zeit(d.eingereichtAm)} sind bei uns. Ihr könnt sie bis zum Stichtag noch ändern.`, 'ok');
     $('ba-form').querySelectorAll('input, textarea').forEach((el) => { el.disabled = !d.offen; });
+    zeigeRider();
     $('ba-form').hidden = false;
     pruefeAlles();
   }
